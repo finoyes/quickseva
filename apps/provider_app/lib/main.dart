@@ -103,27 +103,18 @@ class _ProviderMainShellState extends State<ProviderMainShell> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: QFloatingNavBar(
         selectedIndex: _tabIndex,
-        onDestinationSelected: (idx) => setState(() => _tabIndex = idx),
-        backgroundColor: QColors.cleanWhite,
-        indicatorColor: QColors.softGreenTint,
-        elevation: 8,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.bolt_outlined),
-            selectedIcon: const Icon(
-              Icons.bolt_rounded,
-              color: QColors.primaryGreen,
-            ),
+        onSelected: (idx) => setState(() => _tabIndex = idx),
+        items: [
+          QNavItem(
+            icon: Icons.bolt_outlined,
+            selectedIcon: Icons.bolt_rounded,
             label: context.trPair('Duty', 'ड्यूटी'),
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.query_stats_rounded),
-            selectedIcon: const Icon(
-              Icons.query_stats_rounded,
-              color: QColors.primaryGreen,
-            ),
+          QNavItem(
+            icon: Icons.query_stats_rounded,
+            selectedIcon: Icons.query_stats_rounded,
             label: context.trPair('Earnings', 'कमाई'),
           ),
         ],

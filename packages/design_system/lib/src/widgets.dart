@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'brand_config.dart';
 import 'l10n.dart';
 import 'models.dart';
+import 'motion.dart';
 import 'theme.dart';
+import 'tokens.dart';
 
 /// Smooth Page Route Transition (Fade + Gentle Slide + Micro-Scale)
 /// Safe with `pumpAndSettle` in widget tests while giving fluid motion in-app.
@@ -88,8 +90,14 @@ class _PressableScaleState extends State<PressableScale> {
 }
 
 /// Architectural Layered-Shape Card (Flat Solid Geometric Cutouts, Zero Gradients)
-/// Inspired by Stitch "Karmic Motion" — adds 5-layer scroll-driven parallax depth
-/// using clipped solid circles, concentric rings, stepped corner pills, and geometric diamonds.
+/// Inspired by Stitch "Karmic Motion".
+///
+/// * Dark backgrounds get the full 5-layer scroll-driven parallax composition
+///   (disc, ring, stepped pill, angled pill, diamond).
+/// * Light backgrounds get a single subtle corner disc + ring that drifts on
+///   scroll, so decoration never competes with content.
+///
+/// Only the decoration layer rebuilds on scroll; the child is cached.
 class LayeredShapeCard extends StatefulWidget {
   final Widget child;
   final Color backgroundColor;
@@ -102,6 +110,7 @@ class LayeredShapeCard extends StatefulWidget {
   final List<BoxShadow>? boxShadow;
   final VoidCallback? onTap;
   final double depthMultiplier;
+  final bool? subtleShapes;
 
   const LayeredShapeCard({
     super.key,
@@ -116,6 +125,7 @@ class LayeredShapeCard extends StatefulWidget {
     this.boxShadow,
     this.onTap,
     this.depthMultiplier = 1.0,
+    this.subtleShapes,
   });
 
   @override
@@ -124,42 +134,38 @@ class LayeredShapeCard extends StatefulWidget {
 
 class _LayeredShapeCardState extends State<LayeredShapeCard> {
   ScrollPosition? _scrollPosition;
-  double _scrollPixels = 0.0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newPos = Scrollable.maybeOf(context)?.position;
-    if (_scrollPosition != newPos) {
-      _scrollPosition?.removeListener(_onScroll);
-      _scrollPosition = newPos;
-      _scrollPosition?.addListener(_onScroll);
-      if (newPos != null && newPos.hasPixels) {
-        _scrollPixels = newPos.pixels;
-      }
-    }
+    _scrollPosition = Scrollable.maybeOf(context)?.position;
   }
 
-  @override
-  void dispose() {
-    _scrollPosition?.removeListener(_onScroll);
-    super.dispose();
-  }
-
-  void _onScroll() {
+  double get _pixels {
     final pos = _scrollPosition;
-    if (pos != null && pos.hasPixels && mounted) {
-      setState(() {
-        _scrollPixels = pos.pixels;
-      });
-    }
+    return (pos != null && pos.hasPixels) ? pos.pixels : 0.0;
   }
 
   @override
   Widget build(BuildContext context) {
-    final phase = _scrollPixels * 0.011 * widget.depthMultiplier;
-    final dx = math.sin(phase);
-    final dy = math.cos(phase * 0.85);
+    final subtle = widget.subtleShapes ??
+        (widget.backgroundColor.computeLuminance() > 0.5);
+    final reduced = QMotion.reduced(context);
+    final listenable = reduced ? null : _scrollPosition;
+
+    Widget shapes(double phase) {
+      final dx = math.sin(phase);
+      final dy = math.cos(phase * 0.85);
+      return subtle ? _subtleShapes(dx, dy) : _fullShapes(dx, dy);
+    }
+
+    final decoration = listenable == null
+        ? shapes(0)
+        : AnimatedBuilder(
+            animation: listenable,
+            builder: (context, _) =>
+                shapes(_pixels * 0.011 * widget.depthMultiplier),
+          );
 
     final card = Container(
       margin: widget.margin,
@@ -172,85 +178,9 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
-          // Layer 1 (Deep Back): Top-right large solid geometric disc
-          Positioned(
-            right: -34 + (dx * 10),
-            top: -38 + (dy * 12),
-            child: Container(
-              width: 144,
-              height: 144,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.primaryShapeColor,
-              ),
-            ),
+          Positioned.fill(
+            child: IgnorePointer(child: RepaintBoundary(child: decoration)),
           ),
-          // Layer 2 (Mid-Back): Concentric solid ring with hollow center
-          Positioned(
-            right: 16 - (dx * 14),
-            top: -16 + (dy * -10),
-            child: Container(
-              width: 62,
-              height: 62,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.secondaryShapeColor.withValues(alpha: 0.18),
-                border: Border.all(
-                  color: widget.secondaryShapeColor.withValues(alpha: 0.34),
-                  width: 3.5,
-                ),
-              ),
-            ),
-          ),
-          // Layer 3 (Mid-Front): Stepped geometric pill accent on right edge
-          Positioned(
-            right: -12 + (dy * 8),
-            bottom: 18 - (dx * 12),
-            child: Transform.rotate(
-              angle: dx * 0.14,
-              child: Container(
-                width: 48,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: widget.secondaryShapeColor.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ),
-          ),
-          // Layer 4 (Deep Bottom-Left): Angled pill cutout layer
-          Positioned(
-            left: -26 - (dx * 11),
-            bottom: -28 + (dy * 9),
-            child: Transform.rotate(
-              angle: (-18 + (dx * 7)) * math.pi / 180,
-              child: Container(
-                width: 100,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: widget.primaryShapeColor.withValues(alpha: 0.68),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ),
-          ),
-          // Layer 5 (Foreground Micro-Layer): Floating solid geometric diamond
-          Positioned(
-            left: 28 + (dy * 10),
-            top: -10 + (dx * 6),
-            child: Transform.rotate(
-              angle: (45 + (dx * 12)) * math.pi / 180,
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: widget.secondaryShapeColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-            ),
-          ),
-          // Foreground content
           Padding(
             padding: widget.padding,
             child: widget.child,
@@ -262,10 +192,126 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
     if (widget.onTap == null) return card;
     return PressableScale(onTap: widget.onTap, child: card);
   }
+
+  Widget _subtleShapes(double dx, double dy) {
+    return Stack(
+      clipBehavior: Clip.hardEdge,
+      children: [
+        Positioned(
+          right: -46 + (dx * 6),
+          top: -52 + (dy * 6),
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.primaryShapeColor.withValues(alpha: 0.55),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 10 - (dx * 8),
+          top: -18 + (dy * 4),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.secondaryShapeColor.withValues(alpha: 0.16),
+                width: 2.5,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _fullShapes(double dx, double dy) {
+    return Stack(
+      clipBehavior: Clip.hardEdge,
+      children: [
+        Positioned(
+          right: -34 + (dx * 10),
+          top: -38 + (dy * 12),
+          child: Container(
+            width: 144,
+            height: 144,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.primaryShapeColor,
+            ),
+          ),
+        ),
+        Positioned(
+          right: 16 - (dx * 14),
+          top: -16 + (dy * -10),
+          child: Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.secondaryShapeColor.withValues(alpha: 0.18),
+              border: Border.all(
+                color: widget.secondaryShapeColor.withValues(alpha: 0.34),
+                width: 3.5,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: -12 + (dy * 8),
+          bottom: 18 - (dx * 12),
+          child: Transform.rotate(
+            angle: dx * 0.14,
+            child: Container(
+              width: 48,
+              height: 18,
+              decoration: BoxDecoration(
+                color: widget.secondaryShapeColor.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: -26 - (dx * 11),
+          bottom: -28 + (dy * 9),
+          child: Transform.rotate(
+            angle: (-18 + (dx * 7)) * math.pi / 180,
+            child: Container(
+              width: 100,
+              height: 54,
+              decoration: BoxDecoration(
+                color: widget.primaryShapeColor.withValues(alpha: 0.68),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 28 + (dy * 10),
+          top: -10 + (dx * 6),
+          child: Transform.rotate(
+            angle: (45 + (dx * 12)) * math.pi / 180,
+            child: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: widget.secondaryShapeColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 /// Scroll-Linked Depth & Entrance Motion Wrapper for Cards and Bento Sections.
-/// Combines a smooth spring entrance with subtle scroll-driven 3D vertical depth.
+/// Combines a smooth one-shot entrance with a subtle scroll-velocity 3D tilt.
 class ScrollDepthCard extends StatefulWidget {
   final Widget child;
   final int index;
@@ -284,76 +330,60 @@ class ScrollDepthCard extends StatefulWidget {
 
 class _ScrollDepthCardState extends State<ScrollDepthCard> {
   ScrollPosition? _scrollPosition;
-  double _scrollPixels = 0.0;
-  double _scrollDelta = 0.0;
+  double _lastPixels = 0.0;
+  double _tilt = 0.0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newPos = Scrollable.maybeOf(context)?.position;
-    if (_scrollPosition != newPos) {
-      _scrollPosition?.removeListener(_onScroll);
-      _scrollPosition = newPos;
-      _scrollPosition?.addListener(_onScroll);
-      if (newPos != null && newPos.hasPixels) {
-        _scrollPixels = newPos.pixels;
-      }
+    final pos = Scrollable.maybeOf(context)?.position;
+    if (pos != _scrollPosition) {
+      _scrollPosition = pos;
+      _lastPixels = (pos != null && pos.hasPixels) ? pos.pixels : 0.0;
     }
   }
 
-  @override
-  void dispose() {
-    _scrollPosition?.removeListener(_onScroll);
-    super.dispose();
-  }
-
-  void _onScroll() {
+  Matrix4 _matrix() {
     final pos = _scrollPosition;
-    if (pos != null && pos.hasPixels && mounted) {
-      final nextPixels = pos.pixels;
-      final delta = (nextPixels - _scrollPixels).clamp(-18.0, 18.0);
-      setState(() {
-        _scrollDelta = delta;
-        _scrollPixels = nextPixels;
-      });
-    }
+    final pixels = (pos != null && pos.hasPixels) ? pos.pixels : 0.0;
+    final delta = (pixels - _lastPixels).clamp(-18.0, 18.0);
+    _lastPixels = pixels;
+    _tilt = _tilt * 0.6 + (delta * 0.0022) * 0.4;
+    final wave = math.sin((pixels * 0.008) + (widget.index * 0.7));
+    final dy = wave * widget.parallaxStrength * 0.5;
+    return Matrix4.identity()
+      ..setEntry(3, 2, 0.001)
+      ..translateByDouble(0.0, dy, 0.0, 1.0)
+      ..rotateX(_tilt.clamp(-0.04, 0.04));
   }
 
   @override
   Widget build(BuildContext context) {
-    final wave = math.sin((_scrollPixels * 0.008) + (widget.index * 0.7));
-    final dy = wave * widget.parallaxStrength;
-    final tiltX = (_scrollDelta * 0.0022).clamp(-0.04, 0.04);
+    final reduced = QMotion.reduced(context);
+    final pos = _scrollPosition;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 260 + ((widget.index % 5) * 45)),
-      curve: Curves.easeOutCubic,
-      builder: (context, enterVal, child) {
-        final entranceOffset = (1.0 - enterVal) * 14.0;
-        final scale = 0.97 + (0.03 * enterVal);
-        final matrix = Matrix4.identity()
-          ..setEntry(3, 2, 0.001)
-          ..rotateX(tiltX);
-        return Transform(
-          alignment: Alignment.center,
-          transform: matrix,
-          child: Transform.translate(
-            offset: Offset(0, entranceOffset + dy),
-            child: Transform.scale(
-              scale: scale,
+    final Widget body = (reduced || pos == null)
+        ? widget.child
+        : AnimatedBuilder(
+            animation: pos,
+            builder: (context, child) => Transform(
+              alignment: Alignment.center,
+              transform: _matrix(),
               child: child,
             ),
-          ),
-        );
-      },
-      child: widget.child,
+            child: widget.child,
+          );
+
+    return StaggeredEntrance(
+      index: widget.index % 6,
+      offsetY: 14,
+      child: body,
     );
   }
 }
 
 /// Smooth Rolling Numeric Counter for Rupee Prices & Earnings Totals.
-class RollingRupeeText extends StatelessWidget {
+class RollingRupeeText extends StatefulWidget {
   final int amountRupees;
   final TextStyle style;
   final String prefix;
@@ -368,20 +398,43 @@ class RollingRupeeText extends StatelessWidget {
   });
 
   @override
+  State<RollingRupeeText> createState() => _RollingRupeeTextState();
+}
+
+class _RollingRupeeTextState extends State<RollingRupeeText> {
+  late int _previousAmount;
+
+  @override
+  void initState() {
+    super.initState();
+    _previousAmount = widget.amountRupees;
+  }
+
+  @override
+  void didUpdateWidget(covariant RollingRupeeText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amountRupees != widget.amountRupees) {
+      _previousAmount = oldWidget.amountRupees;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(
-        begin: amountRupees.toDouble(),
-        end: amountRupees.toDouble(),
+        begin: _previousAmount.toDouble(),
+        end: widget.amountRupees.toDouble(),
       ),
-      duration: const Duration(milliseconds: 340),
+      duration: QMotion.of(context, const Duration(milliseconds: 340)),
       curve: Curves.easeOutCubic,
       builder: (context, value, _) {
         return Text(
-          '$prefix${value.round()}$suffix',
+          '${widget.prefix}${value.round()}${widget.suffix}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: style,
+          style: widget.style.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
         );
       },
     );
@@ -930,10 +983,10 @@ class PackageDurationCard extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
-                // Layer 1: Decorative corner circle
+                // Single subtle corner accent (no inner radio-like dot)
                 Positioned(
-                  right: -20,
-                  top: -20,
+                  right: -28,
+                  top: -28,
                   child: Container(
                     width: 68,
                     height: 68,
@@ -941,22 +994,7 @@ class PackageDurationCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: isSelected
                           ? QColors.primaryGreen.withValues(alpha: 0.12)
-                          : QColors.warmIvorySurface.withValues(alpha: 0.75),
-                    ),
-                  ),
-                ),
-                // Layer 2: Inner accent dot
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isSelected
-                          ? QColors.primaryGreen.withValues(alpha: 0.28)
-                          : QColors.borderStrong.withValues(alpha: 0.45),
+                          : QColors.softGreenTint.withValues(alpha: 0.65),
                     ),
                   ),
                 ),
@@ -980,8 +1018,8 @@ class PackageDurationCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Text(
-                            '${BrandConfig.currency}${tier.priceRupees}',
+                          RollingRupeeText(
+                            amountRupees: tier.priceRupees,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
@@ -1044,14 +1082,31 @@ class PackageDurationCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text(
-                            isSelected
-                                ? context.trPair('Selected ✓', 'चुन लिया ✓')
-                                : context.trPair('Book', 'बुक करें'),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (isSelected) ...[
+                                const Icon(
+                                  Icons.check_rounded,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  isSelected
+                                      ? context.trPair('Selected', 'चुन लिया')
+                                      : context.trPair('Book', 'बुक करें'),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -1309,18 +1364,9 @@ class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
           offset: Offset(0, parallaxShift),
           child: Transform.scale(
             scale: 1.12,
-            child: Image.network(
-              widget.item.imageUrl,
+            child: QNetworkImage(
+              url: widget.item.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
-                color: QColors.warmIvorySurface,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.home_repair_service_rounded,
-                  size: 38,
-                  color: QColors.primaryGreen,
-                ),
-              ),
             ),
           ),
         ),
@@ -1359,13 +1405,28 @@ class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
                         color: QColors.deepSlate,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        context.tr(widget.item.badge!),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            widget.item.badge!.en.contains('min')
+                                ? Icons.bolt_rounded
+                                : (widget.item.badge!.en.contains('Bestseller')
+                                    ? Icons.workspace_premium_rounded
+                                    : Icons.local_offer_rounded),
+                            size: 12,
+                            color: const Color(0xFFFDE68A),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            context.tr(widget.item.badge!),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1373,45 +1434,16 @@ class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
             ),
             Stack(
               children: [
+                // Single subtle corner accent that drifts on scroll
                 Positioned(
-                  right: -14 + (parallaxShift * 0.4),
-                  bottom: -14,
+                  right: -20 + (parallaxShift * 0.4),
+                  bottom: -22,
                   child: Container(
-                    width: 52,
-                    height: 52,
+                    width: 54,
+                    height: 54,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: QColors.softGreenTint.withValues(alpha: 0.9),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 14 - (parallaxShift * 0.5),
-                  bottom: -10,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: QColors.primaryGreen.withValues(alpha: 0.25),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: -12,
-                  bottom: -12 + (parallaxShift * 0.3),
-                  child: Transform.rotate(
-                    angle: -14 * math.pi / 180,
-                    child: Container(
-                      width: 36,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: QColors.warmIvorySurface.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
+                      color: QColors.softGreenTint.withValues(alpha: 0.72),
                     ),
                   ),
                 ),
@@ -1431,10 +1463,20 @@ class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
                           ),
                         ),
                       ),
-                      const Icon(
-                        Icons.arrow_outward_rounded,
-                        size: 16,
-                        color: QColors.primaryGreen,
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: QColors.softGreenTint,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: QColors.softGreenBorder),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_outward_rounded,
+                          size: 14,
+                          color: QColors.primaryGreen,
+                        ),
                       ),
                     ],
                   ),
@@ -2031,23 +2073,8 @@ class GeometricCelebrationBurst extends StatelessWidget {
                 height: 56,
                 child: CustomPaint(
                   painter: _GeometricBurstPainter(progress: clamped),
-                  child: Center(
-                    child: Transform.scale(
-                      scale: (0.5 + (0.5 * clamped)).clamp(0.5, 1.08),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: QColors.primaryGreen,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.verified_rounded,
-                          color: Colors.white,
-                          size: 19,
-                        ),
-                      ),
-                    ),
+                  child: const Center(
+                    child: AnimatedCheckmark(size: 34),
                   ),
                 ),
               ),

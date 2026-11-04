@@ -84,7 +84,7 @@ class CatalogData {
       imageUrl:
           'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=700&q=80',
       aspectRatio: 0.88,
-      badge: Tr('⚡ In 14 mins', '⚡ 14 मिनट में'),
+      badge: Tr('In 14 mins', '14 मिनट में'),
     ),
     DiscoveryCardItem(
       id: 'disc_2',

@@ -83,23 +83,11 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     final s = widget.service;
     final brand = BrandConfig.name(context.lang);
 
-    final thumbImage = ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: Image.network(
-        s.imageUrl,
-        width: 68,
-        height: 68,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Container(
-          width: 68,
-          height: 68,
-          color: QColors.warmIvorySurface,
-          child: const Icon(
-            Icons.home_repair_service_rounded,
-            color: QColors.primaryGreen,
-          ),
-        ),
-      ),
+    final thumbImage = QNetworkImage(
+      url: s.imageUrl,
+      width: 68,
+      height: 68,
+      radius: 14,
     );
 
     return Scaffold(

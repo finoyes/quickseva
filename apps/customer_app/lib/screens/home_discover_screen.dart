@@ -151,46 +151,25 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: QFloatingNavBar(
         selectedIndex: _tabIndex,
-        onDestinationSelected: (idx) => setState(() => _tabIndex = idx),
-        backgroundColor: QColors.cleanWhite,
-        indicatorColor: QColors.softGreenTint,
-        elevation: 8,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(
-              Icons.home_rounded,
-              color: QColors.primaryGreen,
-            ),
+        onSelected: (idx) => setState(() => _tabIndex = idx),
+        items: [
+          QNavItem(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home_rounded,
             label: context.trPair('Home', 'होम'),
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.grid_view_outlined),
-            selectedIcon: const Icon(
-              Icons.grid_view_rounded,
-              color: QColors.primaryGreen,
-            ),
+          QNavItem(
+            icon: Icons.grid_view_outlined,
+            selectedIcon: Icons.grid_view_rounded,
             label: context.trPair('Discover', 'डिस्कवर'),
           ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: _bookings.isNotEmpty,
-              label: Text('${_bookings.length}'),
-              backgroundColor: QColors.primaryGreen,
-              child: const Icon(Icons.receipt_long_outlined),
-            ),
-            selectedIcon: Badge(
-              isLabelVisible: _bookings.isNotEmpty,
-              label: Text('${_bookings.length}'),
-              backgroundColor: QColors.primaryGreen,
-              child: const Icon(
-                Icons.receipt_long_rounded,
-                color: QColors.primaryGreen,
-              ),
-            ),
+          QNavItem(
+            icon: Icons.receipt_long_outlined,
+            selectedIcon: Icons.receipt_long_rounded,
             label: context.trPair('Bookings', 'बुकिंग्स'),
+            badgeCount: _bookings.length,
           ),
         ],
       ),
@@ -274,23 +253,37 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       ),
                     ],
                   ),
-                  Text(
-                    _homeInstantToggle
-                        ? context.trPair(
-                            '⚡ Express ${service.instantEtaMinutes}-min dispatch • Escrow protected',
-                            '⚡ ${service.instantEtaMinutes}-मिनट एक्सप्रेस • एस्क्रो सुरक्षित',
-                          )
-                        : context.trPair(
-                            '📅 Scheduled slot • Pay post job',
-                            '📅 शेड्यूल स्लॉट • काम के बाद भुगतान',
+                  Row(
+                    children: [
+                      Icon(
+                        _homeInstantToggle
+                            ? Icons.bolt_rounded
+                            : Icons.calendar_today_rounded,
+                        size: 13,
+                        color: const Color(0xFFFDE68A),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          _homeInstantToggle
+                              ? context.trPair(
+                                  'Express ${service.instantEtaMinutes}-min dispatch • Escrow protected',
+                                  '${service.instantEtaMinutes}-मिनट एक्सप्रेस • एस्क्रो सुरक्षित',
+                                )
+                              : context.trPair(
+                                  'Scheduled slot • Pay post job',
+                                  'शेड्यूल स्लॉट • काम के बाद भुगतान',
+                                ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white.withValues(alpha: 0.78),
+                            fontWeight: FontWeight.w500,
                           ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.white.withValues(alpha: 0.78),
-                      fontWeight: FontWeight.w500,
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -377,42 +370,107 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Stitch Live Availability Pill ("⚡ 14-MIN EXPRESS ACTIVE • 42 Pros Nearby")
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: QColors.softGreenTint,
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: QColors.softGreenBorder),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                        // Top Status Row: Live Availability Pill + Compact Active Booking Chip
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              const LiveStatusDot(
-                                color: QColors.primaryGreen,
-                                size: 7,
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  context.trPair(
-                                    '⚡ ${BrandConfig.instantPromiseMinutes}-MIN EXPRESS ACTIVE • 42 Verified Pros Nearby',
-                                    '⚡ ${BrandConfig.instantPromiseMinutes}-मिनट एक्सप्रेस सक्रिय • 42 वेरिफाइड प्रो पास में',
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: QColors.primaryGreenDark,
-                                    letterSpacing: 0.1,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: QColors.softGreenTint,
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: QColors.softGreenBorder,
                                   ),
                                 ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const LiveStatusDot(
+                                      color: QColors.primaryGreen,
+                                      size: 7,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.bolt_rounded,
+                                      size: 13,
+                                      color: QColors.primaryGreenDark,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Flexible(
+                                      child: Text(
+                                        context.trPair(
+                                          '${BrandConfig.instantPromiseMinutes}-MIN EXPRESS • 42 Pros',
+                                          '${BrandConfig.instantPromiseMinutes}-मिनट एक्सप्रेस • 42 प्रो',
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w800,
+                                          color: QColors.primaryGreenDark,
+                                          letterSpacing: 0.1,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              if (_bookings.isNotEmpty)
+                                PressableScale(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      SmoothPageRoute(
+                                        page: LiveTrackingScreen(
+                                          order: _bookings.first,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: QColors.deepSlate,
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.two_wheeler_rounded,
+                                          size: 13,
+                                          color: Color(0xFFFDE68A),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Flexible(
+                                          child: Text(
+                                            context.trPair(
+                                              'OTP ${_bookings.first.startOtp} • Track →',
+                                              'OTP ${_bookings.first.startOtp} • ट्रैक →',
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 10.5,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -475,53 +533,91 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         ),
                         const SizedBox(height: 14),
 
-                        // Search Bar with Stitch Voice Search Mic Pill
-                        TextField(
-                          onChanged: (v) => setState(() => _searchQuery = v),
-                          decoration: InputDecoration(
-                            hintText: context.trPair(
-                              'Search "House help", "Plumber", "AC", "Salon"...',
-                              '"हाउस हेल्प", "प्लम्बर", "AC", "सैलून" खोजें...',
-                            ),
-                            hintStyle: const TextStyle(
-                              fontSize: 13.5,
-                              color: QColors.inkLight,
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.search_rounded,
-                              color: QColors.primaryGreen,
-                            ),
-                            suffixIcon: Container(
-                              margin: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: QColors.softGreenTint,
-                                borderRadius: BorderRadius.circular(10),
+                        // Search Bar with Animated Rotating Placeholder & Voice Mic Pill
+                        Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            TextField(
+                              onChanged: (v) =>
+                                  setState(() => _searchQuery = v),
+                              decoration: InputDecoration(
+                                hintText: '',
+                                prefixIcon: const Icon(
+                                  Icons.search_rounded,
+                                  color: QColors.primaryGreen,
+                                ),
+                                suffixIcon: Container(
+                                  margin: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: QColors.softGreenTint,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.mic_none_rounded,
+                                    size: 18,
+                                    color: QColors.primaryGreen,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: QColors.warmIvoryBg,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: QColors.borderSubtle,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: QColors.primaryGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.mic_none_rounded,
-                                size: 18,
-                                color: QColors.primaryGreen,
+                            ),
+                            if (_searchQuery.isEmpty)
+                              Positioned(
+                                left: 46,
+                                right: 52,
+                                child: IgnorePointer(
+                                  child: RotatingHintText(
+                                    prefix: context.trPair(
+                                      'Search ',
+                                      'खोजें: ',
+                                    ),
+                                    hints: context.lang == AppLanguage.hi
+                                        ? const [
+                                            '"14 मिनट में हाउस हेल्प"',
+                                            '"प्लम्बर और नल रिपेयर"',
+                                            '"AC फोम-जेट सर्विस"',
+                                            '"सैलून और ब्यूटी पार्लर"',
+                                            '"इलेक्ट्रीशियन और MCB"',
+                                          ]
+                                        : const [
+                                            '"House help in 14 mins"',
+                                            '"Plumber & tap repair"',
+                                            '"AC foam-jet service"',
+                                            '"Salon & facial at home"',
+                                            '"Electrician & MCB fix"',
+                                          ],
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: QColors.inkLight,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    highlightStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: QColors.inkMuted,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            filled: true,
-                            fillColor: QColors.warmIvoryBg,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide:
-                                  const BorderSide(color: QColors.borderSubtle),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: QColors.primaryGreen,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
@@ -531,222 +627,392 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ),
           ),
 
-          // Active Booking Live Strip (if user has an active job)
-          if (_bookings.isNotEmpty)
-            SliverToBoxAdapter(
-              child: LayeredShapeCard(
-                margin: const EdgeInsets.fromLTRB(18, 14, 18, 4),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                borderRadius: 16,
-                backgroundColor: QColors.primaryGreenDark,
-                primaryShapeColor: QColors.primaryGreen,
-                secondaryShapeColor: QColors.amberGold,
-                onTap: () {
-                  Navigator.of(context).push(
-                    SmoothPageRoute(
-                      page: LiveTrackingScreen(order: _bookings.first),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.16),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.two_wheeler_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.trPair(
-                              'Active Booking • Start OTP: ${_bookings.first.startOtp}',
-                              'सक्रिय बुकिंग • स्टार्ट OTP: ${_bookings.first.startOtp}',
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            '${context.tr(_bookings.first.service.name)} (${context.tr(_bookings.first.selectedPackage.title)})',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: Colors.white.withValues(alpha: 0.85),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        context.trPair('Track Live →', 'लाइव ट्रैक →'),
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w800,
-                          color: QColors.primaryGreenDark,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
           // =================================================================
-          // STITCH "KARMIC MOTION" HERO TURBO CARD (LAYERED SOLID SHAPES)
+          // AUTO-ADVANCING PROMO CAROUSEL (TURBO + SUPER SAVER + ESCROW)
           // =================================================================
           SliverToBoxAdapter(
-            child: LayeredShapeCard(
-              margin: const EdgeInsets.fromLTRB(18, 14, 18, 4),
-              backgroundColor: QColors.deepSlate,
-              primaryShapeColor: QColors.deepSlateSurface,
-              secondaryShapeColor: QColors.karmicOrange,
-              borderRadius: 20,
-              padding: const EdgeInsets.all(18),
-              boxShadow: QTheme.darkSlateShadow,
-              onTap: () => _openService(
-                houseHelpService,
-                heroTag: 'turbo-hero-${houseHelpService.id}',
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: QColors.karmicOrange,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          context.trPair(
-                            '⚡ TURBO • AVG ${BrandConfig.instantPromiseMinutes} MINS',
-                            '⚡ टर्बो • औसत ${BrandConfig.instantPromiseMinutes} मिनट',
-                          ),
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          context.trPair(
-                            'Zero Surge • Fixed Fare',
-                            'जीरो सर्ज • फिक्स रेट',
-                          ),
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 14, bottom: 4),
+              child: PromoCarousel(
+                height: 174,
+                slides: [
+                  // Slide 1: Turbo 14-Min Express Hero
+                  LayeredShapeCard(
+                    backgroundColor: QColors.deepSlate,
+                    primaryShapeColor: QColors.deepSlateSurface,
+                    secondaryShapeColor: QColors.karmicOrange,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.all(16),
+                    boxShadow: QTheme.darkSlateShadow,
+                    onTap: () => _openService(
+                      houseHelpService,
+                      heroTag: 'turbo-hero-${houseHelpService.id}',
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text(
-                              context.trPair(
-                                'Need Help in ${BrandConfig.instantPromiseMinutes} Mins?',
-                                'क्या ${BrandConfig.instantPromiseMinutes} मिनट में मदद चाहिए?',
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 4,
                               ),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                height: 1.15,
-                                letterSpacing: -0.4,
+                              decoration: BoxDecoration(
+                                color: QColors.karmicOrange,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.bolt_rounded,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Flexible(
+                                    child: Text(
+                                      context.trPair(
+                                        'TURBO • AVG ${BrandConfig.instantPromiseMinutes} MINS',
+                                        'टर्बो • औसत ${BrandConfig.instantPromiseMinutes} मिनट',
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              context.trPair(
-                                'Instant House Help, Plumber, Electrician & AC Pros at your doorstep.',
-                                'तुरंत हाउस हेल्प, प्लम्बर, इलेक्ट्रीशियन और AC रिपेयर आपके द्वार पर।',
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 4,
                               ),
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: Colors.white.withValues(alpha: 0.8),
-                                height: 1.3,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                context.trPair(
+                                  'Zero Surge • Fixed Fare',
+                                  'जीरो सर्ज • फिक्स रेट',
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    context.trPair(
+                                      'Need Help in ${BrandConfig.instantPromiseMinutes} Mins?',
+                                      'क्या ${BrandConfig.instantPromiseMinutes} मिनट में मदद चाहिए?',
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 18.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      height: 1.15,
+                                      letterSpacing: -0.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    context.trPair(
+                                      'Instant House Help, Plumber, Electrician & AC Pros.',
+                                      'तुरंत हाउस हेल्प, प्लम्बर, इलेक्ट्रीशियन और AC प्रो।',
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withValues(alpha: 0.8),
+                                      height: 1.25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 9,
+                              ),
+                              decoration: BoxDecoration(
+                                color: QColors.primaryGreen,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                context.trPair(
+                                  'From ₹49 →',
+                                  '₹49 से →',
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        decoration: BoxDecoration(
-                          color: QColors.primaryGreen,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          context.trPair(
-                            'From ₹49 →',
-                            '₹49 से शुरू →',
+                      ],
+                    ),
+                  ),
+
+                  // Slide 2: Super Saver 3-Visits Pack
+                  LayeredShapeCard(
+                    backgroundColor: QColors.primaryGreenDark,
+                    primaryShapeColor: QColors.primaryGreen,
+                    secondaryShapeColor: QColors.amberGold,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.all(16),
+                    boxShadow: QTheme.elevatedShadow,
+                    onTap: () => _openService(houseHelpService),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 4,
                           ),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: QColors.amberGold,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.local_offer_rounded,
+                                size: 11,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  context.trPair(
+                                    'SUPER SAVER • EXTRA 85% OFF',
+                                    'सुपर सेवर • 85% छूट',
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    context.trPair(
+                                      '3-Visits Pack at ₹33/visit',
+                                      '3-विज़िट पैक सिर्फ ₹33/विज़िट',
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 18.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFFFDE68A),
+                                      letterSpacing: -0.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    context.trPair(
+                                      'Valid 30 days • Sweeping, mopping, dishes & bathroom.',
+                                      '30 दिन वैध • झाड़ू-पोछा, बर्तन और सफाई।',
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withValues(alpha: 0.85),
+                                      height: 1.25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 9,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                context.trPair('Claim →', 'लें →'),
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w900,
+                                  color: QColors.primaryGreenDark,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Slide 3: QuickSeva Escrow & Safety Shield
+                  LayeredShapeCard(
+                    backgroundColor: QColors.deepSlateSurface,
+                    primaryShapeColor: QColors.deepSlate,
+                    secondaryShapeColor: QColors.trustBlue,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.all(16),
+                    boxShadow: QTheme.darkSlateShadow,
+                    onTap: () => _openSubCategoryRateCardSheet(
+                      initialCategoryId: 'cat_repairs',
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: QColors.trustBlue,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.verified_user_rounded,
+                                size: 12,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  context.trPair(
+                                    '100% ESCROW PROTECTED',
+                                    '100% एस्क्रो सुरक्षित',
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    context.trPair(
+                                      'Pay Only After 4-Digit OTP',
+                                      '4-अंकीय OTP के बाद ही भुगतान',
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      letterSpacing: -0.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    context.trPair(
+                                      'Police-verified pros • Fixed spare-parts tariff card.',
+                                      'पुलिस वेरिफाइड प्रो • फिक्स स्पेयर-पार्ट्स रेट कार्ड।',
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withValues(alpha: 0.82),
+                                      height: 1.25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 9,
+                              ),
+                              decoration: BoxDecoration(
+                                color: QColors.trustBlue,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                context.trPair('Tariff →', 'रेट कार्ड →'),
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1461,9 +1727,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ],
           ),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          QMarquee(
+            height: 30,
+            pixelsPerSecond: 24,
+            gap: 8,
             children: [
               _TrustPill(
                 icon: Icons.account_balance_wallet_outlined,
@@ -1477,6 +1744,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 icon: Icons.replay_circle_filled_outlined,
                 label:
                     context.trPair('7-Day Free Re-work', '7-दिन फ्री री-वर्क'),
+              ),
+              _TrustPill(
+                icon: Icons.receipt_long_outlined,
+                label: context.trPair('Fixed Spare Tariff', 'फिक्स स्पेयर रेट'),
+              ),
+              _TrustPill(
+                icon: Icons.bolt_rounded,
+                label: context.trPair('14-Min Express', '14-मिनट एक्सप्रेस'),
               ),
             ],
           ),
@@ -1938,23 +2213,11 @@ class _ServiceListRowCard extends StatelessWidget {
                 children: [
                   Hero(
                     tag: heroTag,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        service.imageUrl,
-                        width: 88,
-                        height: 88,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Container(
-                          width: 88,
-                          height: 88,
-                          color: QColors.warmIvorySurface,
-                          child: const Icon(
-                            Icons.home_repair_service_rounded,
-                            color: QColors.primaryGreen,
-                          ),
-                        ),
-                      ),
+                    child: QNetworkImage(
+                      url: service.imageUrl,
+                      width: 88,
+                      height: 88,
+                      radius: 12,
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -1973,16 +2236,27 @@ class _ServiceListRowCard extends StatelessWidget {
                               color: QColors.softGreenTint,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: Text(
-                              context.trPair(
-                                '⚡ In ${service.instantEtaMinutes} mins',
-                                '⚡ ${service.instantEtaMinutes} मिनट में',
-                              ),
-                              style: const TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                                color: QColors.primaryGreen,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.bolt_rounded,
+                                  size: 12,
+                                  color: QColors.primaryGreen,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  context.trPair(
+                                    'In ${service.instantEtaMinutes} mins',
+                                    '${service.instantEtaMinutes} मिनट में',
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: QColors.primaryGreen,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         Text(

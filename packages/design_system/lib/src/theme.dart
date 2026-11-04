@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'tokens.dart';
+
 /// ============================================================================
 /// QUICKSEVA DESIGN TOKENS: CLEAN WHITE + FOREST/EMERALD GREEN + WARM IVORY
 /// + STITCH "KARMIC MOTION" LAYERED SOLID ACCENTS (ZERO GRADIENTS)
@@ -55,10 +57,18 @@ class QColors {
 class QTheme {
   QTheme._();
 
+  /// Brand font families bundled in this package (see pubspec.yaml).
+  static const String fontFamily = 'packages/design_system/PlusJakartaSans';
+  static const List<String> fontFamilyFallback = [
+    'packages/design_system/NotoSansDevanagari',
+  ];
+
   static ThemeData lightTheme() {
     final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: fontFamily,
+      fontFamilyFallback: fontFamilyFallback,
       scaffoldBackgroundColor: QColors.warmIvoryBg,
       colorScheme: const ColorScheme.light(
         primary: QColors.primaryGreen,
@@ -72,6 +82,32 @@ class QTheme {
     );
 
     return base.copyWith(
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
+      chipTheme: base.chipTheme.copyWith(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(QRadius.pill),
+        ),
+        side: const BorderSide(color: QColors.borderSubtle),
+        showCheckmark: false,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: QColors.deepSlate,
+        contentTextStyle: const TextStyle(
+          fontFamily: fontFamily,
+          fontFamilyFallback: fontFamilyFallback,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(QRadius.md),
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: QColors.cleanWhite,
         foregroundColor: QColors.inkDark,
@@ -83,7 +119,7 @@ class QTheme {
         color: QColors.cleanWhite,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(QRadius.lg),
           side: const BorderSide(color: QColors.borderSubtle, width: 1),
         ),
       ),
@@ -99,9 +135,11 @@ class QTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(QRadius.md),
           ),
           textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontFamilyFallback: fontFamilyFallback,
             fontSize: 15,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.2,
@@ -114,9 +152,11 @@ class QTheme {
           side: const BorderSide(color: QColors.borderSubtle, width: 1.2),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(QRadius.md),
           ),
           textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontFamilyFallback: fontFamilyFallback,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),

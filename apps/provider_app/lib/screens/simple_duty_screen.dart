@@ -1331,17 +1331,30 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                         color: QColors.softGreenTint,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
-                        context.trPair(
-                          '⚡ Direct to Bank / Instant Settlement',
-                          '⚡ सीधा बैंक खाते में / तुरंत भुगतान',
-                        ),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w800,
-                          color: QColors.primaryGreen,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.bolt_rounded,
+                            size: 12,
+                            color: QColors.primaryGreen,
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              context.trPair(
+                                'Direct to Bank / Instant Settlement',
+                                'सीधा बैंक खाते में / तुरंत भुगतान',
+                              ),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                color: QColors.primaryGreen,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
