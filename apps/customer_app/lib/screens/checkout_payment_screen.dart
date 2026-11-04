@@ -217,7 +217,7 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                               url: widget.service.imageUrl,
                               width: 58,
                               height: 58,
-                              radius: 10,
+                              borderRadius: BorderRadius.circular(10),
                               fallbackIcon: Icons.cleaning_services_rounded,
                             ),
                             const SizedBox(width: 12),

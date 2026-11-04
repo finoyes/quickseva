@@ -279,6 +279,7 @@ class QNetworkImage extends StatelessWidget {
   final double? height;
   final BoxFit fit;
   final double radius;
+  final BorderRadius? borderRadius;
   final IconData fallbackIcon;
 
   const QNetworkImage({
@@ -288,12 +289,17 @@ class QNetworkImage extends StatelessWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.radius = 0,
+    this.borderRadius,
     this.fallbackIcon = Icons.home_repair_service_rounded,
   });
 
   @override
   Widget build(BuildContext context) {
     final reduced = QMotion.reduced(context);
+    final effectiveRadius =
+        borderRadius ?? (radius > 0 ? BorderRadius.circular(radius) : null);
+    final skeletonRadius =
+        radius > 0 ? radius : (borderRadius?.topLeft.x ?? 0);
     final image = Image.network(
       url,
       width: width,
@@ -306,7 +312,7 @@ class QNetworkImage extends StatelessWidget {
           fit: StackFit.passthrough,
           children: [
             if (!loaded)
-              Positioned.fill(child: PulseSkeleton(radius: radius)),
+              Positioned.fill(child: PulseSkeleton(radius: skeletonRadius)),
             AnimatedOpacity(
               opacity: loaded ? 1 : 0,
               duration: QMotion.slow,
@@ -329,9 +335,9 @@ class QNetworkImage extends StatelessWidget {
         child: Icon(fallbackIcon, color: QColors.primaryGreen),
       ),
     );
-    if (radius == 0) return image;
+    if (effectiveRadius == null) return image;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: effectiveRadius,
       child: image,
     );
   }
