@@ -1,0 +1,659 @@
+import 'package:design_system/design_system.dart';
+import 'package:flutter/material.dart';
+import 'checkout_payment_screen.dart';
+import 'schedule_slot_screen.dart';
+
+/// Matches UC Screenshot #1 + Stitch Layered Visual Depth + Shared-Element Hero:
+/// - "House help by QuickSeva, cleaning & more"
+/// - Segmented toggle: "⚡ In 14 mins" (Green) vs "Later"
+/// - Horizontal duration/package tier cards (45 mins ₹49, 1 hour ₹59, 1.5 hours ₹89 Bestseller)
+/// - Super Saver Pack card ("3-visits pack at ₹225 -> ₹33/visit • SUPER SAVER PACK")
+/// - "One help who can do it all" capabilities grid + dynamic SDUI form fields
+class ServiceDetailScreen extends StatefulWidget {
+  final ServiceItem service;
+  final ValueChanged<BookingOrder> onBookingCreated;
+  final String? heroTag;
+
+  const ServiceDetailScreen({
+    super.key,
+    required this.service,
+    required this.onBookingCreated,
+    this.heroTag,
+  });
+
+  @override
+  State<ServiceDetailScreen> createState() => _ServiceDetailScreenState();
+}
+
+class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
+  late bool _isInstant;
+  late ServicePackageTier _selectedPackage;
+  final Map<String, dynamic> _formValues = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _isInstant = widget.service.supportsInstant;
+    _selectedPackage = widget.service.packages.firstWhere(
+      (p) => p.isBestseller,
+      orElse: () => widget.service.packages.first,
+    );
+    for (final field in widget.service.formFields) {
+      if (field.type == FormFieldType.select && field.options.isNotEmpty) {
+        _formValues[field.key] = field.options.first.value;
+      } else if (field.type == FormFieldType.stepper) {
+        _formValues[field.key] = field.defaultValue;
+      }
+    }
+  }
+
+  void _proceedWithPackage(ServicePackageTier tier) {
+    setState(() => _selectedPackage = tier);
+    if (_isInstant) {
+      Navigator.of(context).push(
+        SmoothPageRoute(
+          page: CheckoutPaymentScreen(
+            service: widget.service,
+            selectedPackage: tier,
+            isInstant: true,
+            scheduleLabel: context.trPair(
+              'Instant • Arrives in ${widget.service.instantEtaMinutes} mins',
+              'तुरंत • ${widget.service.instantEtaMinutes} मिनट में आगमन',
+            ),
+            surchargeRupees: 0,
+            onBookingCreated: widget.onBookingCreated,
+          ),
+        ),
+      );
+    } else {
+      Navigator.of(context).push(
+        SmoothPageRoute(
+          page: ScheduleSlotScreen(
+            service: widget.service,
+            selectedPackage: tier,
+            onBookingCreated: widget.onBookingCreated,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.service;
+    final brand = BrandConfig.name(context.lang);
+
+    final thumbImage = ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Image.network(
+        s.imageUrl,
+        width: 68,
+        height: 68,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => Container(
+          width: 68,
+          height: 68,
+          color: QColors.warmIvorySurface,
+          child: const Icon(
+            Icons.home_repair_service_rounded,
+            color: QColors.primaryGreen,
+          ),
+        ),
+      ),
+    );
+
+    return Scaffold(
+      backgroundColor: QColors.cleanWhite,
+      appBar: AppBar(
+        backgroundColor: QColors.cleanWhite,
+        leadingWidth: 64,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Center(
+            child: InkWell(
+              borderRadius: BorderRadius.circular(999),
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: QColors.cleanWhite,
+                  border: Border.all(color: QColors.borderSubtle),
+                ),
+                child: const Icon(Icons.arrow_back_rounded, size: 20),
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          s.id == 'svc_house_help'
+              ? context.trPair(
+                  'House help by $brand',
+                  '$brand द्वारा हाउस हेल्प',
+                )
+              : context.tr(s.name),
+          style: const TextStyle(
+            fontSize: 16.5,
+            fontWeight: FontWeight.w800,
+            color: QColors.inkDark,
+            letterSpacing: -0.3,
+          ),
+        ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: LanguageTogglePill(),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+                children: [
+                  // Headline Banner inside a Layered Shape Header Card + Shared-Element Hero Thumbnail
+                  LayeredShapeCard(
+                    backgroundColor: QColors.warmIvoryBg,
+                    primaryShapeColor: QColors.softGreenTint,
+                    secondaryShapeColor: QColors.primaryGreen,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.all(16),
+                    border: Border.all(color: QColors.borderSubtle),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                s.id == 'svc_house_help'
+                                    ? context.trPair(
+                                        'House help by $brand,\ncleaning & more',
+                                        '$brand हाउस हेल्प,\nसफाई और घर के काम',
+                                      )
+                                    : context.tr(s.name),
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: QColors.inkDark,
+                                  height: 1.18,
+                                  letterSpacing: -0.6,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: QColors.softGreenTint,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          size: 15,
+                                          color: QColors.primaryGreen,
+                                        ),
+                                        const SizedBox(width: 3),
+                                        Text(
+                                          '${s.rating} (${s.bookingsCountLabel})',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                            color: QColors.primaryGreen,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: QColors.deepSlate,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      context.trPair(
+                                        'Escrow Verified',
+                                        'एस्क्रो सुरक्षित',
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                context.tr(s.tagline),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  color: QColors.inkMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        if (widget.heroTag != null)
+                          Hero(tag: widget.heroTag!, child: thumbImage)
+                        else
+                          thumbImage,
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Instant ("⚡ In 14 mins") vs "Later" Toggle (Matches UC Screenshot #1)
+                  InstantLaterSegmentedControl(
+                    isInstant: _isInstant,
+                    instantMinutes: s.instantEtaMinutes,
+                    onChanged: (val) => setState(() => _isInstant = val),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Horizontal Package / Duration Cards (Matches UC Screenshot #1)
+                  SizedBox(
+                    height: 186,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: s.packages.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 12),
+                      itemBuilder: (context, idx) {
+                        final pkg = s.packages[idx];
+                        return PackageDurationCard(
+                          tier: pkg,
+                          isSelected: _selectedPackage.id == pkg.id,
+                          onBookTap: () => _proceedWithPackage(pkg),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Super Saver Pack Banner (Matches UC Screenshot #1)
+                  if (s.superSaverPack != null) ...[
+                    SuperSaverPackBanner(
+                      pack: s.superSaverPack!,
+                      onBookTap: () {
+                        final pack = s.superSaverPack!;
+                        final packTier = ServicePackageTier(
+                          id: pack.id,
+                          title: Tr(
+                            '3-Visits Super Saver Pack',
+                            '3-विज़िट सुपर सेवर पैक',
+                          ),
+                          subtitle: pack.validityText,
+                          priceRupees: pack.packPriceRupees,
+                          originalPriceRupees: pack.originalPriceRupees,
+                          durationMinutes: 60,
+                        );
+                        _proceedWithPackage(packTier);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Interactive Before vs After Service Comparison Slider
+                  BeforeAfterComparisonCard(serviceTitle: s.name),
+                  const SizedBox(height: 20),
+
+                  // "One help who can do it all" Section (Matches UC Screenshot #1)
+                  if (s.capabilities.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: QColors.warmIvoryBg,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: QColors.borderSubtle),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            s.id == 'svc_house_help'
+                                ? context.trPair(
+                                    'One help who can do it all',
+                                    'एक हेल्पर जो सभी काम निपटाए',
+                                  )
+                                : context.trPair(
+                                    'What is included in this service',
+                                    'इस सर्विस में क्या शामिल है',
+                                  ),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: QColors.inkDark,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: s.capabilities.map((cap) {
+                              return Container(
+                                width:
+                                    (MediaQuery.of(context).size.width - 86) /
+                                        2,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: QColors.cleanWhite,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border:
+                                      Border.all(color: QColors.borderSubtle),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        color: QColors.softGreenTint,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.check_circle_rounded,
+                                        size: 16,
+                                        color: QColors.primaryGreen,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        context.tr(cap),
+                                        style: const TextStyle(
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: QColors.inkBody,
+                                          height: 1.25,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Dynamic Server-Driven Service Form Schema (Section 10 of ARCHITECTURE.md)
+                  if (s.formFields.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: QColors.cleanWhite,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: QColors.borderSubtle),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.tune_rounded,
+                                size: 18,
+                                color: QColors.primaryGreen,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  context.trPair(
+                                    'Customize your service preferences',
+                                    'अपनी सर्विस प्राथमिकताएं चुनें',
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 15.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: QColors.inkDark,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          ...s.formFields.map((field) {
+                            if (field.type == FormFieldType.select) {
+                              final selectedVal = _formValues[field.key];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      context.tr(field.label),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: QColors.inkMuted,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: field.options.map((opt) {
+                                        final active =
+                                            selectedVal == opt.value;
+                                        return ChoiceChip(
+                                          label: Text(context.tr(opt.label)),
+                                          selected: active,
+                                          selectedColor: QColors.softGreenTint,
+                                          backgroundColor:
+                                              QColors.warmIvoryBg,
+                                          labelStyle: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: active
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            color: active
+                                                ? QColors.primaryGreen
+                                                : QColors.inkBody,
+                                          ),
+                                          side: BorderSide(
+                                            color: active
+                                                ? QColors.primaryGreen
+                                                : QColors.borderSubtle,
+                                          ),
+                                          onSelected: (_) {
+                                            setState(() {
+                                              _formValues[field.key] =
+                                                  opt.value;
+                                            });
+                                          },
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              final count =
+                                  (_formValues[field.key] as int?) ??
+                                      field.defaultValue;
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      context.tr(field.label),
+                                      style: const TextStyle(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: QColors.inkBody,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: QColors.warmIvorySurface,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: QColors.borderSubtle,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.remove_rounded,
+                                            size: 18,
+                                          ),
+                                          onPressed: count > field.min
+                                              ? () => setState(() =>
+                                                  _formValues[field.key] =
+                                                      count - 1)
+                                              : null,
+                                        ),
+                                        Text(
+                                          '$count',
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.add_rounded,
+                                            size: 18,
+                                          ),
+                                          onPressed: count < field.max
+                                              ? () => setState(() =>
+                                                  _formValues[field.key] =
+                                                      count + 1)
+                                              : null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          }),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            // Sticky Bottom Bar with Elastic Bounce & Rolling Rupee Counter
+            ElasticBounceWrapper(
+              triggerKey: '${_selectedPackage.id}_$_isInstant',
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+                decoration: BoxDecoration(
+                  color: QColors.cleanWhite,
+                  border: const Border(
+                    top: BorderSide(color: QColors.borderSubtle),
+                  ),
+                  boxShadow: QTheme.softShadow,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.tr(_selectedPackage.title),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: QColors.inkMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              RollingRupeeText(
+                                amountRupees: _selectedPackage.priceRupees,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  color: QColors.inkDark,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${BrandConfig.currency}${_selectedPackage.originalPriceRupees}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: QColors.inkLight,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              _proceedWithPackage(_selectedPackage),
+                          icon: Icon(
+                            _isInstant
+                                ? Icons.bolt_rounded
+                                : Icons.calendar_month_rounded,
+                            size: 19,
+                          ),
+                          label: Text(
+                            _isInstant
+                                ? context.trPair(
+                                    'Book Instant (${s.instantEtaMinutes}m)',
+                                    'तुरंत बुक (${s.instantEtaMinutes}m)',
+                                  )
+                                : context.trPair(
+                                    'Select Time Slot',
+                                    'समय स्लॉट चुनें',
+                                  ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

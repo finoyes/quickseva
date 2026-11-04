@@ -1,0 +1,2148 @@
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'brand_config.dart';
+import 'l10n.dart';
+import 'models.dart';
+import 'theme.dart';
+
+/// Smooth Page Route Transition (Fade + Gentle Slide + Micro-Scale)
+/// Safe with `pumpAndSettle` in widget tests while giving fluid motion in-app.
+class SmoothPageRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
+
+  SmoothPageRoute({required this.page})
+      : super(
+          transitionDuration: const Duration(milliseconds: 280),
+          reverseTransitionDuration: const Duration(milliseconds: 220),
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return FadeTransition(
+              opacity: curved,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.04, 0.02),
+                  end: Offset.zero,
+                ).animate(curved),
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.985, end: 1.0).animate(curved),
+                  child: child,
+                ),
+              ),
+            );
+          },
+        );
+}
+
+/// Tactile Spring Press Wrapper for Cards, Bento Tiles & Action Chips.
+/// Scales down smoothly on touch/press and springs back on release.
+class PressableScale extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final double pressedScale;
+  final Duration duration;
+
+  const PressableScale({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.pressedScale = 0.965,
+    this.duration = const Duration(milliseconds: 150),
+  });
+
+  @override
+  State<PressableScale> createState() => _PressableScaleState();
+}
+
+class _PressableScaleState extends State<PressableScale> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed != value && mounted) {
+      setState(() => _pressed = value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.onTap == null) return widget.child;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? widget.pressedScale : 1.0,
+        duration: widget.duration,
+        curve: _pressed ? Curves.easeInOut : Curves.easeOutBack,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Architectural Layered-Shape Card (Flat Solid Geometric Cutouts, Zero Gradients)
+/// Inspired by Stitch "Karmic Motion" — adds 5-layer scroll-driven parallax depth
+/// using clipped solid circles, concentric rings, stepped corner pills, and geometric diamonds.
+class LayeredShapeCard extends StatefulWidget {
+  final Widget child;
+  final Color backgroundColor;
+  final Color primaryShapeColor;
+  final Color secondaryShapeColor;
+  final double borderRadius;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? margin;
+  final Border? border;
+  final List<BoxShadow>? boxShadow;
+  final VoidCallback? onTap;
+  final double depthMultiplier;
+
+  const LayeredShapeCard({
+    super.key,
+    required this.child,
+    this.backgroundColor = QColors.deepSlate,
+    this.primaryShapeColor = QColors.deepSlateSurface,
+    this.secondaryShapeColor = QColors.primaryGreen,
+    this.borderRadius = 20,
+    this.padding = const EdgeInsets.all(18),
+    this.margin,
+    this.border,
+    this.boxShadow,
+    this.onTap,
+    this.depthMultiplier = 1.0,
+  });
+
+  @override
+  State<LayeredShapeCard> createState() => _LayeredShapeCardState();
+}
+
+class _LayeredShapeCardState extends State<LayeredShapeCard> {
+  ScrollPosition? _scrollPosition;
+  double _scrollPixels = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newPos = Scrollable.maybeOf(context)?.position;
+    if (_scrollPosition != newPos) {
+      _scrollPosition?.removeListener(_onScroll);
+      _scrollPosition = newPos;
+      _scrollPosition?.addListener(_onScroll);
+      if (newPos != null && newPos.hasPixels) {
+        _scrollPixels = newPos.pixels;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollPosition?.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final pos = _scrollPosition;
+    if (pos != null && pos.hasPixels && mounted) {
+      setState(() {
+        _scrollPixels = pos.pixels;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final phase = _scrollPixels * 0.011 * widget.depthMultiplier;
+    final dx = math.sin(phase);
+    final dy = math.cos(phase * 0.85);
+
+    final card = Container(
+      margin: widget.margin,
+      decoration: BoxDecoration(
+        color: widget.backgroundColor,
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        border: widget.border,
+        boxShadow: widget.boxShadow,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Layer 1 (Deep Back): Top-right large solid geometric disc
+          Positioned(
+            right: -34 + (dx * 10),
+            top: -38 + (dy * 12),
+            child: Container(
+              width: 144,
+              height: 144,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.primaryShapeColor,
+              ),
+            ),
+          ),
+          // Layer 2 (Mid-Back): Concentric solid ring with hollow center
+          Positioned(
+            right: 16 - (dx * 14),
+            top: -16 + (dy * -10),
+            child: Container(
+              width: 62,
+              height: 62,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.secondaryShapeColor.withValues(alpha: 0.18),
+                border: Border.all(
+                  color: widget.secondaryShapeColor.withValues(alpha: 0.34),
+                  width: 3.5,
+                ),
+              ),
+            ),
+          ),
+          // Layer 3 (Mid-Front): Stepped geometric pill accent on right edge
+          Positioned(
+            right: -12 + (dy * 8),
+            bottom: 18 - (dx * 12),
+            child: Transform.rotate(
+              angle: dx * 0.14,
+              child: Container(
+                width: 48,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: widget.secondaryShapeColor.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+          ),
+          // Layer 4 (Deep Bottom-Left): Angled pill cutout layer
+          Positioned(
+            left: -26 - (dx * 11),
+            bottom: -28 + (dy * 9),
+            child: Transform.rotate(
+              angle: (-18 + (dx * 7)) * math.pi / 180,
+              child: Container(
+                width: 100,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: widget.primaryShapeColor.withValues(alpha: 0.68),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+          ),
+          // Layer 5 (Foreground Micro-Layer): Floating solid geometric diamond
+          Positioned(
+            left: 28 + (dy * 10),
+            top: -10 + (dx * 6),
+            child: Transform.rotate(
+              angle: (45 + (dx * 12)) * math.pi / 180,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: widget.secondaryShapeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+          ),
+          // Foreground content
+          Padding(
+            padding: widget.padding,
+            child: widget.child,
+          ),
+        ],
+      ),
+    );
+
+    if (widget.onTap == null) return card;
+    return PressableScale(onTap: widget.onTap, child: card);
+  }
+}
+
+/// Scroll-Linked Depth & Entrance Motion Wrapper for Cards and Bento Sections.
+/// Combines a smooth spring entrance with subtle scroll-driven 3D vertical depth.
+class ScrollDepthCard extends StatefulWidget {
+  final Widget child;
+  final int index;
+  final double parallaxStrength;
+
+  const ScrollDepthCard({
+    super.key,
+    required this.child,
+    this.index = 0,
+    this.parallaxStrength = 4.0,
+  });
+
+  @override
+  State<ScrollDepthCard> createState() => _ScrollDepthCardState();
+}
+
+class _ScrollDepthCardState extends State<ScrollDepthCard> {
+  ScrollPosition? _scrollPosition;
+  double _scrollPixels = 0.0;
+  double _scrollDelta = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newPos = Scrollable.maybeOf(context)?.position;
+    if (_scrollPosition != newPos) {
+      _scrollPosition?.removeListener(_onScroll);
+      _scrollPosition = newPos;
+      _scrollPosition?.addListener(_onScroll);
+      if (newPos != null && newPos.hasPixels) {
+        _scrollPixels = newPos.pixels;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollPosition?.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final pos = _scrollPosition;
+    if (pos != null && pos.hasPixels && mounted) {
+      final nextPixels = pos.pixels;
+      final delta = (nextPixels - _scrollPixels).clamp(-18.0, 18.0);
+      setState(() {
+        _scrollDelta = delta;
+        _scrollPixels = nextPixels;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final wave = math.sin((_scrollPixels * 0.008) + (widget.index * 0.7));
+    final dy = wave * widget.parallaxStrength;
+    final tiltX = (_scrollDelta * 0.0022).clamp(-0.04, 0.04);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 260 + ((widget.index % 5) * 45)),
+      curve: Curves.easeOutCubic,
+      builder: (context, enterVal, child) {
+        final entranceOffset = (1.0 - enterVal) * 14.0;
+        final scale = 0.97 + (0.03 * enterVal);
+        final matrix = Matrix4.identity()
+          ..setEntry(3, 2, 0.001)
+          ..rotateX(tiltX);
+        return Transform(
+          alignment: Alignment.center,
+          transform: matrix,
+          child: Transform.translate(
+            offset: Offset(0, entranceOffset + dy),
+            child: Transform.scale(
+              scale: scale,
+              child: child,
+            ),
+          ),
+        );
+      },
+      child: widget.child,
+    );
+  }
+}
+
+/// Smooth Rolling Numeric Counter for Rupee Prices & Earnings Totals.
+class RollingRupeeText extends StatelessWidget {
+  final int amountRupees;
+  final TextStyle style;
+  final String prefix;
+  final String suffix;
+
+  const RollingRupeeText({
+    super.key,
+    required this.amountRupees,
+    required this.style,
+    this.prefix = BrandConfig.currency,
+    this.suffix = '',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(
+        begin: amountRupees.toDouble(),
+        end: amountRupees.toDouble(),
+      ),
+      duration: const Duration(milliseconds: 340),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, _) {
+        return Text(
+          '$prefix${value.round()}$suffix',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style,
+        );
+      },
+    );
+  }
+}
+
+/// Elastic Spring Bounce Wrapper when `triggerKey` changes (e.g., Cart item / package change).
+class ElasticBounceWrapper extends StatefulWidget {
+  final Object triggerKey;
+  final Widget child;
+
+  const ElasticBounceWrapper({
+    super.key,
+    required this.triggerKey,
+    required this.child,
+  });
+
+  @override
+  State<ElasticBounceWrapper> createState() => _ElasticBounceWrapperState();
+}
+
+class _ElasticBounceWrapperState extends State<ElasticBounceWrapper>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
+    _scaleAnim = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.045)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 45,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.045, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOutBack)),
+        weight: 55,
+      ),
+    ]).animate(_controller);
+  }
+
+  @override
+  void didUpdateWidget(covariant ElasticBounceWrapper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.triggerKey != widget.triggerKey) {
+      _controller.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnim,
+      child: widget.child,
+    );
+  }
+}
+
+/// Solid Vector Sonar Radar Graphic (Zero Gradients)
+/// Draws concentric solid sonar rings, crosshair axes, sweeping vector arm, and blips.
+class SonarRadarGraphic extends StatelessWidget {
+  final double size;
+  final Color primaryColor;
+  final Color accentColor;
+  final double sweepAngleRadians;
+  final Widget? centerChild;
+
+  const SonarRadarGraphic({
+    super.key,
+    this.size = 92,
+    this.primaryColor = QColors.primaryGreen,
+    this.accentColor = QColors.karmicOrange,
+    this.sweepAngleRadians = -0.65,
+    this.centerChild,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _SonarRadarPainter(
+                primaryColor: primaryColor,
+                accentColor: accentColor,
+                sweepAngleRadians: sweepAngleRadians,
+              ),
+            ),
+          ),
+          ?centerChild,
+        ],
+      ),
+    );
+  }
+}
+
+class _SonarRadarPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color accentColor;
+  final double sweepAngleRadians;
+
+  _SonarRadarPainter({
+    required this.primaryColor,
+    required this.accentColor,
+    required this.sweepAngleRadians,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final maxR = size.width / 2;
+
+    // 3 Concentric solid fill + stroke sonar rings
+    final outerFill = Paint()
+      ..color = primaryColor.withValues(alpha: 0.08)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, maxR, outerFill);
+
+    final midFill = Paint()
+      ..color = primaryColor.withValues(alpha: 0.13)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, maxR * 0.68, midFill);
+
+    final innerFill = Paint()
+      ..color = primaryColor.withValues(alpha: 0.2)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, maxR * 0.38, innerFill);
+
+    final ringStroke = Paint()
+      ..color = primaryColor.withValues(alpha: 0.32)
+      ..strokeWidth = 1.4
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, maxR - 1, ringStroke);
+    canvas.drawCircle(center, maxR * 0.68, ringStroke);
+    canvas.drawCircle(center, maxR * 0.38, ringStroke);
+
+    // Crosshair lines
+    final axisPaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.22)
+      ..strokeWidth = 1.0;
+    canvas.drawLine(
+      Offset(center.dx - maxR + 4, center.dy),
+      Offset(center.dx + maxR - 4, center.dy),
+      axisPaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - maxR + 4),
+      Offset(center.dx, center.dy + maxR - 4),
+      axisPaint,
+    );
+
+    // Solid radar sector wedge (flat solid alpha, zero gradient)
+    final sectorPaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.18)
+      ..style = PaintingStyle.fill;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: maxR - 2),
+      sweepAngleRadians - 0.55,
+      0.55,
+      true,
+      sectorPaint,
+    );
+
+    // Sweeping vector arm
+    final armEnd = Offset(
+      center.dx + math.cos(sweepAngleRadians) * (maxR - 3),
+      center.dy + math.sin(sweepAngleRadians) * (maxR - 3),
+    );
+    final armPaint = Paint()
+      ..color = primaryColor
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(center, armEnd, armPaint);
+
+    // Nearby job blips (solid circles)
+    final blip1 = Offset(
+      center.dx + math.cos(sweepAngleRadians - 0.25) * (maxR * 0.62),
+      center.dy + math.sin(sweepAngleRadians - 0.25) * (maxR * 0.62),
+    );
+    final blip2 = Offset(
+      center.dx + math.cos(sweepAngleRadians + 2.1) * (maxR * 0.48),
+      center.dy + math.sin(sweepAngleRadians + 2.1) * (maxR * 0.48),
+    );
+    canvas.drawCircle(
+      blip1,
+      5.5,
+      Paint()..color = accentColor.withValues(alpha: 0.28),
+    );
+    canvas.drawCircle(blip1, 3.2, Paint()..color = accentColor);
+    canvas.drawCircle(blip2, 3.0, Paint()..color = primaryColor);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SonarRadarPainter oldDelegate) =>
+      oldDelegate.sweepAngleRadians != sweepAngleRadians ||
+      oldDelegate.primaryColor != primaryColor ||
+      oldDelegate.accentColor != accentColor;
+}
+
+/// Circular Countdown Progress Ring Badge (for 15s Incoming Job Offer Modal)
+class CircularCountdownBadge extends StatelessWidget {
+  final int remainingSeconds;
+  final int totalSeconds;
+  final Color activeColor;
+
+  const CircularCountdownBadge({
+    super.key,
+    required this.remainingSeconds,
+    this.totalSeconds = 15,
+    this.activeColor = QColors.amberGold,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (remainingSeconds / totalSeconds).clamp(0.0, 1.0);
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: progress, end: progress),
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+      builder: (context, animProgress, _) {
+        return CustomPaint(
+          painter: _CircularCountdownPainter(
+            progress: animProgress,
+            activeColor: activeColor,
+          ),
+          child: Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            child: Text(
+              '${remainingSeconds}s',
+              style: const TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CircularCountdownPainter extends CustomPainter {
+  final double progress;
+  final Color activeColor;
+
+  _CircularCountdownPainter({
+    required this.progress,
+    required this.activeColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width / 2) - 3;
+
+    // Background disc
+    canvas.drawCircle(
+      center,
+      size.width / 2,
+      Paint()..color = Colors.white.withValues(alpha: 0.14),
+    );
+
+    // Track ring
+    final trackPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.22)
+      ..strokeWidth = 3.2
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    // Active progress arc
+    final arcPaint = Paint()
+      ..color = activeColor
+      ..strokeWidth = 3.4
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * progress,
+      false,
+      arcPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CircularCountdownPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.activeColor != activeColor;
+}
+
+/// Concentric Live Status Dot (Flat Solid Layers)
+class LiveStatusDot extends StatelessWidget {
+  final Color color;
+  final double size;
+
+  const LiveStatusDot({
+    super.key,
+    this.color = QColors.vibrantMint,
+    this.size = 8,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size + 6,
+      height: size + 6,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withValues(alpha: 0.24),
+      ),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+/// 1-Tap Bilingual Switcher Pill (EN <-> हिं)
+class LanguageTogglePill extends StatelessWidget {
+  final bool darkSurface;
+  const LanguageTogglePill({super.key, this.darkSurface = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = LanguageScope.of(context);
+    final isHindi = controller.isHindi;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(999),
+      onTap: controller.toggle,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: darkSurface
+              ? Colors.white.withValues(alpha: 0.14)
+              : QColors.warmIvorySurface,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: darkSurface
+                ? Colors.white.withValues(alpha: 0.25)
+                : QColors.borderStrong,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.translate_rounded,
+              size: 14,
+              color: darkSurface ? Colors.white : QColors.primaryGreen,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              isHindi ? 'हिंदी • EN' : 'EN • हिंदी',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: darkSurface ? Colors.white : QColors.inkDark,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #1: Segmented Toggle ("⚡ In 14 mins" vs "Later")
+class InstantLaterSegmentedControl extends StatelessWidget {
+  final bool isInstant;
+  final int instantMinutes;
+  final ValueChanged<bool> onChanged;
+
+  const InstantLaterSegmentedControl({
+    super.key,
+    required this.isInstant,
+    this.instantMinutes = BrandConfig.instantPromiseMinutes,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: QColors.warmIvorySurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: QColors.borderSubtle),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onChanged(true),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                decoration: BoxDecoration(
+                  color: isInstant ? QColors.primaryGreen : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: isInstant ? QTheme.softShadow : null,
+                ),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DispatchClockGraphic(
+                      size: 18,
+                      color: isInstant ? Colors.white : QColors.primaryGreen,
+                      active: isInstant,
+                    ),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        context.trPair(
+                          'In $instantMinutes mins',
+                          '$instantMinutes मिनट में',
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: isInstant ? Colors.white : QColors.inkBody,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onChanged(false),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                decoration: BoxDecoration(
+                  color: !isInstant ? QColors.primaryGreen : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: !isInstant ? QTheme.softShadow : null,
+                ),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14,
+                      color: !isInstant ? Colors.white : QColors.inkMuted,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        context.trPair('Later', 'बाद के लिए'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: !isInstant ? Colors.white : QColors.inkBody,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #1: Horizontal Duration / Package Card
+/// ("45 mins", "₹49 ~~₹225~~", "🏷 78% OFF", "Bestseller" ribbon, "Book" button)
+/// Enhanced with multi-layered geometric corner shapes and spring press physics.
+class PackageDurationCard extends StatelessWidget {
+  final ServicePackageTier tier;
+  final bool isSelected;
+  final VoidCallback onBookTap;
+
+  const PackageDurationCard({
+    super.key,
+    required this.tier,
+    this.isSelected = false,
+    required this.onBookTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final discount = tier.discountPercent;
+
+    return PressableScale(
+      onTap: onBookTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            width: 154,
+            margin: const EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected
+                    ? QColors.primaryGreen
+                    : QColors.borderSubtle,
+                width: isSelected ? 1.8 : 1.0,
+              ),
+              boxShadow: QTheme.softShadow,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                // Layer 1: Decorative corner circle
+                Positioned(
+                  right: -20,
+                  top: -20,
+                  child: Container(
+                    width: 68,
+                    height: 68,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? QColors.primaryGreen.withValues(alpha: 0.12)
+                          : QColors.warmIvorySurface.withValues(alpha: 0.75),
+                    ),
+                  ),
+                ),
+                // Layer 2: Inner accent dot
+                Positioned(
+                  right: 12,
+                  top: 12,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? QColors.primaryGreen.withValues(alpha: 0.28)
+                          : QColors.borderStrong.withValues(alpha: 0.45),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        context.tr(tier.title),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: QColors.inkDark,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            '${BrandConfig.currency}${tier.priceRupees}',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: QColors.inkDark,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          if (tier.originalPriceRupees > tier.priceRupees)
+                            Text(
+                              '${BrandConfig.currency}${tier.originalPriceRupees}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: QColors.inkLight,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      if (discount > 0)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.local_offer_rounded,
+                              size: 13,
+                              color: QColors.primaryGreen,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              context.trPair('$discount% OFF', '$discount% छूट'),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: QColors.primaryGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 36,
+                        child: OutlinedButton(
+                          onPressed: onBookTap,
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: isSelected
+                                ? QColors.primaryGreen
+                                : QColors.cleanWhite,
+                            foregroundColor: isSelected
+                                ? Colors.white
+                                : QColors.primaryGreen,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? QColors.primaryGreen
+                                  : QColors.borderSubtle,
+                            ),
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            isSelected
+                                ? context.trPair('Selected ✓', 'चुन लिया ✓')
+                                : context.trPair('Book', 'बुक करें'),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (tier.isBestseller)
+            Positioned(
+              top: 0,
+              left: 10,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: QColors.bestsellerForest,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  context.trPair('Bestseller', 'बेस्टसेलर'),
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #1: Super Saver Pack Banner with Tilted 3D Text & Layered Shapes
+class SuperSaverPackBanner extends StatelessWidget {
+  final SuperSaverPack pack;
+  final VoidCallback onBookTap;
+
+  const SuperSaverPackBanner({
+    super.key,
+    required this.pack,
+    required this.onBookTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayeredShapeCard(
+      backgroundColor: QColors.superSaverBg,
+      primaryShapeColor: QColors.primaryGreenDark,
+      secondaryShapeColor: QColors.amberGold,
+      borderRadius: 18,
+      padding: const EdgeInsets.all(18),
+      boxShadow: QTheme.elevatedShadow,
+      onTap: onBookTap,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: QColors.amberGold,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    context.tr(pack.badgeText),
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.3,
+                    ),
+                    children: [
+                      TextSpan(text: '${context.tr(pack.headline)} '),
+                      TextSpan(
+                        text:
+                            '${BrandConfig.currency}${pack.originalPriceRupees}',
+                        style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '\n${context.tr(pack.pricePerVisitText)}',
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFFFDE68A),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  context.tr(pack.validityText),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                ElevatedButton(
+                  onPressed: onBookTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: QColors.cleanWhite,
+                    foregroundColor: QColors.inkDark,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 10,
+                    ),
+                    minimumSize: const Size(92, 38),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    context.trPair('Book', 'बुक करें'),
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Transform.rotate(
+              angle: -10 * math.pi / 180,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      context.trPair(
+                        'SUPER\nSAVER\nPACK',
+                        'सुपर\nसेवर\nपैक',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        height: 0.96,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.35),
+                            offset: const Offset(3, 5),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #2: Masonry Discovery Card ("Home Cleaning", "Beauty Services", etc.)
+/// Enhanced with inner scroll-linked photo parallax, spring press physics, Hero tag, and layered geometric footer.
+class MasonryDiscoveryCard extends StatefulWidget {
+  final DiscoveryCardItem item;
+  final double imageHeight;
+  final VoidCallback onTap;
+  final String? heroTag;
+
+  const MasonryDiscoveryCard({
+    super.key,
+    required this.item,
+    required this.imageHeight,
+    required this.onTap,
+    this.heroTag,
+  });
+
+  @override
+  State<MasonryDiscoveryCard> createState() => _MasonryDiscoveryCardState();
+}
+
+class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
+  ScrollPosition? _scrollPosition;
+  double _scrollPixels = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newPos = Scrollable.maybeOf(context)?.position;
+    if (_scrollPosition != newPos) {
+      _scrollPosition?.removeListener(_onScroll);
+      _scrollPosition = newPos;
+      _scrollPosition?.addListener(_onScroll);
+      if (newPos != null && newPos.hasPixels) {
+        _scrollPixels = newPos.pixels;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollPosition?.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final pos = _scrollPosition;
+    if (pos != null && pos.hasPixels && mounted) {
+      setState(() {
+        _scrollPixels = pos.pixels;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final parallaxShift = math.sin(
+          (_scrollPixels * 0.009) + (widget.item.id.hashCode * 0.4),
+        ) *
+        8.0;
+
+    final imageWidget = SizedBox(
+      height: widget.imageHeight,
+      width: double.infinity,
+      child: ClipRect(
+        child: Transform.translate(
+          offset: Offset(0, parallaxShift),
+          child: Transform.scale(
+            scale: 1.12,
+            child: Image.network(
+              widget.item.imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Container(
+                color: QColors.warmIvorySurface,
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.home_repair_service_rounded,
+                  size: 38,
+                  color: QColors.primaryGreen,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return PressableScale(
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: QColors.cleanWhite,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: QColors.borderSubtle),
+          boxShadow: QTheme.softShadow,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                if (widget.heroTag != null)
+                  Hero(tag: widget.heroTag!, child: imageWidget)
+                else
+                  imageWidget,
+                if (widget.item.badge != null)
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: QColors.deepSlate,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        context.tr(widget.item.badge!),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            Stack(
+              children: [
+                Positioned(
+                  right: -14 + (parallaxShift * 0.4),
+                  bottom: -14,
+                  child: Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: QColors.softGreenTint.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 14 - (parallaxShift * 0.5),
+                  bottom: -10,
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: QColors.primaryGreen.withValues(alpha: 0.25),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: -12,
+                  bottom: -12 + (parallaxShift * 0.3),
+                  child: Transform.rotate(
+                    angle: -14 * math.pi / 180,
+                    child: Container(
+                      width: 36,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: QColors.warmIvorySurface.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          context.tr(widget.item.title),
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w800,
+                            color: QColors.inkDark,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_outward_rounded,
+                        size: 16,
+                        color: QColors.primaryGreen,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #3: Date Selector Card ("Wed 01", "Thu 02", "Fri 03" with trend badge)
+class DateSlotCard extends StatelessWidget {
+  final DateSlotItem slot;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const DateSlotCard({
+    super.key,
+    required this.slot,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElasticBounceWrapper(
+      triggerKey: isSelected,
+      child: PressableScale(
+        onTap: onTap,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              width: 68,
+              height: 76,
+              decoration: BoxDecoration(
+                color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isSelected
+                      ? QColors.primaryGreen
+                      : QColors.borderSubtle,
+                  width: isSelected ? 1.8 : 1.0,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    context.tr(slot.dayShort),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          isSelected ? QColors.primaryGreen : QColors.inkMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    slot.dateNumber,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color:
+                          isSelected ? QColors.primaryGreen : QColors.inkDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (slot.trend != DemandTrend.none)
+              Positioned(
+                top: -5,
+                right: -4,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: slot.trend == DemandTrend.lowDown
+                        ? QColors.amberSoftBg
+                        : QColors.warmIvorySurface,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: QColors.borderSubtle),
+                  ),
+                  child: Icon(
+                    slot.trend == DemandTrend.lowDown
+                        ? Icons.trending_down_rounded
+                        : Icons.trending_up_rounded,
+                    size: 12,
+                    color: slot.trend == DemandTrend.lowDown
+                        ? QColors.amberGold
+                        : QColors.inkBody,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Matches UC Screenshot #3: Time Slot Cell ("9:30 AM", "11:30 AM" with "+ ₹20" badge)
+class TimeSlotCell extends StatelessWidget {
+  final TimeSlotItem slot;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const TimeSlotCell({
+    super.key,
+    required this.slot,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElasticBounceWrapper(
+      triggerKey: isSelected,
+      child: PressableScale(
+        onTap: onTap,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected
+                      ? QColors.primaryGreen
+                      : QColors.borderSubtle,
+                  width: isSelected ? 1.8 : 1.0,
+                ),
+              ),
+              child: Text(
+                slot.label,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected ? QColors.primaryGreen : QColors.inkDark,
+                ),
+              ),
+            ),
+            if (slot.peakSurchargeRupees > 0)
+              Positioned(
+                top: -8,
+                right: 8,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: QColors.amberSoftBg,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: QColors.amberGold.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Text(
+                    '+ ${BrandConfig.currency}${slot.peakSurchargeRupees}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: QColors.amberGold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom-Painted Animated 14-Min Dispatch Clock / Stopwatch Graphic (Zero Gradients)
+class DispatchClockGraphic extends StatelessWidget {
+  final double size;
+  final Color color;
+  final bool active;
+
+  const DispatchClockGraphic({
+    super.key,
+    this.size = 18,
+    this.color = QColors.primaryGreen,
+    this.active = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey('clock_$active'),
+      tween: Tween<double>(begin: 0.0, end: active ? 1.0 : 0.35),
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutBack,
+      builder: (context, progress, _) {
+        return SizedBox(
+          width: size,
+          height: size,
+          child: CustomPaint(
+            painter: _DispatchClockPainter(
+              color: color,
+              progress: progress.clamp(0.0, 1.0),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DispatchClockPainter extends CustomPainter {
+  final Color color;
+  final double progress;
+
+  _DispatchClockPainter({required this.color, required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, (size.height / 2) + 1);
+    final radius = (size.width / 2) - 2.2;
+
+    // Top stopwatch crown
+    final crownPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+      Offset(center.dx - 2.2, 0.8),
+      Offset(center.dx + 2.2, 0.8),
+      crownPaint,
+    );
+
+    // Outer clock ring
+    final ringPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.6
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, ringPaint);
+
+    // 14-minute solid sector wedge
+    final sectorPaint = Paint()
+      ..color = color.withValues(alpha: 0.28)
+      ..style = PaintingStyle.fill;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius - 1),
+      -math.pi / 2,
+      (math.pi * 0.72) * progress,
+      true,
+      sectorPaint,
+    );
+
+    // Sweeping hand
+    final handAngle = (-math.pi / 2) + ((math.pi * 0.72) * progress);
+    final handEnd = Offset(
+      center.dx + math.cos(handAngle) * (radius - 2),
+      center.dy + math.sin(handAngle) * (radius - 2),
+    );
+    canvas.drawLine(
+      center,
+      handEnd,
+      Paint()
+        ..color = color
+        ..strokeWidth = 1.6
+        ..strokeCap = StrokeCap.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _DispatchClockPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
+}
+
+/// Interactive Before / After Service Comparison Slider Card (Zero Gradients)
+/// Allows dragging or tapping presets to compare "Before" vs "After QuickSeva".
+class BeforeAfterComparisonCard extends StatefulWidget {
+  final Tr serviceTitle;
+
+  const BeforeAfterComparisonCard({
+    super.key,
+    required this.serviceTitle,
+  });
+
+  @override
+  State<BeforeAfterComparisonCard> createState() =>
+      _BeforeAfterComparisonCardState();
+}
+
+class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
+  double _splitFraction = 0.56; // 56% After shown by default
+
+  @override
+  Widget build(BuildContext context) {
+    return LayeredShapeCard(
+      backgroundColor: QColors.cleanWhite,
+      primaryShapeColor: QColors.softGreenTint,
+      secondaryShapeColor: QColors.primaryGreen,
+      borderRadius: 18,
+      padding: const EdgeInsets.all(14),
+      border: Border.all(color: QColors.borderSubtle),
+      boxShadow: QTheme.softShadow,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: QColors.deepSlate,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  context.trPair('BEFORE vs AFTER', 'पहले बनाम बाद में'),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  context.trPair(
+                    'Drag slider to inspect quality',
+                    'क्वालिटी देखने के लिए स्लाइडर खींचें',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: QColors.inkMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Interactive Split Canvas
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final totalW = constraints.maxWidth;
+              final splitX = (totalW * _splitFraction).clamp(32.0, totalW - 32.0);
+
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _splitFraction =
+                        (details.localPosition.dx / totalW).clamp(0.15, 0.88);
+                  });
+                },
+                onTapDown: (details) {
+                  setState(() {
+                    _splitFraction =
+                        (details.localPosition.dx / totalW).clamp(0.15, 0.88);
+                  });
+                },
+                child: Container(
+                  height: 116,
+                  decoration: BoxDecoration(
+                    color: QColors.warmIvorySurface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: QColors.borderStrong),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      // RIGHT / FULL LAYER: "BEFORE" (Dull / Untreated State)
+                      Positioned.fill(
+                        child: Container(
+                          color: const Color(0xFFE7E2D8),
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 2.5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: QColors.inkMuted,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        context.trPair('BEFORE', 'पहले'),
+                                        style: const TextStyle(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    const Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: QColors.amberGold,
+                                      size: 26,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      context.trPair(
+                                        'Scaling, Dust & Wear',
+                                        'धूल, दाग और रुकावट',
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: QColors.inkBody,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // LEFT CLIPPED LAYER: "AFTER QUICKSEVA" (Sparkling Clean State)
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: splitX,
+                        child: Container(
+                          color: QColors.softGreenTint,
+                          padding: const EdgeInsets.all(12),
+                          clipBehavior: Clip.hardEdge,
+                          decoration: const BoxDecoration(
+                            color: QColors.softGreenTint,
+                          ),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: -16,
+                                bottom: -16,
+                                child: Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: QColors.primaryGreen
+                                        .withValues(alpha: 0.14),
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 2.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: QColors.primaryGreen,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Text(
+                                      context.trPair(
+                                        'AFTER ${BrandConfig.brandName.toUpperCase()}',
+                                        '${BrandConfig.brandNameHindi} के बाद',
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  const Icon(
+                                    Icons.auto_awesome_rounded,
+                                    color: QColors.primaryGreen,
+                                    size: 26,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    context.trPair(
+                                      '100% Sanitized & Restored',
+                                      '100% चकाचक और सुरक्षित',
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: QColors.primaryGreenDark,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Vertical Divider Line + Tactile Drag Handle
+                      Positioned(
+                        left: splitX - 16,
+                        top: 0,
+                        bottom: 0,
+                        width: 32,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 3,
+                              color: QColors.deepSlate,
+                            ),
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: QColors.deepSlate,
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const Icon(
+                                Icons.compare_arrows_rounded,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Celebratory Solid Geometric Confetti & Expanding Shield Checkmark Burst (Zero Gradients)
+class GeometricCelebrationBurst extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const GeometricCelebrationBurst({
+    super.key,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 620),
+      curve: Curves.easeOutBack,
+      builder: (context, progress, _) {
+        final clamped = progress.clamp(0.0, 1.2);
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: QColors.softGreenTint,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: QColors.primaryGreen, width: 1.5),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 56,
+                height: 56,
+                child: CustomPaint(
+                  painter: _GeometricBurstPainter(progress: clamped),
+                  child: Center(
+                    child: Transform.scale(
+                      scale: (0.5 + (0.5 * clamped)).clamp(0.5, 1.08),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: QColors.primaryGreen,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.verified_rounded,
+                          color: Colors.white,
+                          size: 19,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w900,
+                        color: QColors.primaryGreenDark,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: QColors.inkBody,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _GeometricBurstPainter extends CustomPainter {
+  final double progress;
+
+  _GeometricBurstPainter({required this.progress});
+
+  static const List<Color> _palette = [
+    QColors.primaryGreen,
+    QColors.amberGold,
+    QColors.karmicOrange,
+    QColors.trustBlue,
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final maxRadius = size.width / 2;
+
+    // Expanding outer ring
+    canvas.drawCircle(
+      center,
+      (maxRadius * 0.85 * progress).clamp(4.0, maxRadius),
+      Paint()
+        ..color = QColors.primaryGreen.withValues(alpha: 0.22)
+        ..strokeWidth = 1.6
+        ..style = PaintingStyle.stroke,
+    );
+
+    // 8 radiating solid geometric particles (diamonds & circles)
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi / 4) + (progress * 0.35);
+      final dist = (10.0 + (15.0 * progress)).clamp(6.0, maxRadius - 2);
+      final pt = Offset(
+        center.dx + math.cos(angle) * dist,
+        center.dy + math.sin(angle) * dist,
+      );
+      final paint = Paint()
+        ..color = _palette[i % _palette.length]
+        ..style = PaintingStyle.fill;
+
+      if (i.isEven) {
+        canvas.drawCircle(pt, 2.8, paint);
+      } else {
+        canvas.save();
+        canvas.translate(pt.dx, pt.dy);
+        canvas.rotate(math.pi / 4);
+        canvas.drawRect(
+          Rect.fromCenter(center: Offset.zero, width: 4.8, height: 4.8),
+          paint,
+        );
+        canvas.restore();
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GeometricBurstPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}

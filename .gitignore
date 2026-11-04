@@ -1,0 +1,44 @@
+# =============================================================================
+# QuickSeva Monorepo (.gitignore)
+# =============================================================================
+
+# Android APK / AAB / DEX / Signing Binaries
+*.apk
+*.aab
+*.ap_
+*.dex
+*.jks
+*.keystore
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# Flutter / Dart / Pub Build & Tooling Artifacts
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+app.*.symbols
+app.*.map.json
+
+# Gradle & Android Local Machine Config
+**/.gradle/
+**/local.properties
+**/GeneratedPluginRegistrant.java
+
+# IDE / OS / Scratch
+.DS_Store
+Thumbs.db
+*.iml
+*.ipr
+*.iws
+.idea/
+*.log
+*.swp
+.playwright-mcp/
