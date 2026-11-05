@@ -35,32 +35,32 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Tr _statusTitle(BookingStatus s) {
     switch (s) {
       case BookingStatus.searching:
-        return const Tr(
+        return Tr(
           'Searching nearby partner...',
           'नज़दीकी पार्टनर खोज रहे हैं...',
         );
       case BookingStatus.assigned:
-        return const Tr(
+        return Tr(
           'Partner Assigned & Preparing',
           'पार्टनर असाइन हो गया है',
         );
       case BookingStatus.enRoute:
-        return const Tr(
+        return Tr(
           'Partner is on the way (6 mins away)',
           'पार्टनर रास्ते में है (6 मिनट दूर)',
         );
       case BookingStatus.arrived:
-        return const Tr(
+        return Tr(
           'Partner has arrived! Share Start OTP',
           'पार्टनर पहुंच गया है! स्टार्ट OTP बताएं',
         );
       case BookingStatus.inProgress:
-        return const Tr(
+        return Tr(
           'Service is in progress',
           'सर्विस चल रही है',
         );
       case BookingStatus.completed:
-        return const Tr(
+        return Tr(
           'Service Completed Successfully!',
           'सर्विस सफलतापूर्वक पूरी हुई!',
         );
@@ -70,17 +70,17 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Tr _stepShortLabel(BookingStatus s) {
     switch (s) {
       case BookingStatus.assigned:
-        return const Tr('Assigned', 'असाइन');
+        return Tr('Assigned', 'असाइन');
       case BookingStatus.enRoute:
-        return const Tr('En Route', 'रास्ते में');
+        return Tr('En Route', 'रास्ते में');
       case BookingStatus.arrived:
-        return const Tr('Arrived', 'पहुंच गए');
+        return Tr('Arrived', 'पहुंच गए');
       case BookingStatus.inProgress:
-        return const Tr('Working', 'काम जारी');
+        return Tr('Working', 'काम जारी');
       case BookingStatus.completed:
-        return const Tr('Done', 'पूरा हुआ');
+        return Tr('Done', 'पूरा हुआ');
       default:
-        return const Tr('Live', 'लाइव');
+        return Tr('Live', 'लाइव');
     }
   }
 
@@ -125,11 +125,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     final targetProgress = (_currentStepIndex + 1) / _steps.length;
 
     return Scaffold(
-      backgroundColor: QColors.warmIvoryBg,
+      backgroundColor: QSevaColors.of(context).base,
       appBar: AppBar(
         title: Text(
           '${context.trPair('Booking', 'बुकिंग')} #${o.id}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w800,
           ),
@@ -143,7 +143,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18),
           children: [
             // =================================================================
             // 1. ANIMATED VECTOR ROUTE MAP + MOVING RIDER + RADAR RINGS
@@ -151,10 +151,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             Container(
               height: 224,
               decoration: BoxDecoration(
-                color: QColors.mapSurface,
+                color: QSevaColors.of(context).surfaceSunken,
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: QColors.softGreenBorder, width: 1.5),
-                boxShadow: QTheme.softShadow,
+                border: Border.all(color: QSevaColors.of(context).border, width: 1.5),
+                boxShadow: QSevaColors.of(context).e1,
               ),
               clipBehavior: Clip.antiAlias,
               child: LayoutBuilder(
@@ -169,7 +169,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       begin: 0.15,
                       end: targetProgress,
                     ),
-                    duration: const Duration(milliseconds: 560),
+                    duration: Duration(milliseconds: 560),
                     curve: Curves.easeOutBack,
                     builder: (context, animProgress, _) {
                       final clampedProgress = animProgress.clamp(0.0, 1.0);
@@ -185,9 +185,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           // Custom-painted solid city blocks, route path & radar waves
                           Positioned.fill(
                             child: CustomPaint(
-                              painter: _SimulatedMapPainter(
-                                progress: clampedProgress,
-                              ),
+                              painter: _SimulatedMapPainter(progress: clampedProgress, accentColor: QSevaColors.of(context).accentStart, inkColor: QSevaColors.of(context).ink),
                             ),
                           ),
 
@@ -200,22 +198,22 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                               children: [
                                 Flexible(
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                       horizontal: 10,
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: QColors.deepSlate,
+                                      color: QSevaColors.of(context).ink,
                                       borderRadius: BorderRadius.circular(999),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const LiveStatusDot(
-                                          color: QColors.vibrantMint,
+                                        LiveStatusDot(
+                                          color: QSevaColors.of(context).highlight,
                                           size: 7,
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6),
                                         Flexible(
                                           child: Text(
                                             status == BookingStatus.completed
@@ -229,7 +227,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                                   ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
@@ -240,25 +238,25 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 9,
                                     vertical: 5,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: QColors.cleanWhite,
+                                    color: QSevaColors.of(context).surface,
                                     borderRadius: BorderRadius.circular(999),
                                     border: Border.all(
-                                      color: QColors.softGreenBorder,
+                                      color: QSevaColors.of(context).border,
                                     ),
                                   ),
                                   child: Text(
                                     '${(clampedProgress * 100).round()}%',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w900,
-                                      color: QColors.primaryGreen,
+                                      color: QSevaColors.of(context).accentStart,
                                     ),
                                   ),
                                 ),
@@ -273,35 +271,35 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             child: Column(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 8,
                                     vertical: 3.5,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: QColors.deepSlate,
+                                    color: QSevaColors.of(context).ink,
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     context.trPair('Your Home', 'आपका घर'),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 3),
+                                SizedBox(height: 3),
                                 Container(
-                                  padding: const EdgeInsets.all(6),
+                                  padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: QColors.primaryGreen,
+                                    color: QSevaColors.of(context).accentStart,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.white,
                                       width: 2,
                                     ),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.home_rounded,
                                     size: 16,
                                     color: Colors.white,
@@ -324,47 +322,47 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             child: Transform.rotate(
                               angle: (0.45 - clampedProgress) * 0.14,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: QColors.cleanWhite,
+                                  color: QSevaColors.of(context).surface,
                                   borderRadius: BorderRadius.circular(999),
                                   border: Border.all(
-                                    color: QColors.primaryGreen,
+                                    color: QSevaColors.of(context).accentStart,
                                     width: 2,
                                   ),
-                                  boxShadow: QTheme.softShadow,
+                                  boxShadow: QSevaColors.of(context).e1,
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: QColors.softGreenTint,
+                                      padding: EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: QSevaColors.of(context).pistachio,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.two_wheeler_rounded,
                                         size: 15,
-                                        color: QColors.primaryGreen,
+                                        color: QSevaColors.of(context).accentStart,
                                       ),
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6),
                                     ConstrainedBox(
-                                      constraints: const BoxConstraints(
+                                      constraints: BoxConstraints(
                                         maxWidth: 88,
                                       ),
                                       child: Text(
                                         context.tr(o.providerName),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w900,
-                                          color: QColors.inkDark,
+                                          color: QSevaColors.of(context).ink,
                                         ),
                                       ),
                                     ),
@@ -380,64 +378,64 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // =================================================================
             // 2. STATUS, KINETIC 4-DIGIT OTP BOXES & ANIMATED STEP TIMELINE
             // =================================================================
             LayeredShapeCard(
-              backgroundColor: QColors.cleanWhite,
-              primaryShapeColor: QColors.softGreenTint,
-              secondaryShapeColor: QColors.primaryGreen,
+              backgroundColor: QSevaColors.of(context).surface,
+              primaryShapeColor: QSevaColors.of(context).pistachio,
+              secondaryShapeColor: QSevaColors.of(context).accentStart,
               borderRadius: 20,
-              padding: const EdgeInsets.all(18),
-              border: Border.all(color: QColors.borderSubtle),
-              boxShadow: QTheme.softShadow,
+              padding: EdgeInsets.all(18),
+              border: Border.all(color: QSevaColors.of(context).border),
+              boxShadow: QSevaColors.of(context).e1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 240),
+                    duration: Duration(milliseconds: 240),
                     child: Column(
                       key: ValueKey(status),
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           context.tr(_statusTitle(status)),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w900,
-                            color: QColors.inkDark,
+                            color: QSevaColors.of(context).ink,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           o.scheduleLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: QColors.inkMuted,
+                            color: QSevaColors.of(context).inkMuted,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Kinetic 4-Digit Start OTP Box Strip
                   ElasticBounceWrapper(
                     triggerKey: status,
                     child: Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: status == BookingStatus.arrived
-                            ? QColors.amberSoftBg
-                            : QColors.warmIvoryBg,
+                            ? QSevaColors.of(context).peachTint
+                            : QSevaColors.of(context).base,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: status == BookingStatus.arrived
-                              ? QColors.amberGold
-                              : QColors.softGreenBorder,
+                              ? QSevaColors.of(context).warning
+                              : QSevaColors.of(context).border,
                           width: status == BookingStatus.arrived ? 1.6 : 1.0,
                         ),
                       ),
@@ -452,29 +450,29 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                     'START OTP PIN',
                                     'स्टार्ट OTP पिन',
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w900,
-                                    color: QColors.primaryGreen,
+                                    color: QSevaColors.of(context).accentStart,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                SizedBox(height: 2),
                                 Text(
                                   context.trPair(
                                     'Share with professional at doorstep',
                                     'प्रोफेशनल के आने पर यह कोड बताएं',
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11.5,
-                                    color: QColors.inkMuted,
+                                    color: QSevaColors.of(context).inkMuted,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: List.generate(otpDigits.length, (idx) {
@@ -499,15 +497,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                 child: Container(
                                   width: 31,
                                   height: 38,
-                                  margin: const EdgeInsets.only(left: 4),
+                                  margin: EdgeInsets.only(left: 4),
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     color: highlight
-                                        ? QColors.primaryGreen
-                                        : QColors.cleanWhite,
+                                        ? QSevaColors.of(context).highlight
+                                        : QSevaColors.of(context).surface,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: QColors.primaryGreen,
+                                      color: QSevaColors.of(context).accentStart,
                                       width: 1.6,
                                     ),
                                   ),
@@ -518,7 +516,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                       fontWeight: FontWeight.w900,
                                       color: highlight
                                           ? Colors.white
-                                          : QColors.inkDark,
+                                          : QSevaColors.of(context).ink,
                                     ),
                                   ),
                                 ),
@@ -529,7 +527,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  SizedBox(height: 18),
 
                   // Animated 5-Step Progress Timeline Nodes + Flowing Bars
                   Row(
@@ -544,59 +542,59 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                               children: [
                                 Expanded(
                                   child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 280),
+                                    duration: Duration(milliseconds: 280),
                                     height: 3,
                                     color: idx == 0
                                         ? Colors.transparent
                                         : (done
-                                            ? QColors.primaryGreen
-                                            : QColors.warmIvoryHighlight),
+                                            ? QSevaColors.of(context).accentStart
+                                            : QSevaColors.of(context).surfaceSunken),
                                   ),
                                 ),
                                 AnimatedContainer(
-                                  duration: const Duration(milliseconds: 280),
+                                  duration: Duration(milliseconds: 280),
                                   curve: Curves.easeOutBack,
                                   width: isCurrent ? 30 : 24,
                                   height: isCurrent ? 30 : 24,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: done
-                                        ? QColors.primaryGreen
-                                        : QColors.warmIvorySurface,
+                                        ? QSevaColors.of(context).accentStart
+                                        : QSevaColors.of(context).surfaceSunken,
                                     border: Border.all(
                                       color: isCurrent
-                                          ? QColors.amberGold
+                                          ? QSevaColors.of(context).warning
                                           : (done
-                                              ? QColors.primaryGreen
-                                              : QColors.borderStrong),
+                                              ? QSevaColors.of(context).accentStart
+                                              : QSevaColors.of(context).border),
                                       width: isCurrent ? 2.2 : 1.2,
                                     ),
                                   ),
                                   child: Icon(
                                     _stepNodeIcon(step),
                                     size: isCurrent ? 15 : 12,
-                                    color: done ? Colors.white : QColors.inkMuted,
+                                    color: done ? Colors.white : QSevaColors.of(context).inkMuted,
                                   ),
                                 ),
                                 Expanded(
                                   child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 280),
+                                    duration: Duration(milliseconds: 280),
                                     height: 3,
                                     color: idx == _steps.length - 1
                                         ? Colors.transparent
                                         : (idx < _currentStepIndex
-                                            ? QColors.primaryGreen
-                                            : QColors.warmIvoryHighlight),
+                                            ? QSevaColors.of(context).accentStart
+                                            : QSevaColors.of(context).surfaceSunken),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: 6),
                             FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
+                                    EdgeInsets.symmetric(horizontal: 2),
                                 child: Text(
                                   context.tr(_stepShortLabel(step)),
                                   style: TextStyle(
@@ -605,8 +603,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                         ? FontWeight.w900
                                         : FontWeight.w600,
                                     color: done
-                                        ? QColors.inkDark
-                                        : QColors.inkMuted,
+                                        ? QSevaColors.of(context).ink
+                                        : QSevaColors.of(context).inkMuted,
                                   ),
                                 ),
                               ),
@@ -616,7 +614,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Interactive Simulator Button to test state transitions
                   if (status != BookingStatus.completed)
@@ -627,8 +625,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.fast_forward_rounded, size: 18),
-                            const SizedBox(width: 6),
+                            Icon(Icons.fast_forward_rounded, size: 18),
+                            SizedBox(width: 6),
                             Flexible(
                               child: Text(
                                 context.trPair(
@@ -655,7 +653,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       ),
                     ),
                   if (status == BookingStatus.assigned) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     GeometricCelebrationBurst(
                       title: context.trPair(
                         'Booking Confirmed • Escrow Shield Active',
@@ -670,28 +668,31 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Partner Details & Masked Call Card
-            LayeredShapeCard(
-              backgroundColor: QColors.cleanWhite,
-              primaryShapeColor: QColors.softGreenTint,
-              secondaryShapeColor: QColors.trustBlue,
-              padding: const EdgeInsets.all(16),
+            GlassSurface(
               borderRadius: 18,
-              border: Border.all(color: QColors.borderSubtle),
+              boxShadow: QSevaColors.of(context).e1,
+              child: LayeredShapeCard(
+              backgroundColor: QSevaColors.of(context).surface.withValues(alpha: 0.5),
+              primaryShapeColor: QSevaColors.of(context).rose,
+              secondaryShapeColor: QSevaColors.of(context).highlight,
+              padding: EdgeInsets.all(16),
+              borderRadius: 18,
+              border: Border.all(color: QSevaColors.of(context).border),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: QColors.softGreenTint,
-                    child: const Icon(
+                    backgroundColor: QSevaColors.of(context).rose,
+                    child: Icon(
                       Icons.engineering_rounded,
-                      color: QColors.primaryGreen,
+                      color: QSevaColors.of(context).accentStart,
                       size: 28,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -703,36 +704,36 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                 context.tr(o.providerName),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15.5,
                                   fontWeight: FontWeight.w800,
-                                  color: QColors.inkDark,
+                                  color: QSevaColors.of(context).ink,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 6),
-                            const Icon(
+                            SizedBox(width: 6),
+                            Icon(
                               Icons.verified_rounded,
                               size: 16,
-                              color: QColors.primaryGreen,
+                              color: QSevaColors.of(context).accentStart,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 3),
+                        SizedBox(height: 3),
                         Text(
                           '${o.providerRating} • KYC & Police Verified',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
-                            color: QColors.inkMuted,
+                            color: QSevaColors.of(context).inkMuted,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Text(
                           o.providerPhoneMasked,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11.5,
-                            color: QColors.primaryGreen,
+                            color: QSevaColors.of(context).accentStart,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -741,8 +742,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   ),
                   IconButton.filledTonal(
                     style: IconButton.styleFrom(
-                      backgroundColor: QColors.softGreenTint,
-                      foregroundColor: QColors.primaryGreen,
+                      backgroundColor: QSevaColors.of(context).pistachio,
+                      foregroundColor: QSevaColors.of(context).accentStart,
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -756,10 +757,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.call_rounded),
+                    icon: Icon(Icons.call_rounded),
                   ),
                 ],
               ),
+            ),
             ),
           ],
         ),
@@ -770,39 +772,41 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
 class _SimulatedMapPainter extends CustomPainter {
   final double progress;
-  _SimulatedMapPainter({required this.progress});
+  final Color accentColor;
+  final Color inkColor;
+  _SimulatedMapPainter({required this.progress, required this.accentColor, required this.inkColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     // 1. Solid architectural city blocks (zero gradients)
     final blockPaint = Paint()
-      ..color = const Color(0xFF0B6E4F).withValues(alpha: 0.05)
+      ..color = accentColor.withValues(alpha: 0.05)
       ..style = PaintingStyle.fill;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(16, 42, size.width * 0.28, 46),
-        const Radius.circular(8),
+        Radius.circular(8),
       ),
       blockPaint,
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(size.width * 0.52, 28, size.width * 0.34, 52),
-        const Radius.circular(8),
+        Radius.circular(8),
       ),
       blockPaint,
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(28, size.height - 62, size.width * 0.36, 44),
-        const Radius.circular(8),
+        Radius.circular(8),
       ),
       blockPaint,
     );
 
     // 2. Street grid lines
     final gridPaint = Paint()
-      ..color = const Color(0xFF0B6E4F).withValues(alpha: 0.08)
+      ..color = accentColor.withValues(alpha: 0.08)
       ..strokeWidth = 1.2;
 
     for (double x = 0; x < size.width; x += 34) {
@@ -824,7 +828,7 @@ class _SimulatedMapPainter extends CustomPainter {
       radarCenter,
       outerRadarRadius,
       Paint()
-        ..color = QColors.primaryGreen.withValues(
+        ..color = accentColor.withValues(
           alpha: (0.22 * (1.0 - pulsePhase)).clamp(0.04, 0.22),
         )
         ..style = PaintingStyle.fill,
@@ -833,7 +837,7 @@ class _SimulatedMapPainter extends CustomPainter {
       radarCenter,
       26,
       Paint()
-        ..color = QColors.primaryGreen.withValues(alpha: 0.26)
+        ..color = accentColor.withValues(alpha: 0.26)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke,
     );
@@ -841,7 +845,7 @@ class _SimulatedMapPainter extends CustomPainter {
       radarCenter,
       15,
       Paint()
-        ..color = QColors.primaryGreen.withValues(alpha: 0.16)
+        ..color = accentColor.withValues(alpha: 0.16)
         ..style = PaintingStyle.fill,
     );
 
@@ -858,7 +862,7 @@ class _SimulatedMapPainter extends CustomPainter {
     canvas.drawPath(
       fullRoutePath,
       Paint()
-        ..color = QColors.primaryGreen.withValues(alpha: 0.22)
+        ..color = accentColor.withValues(alpha: 0.22)
         ..strokeWidth = 5
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.stroke,
@@ -873,7 +877,7 @@ class _SimulatedMapPainter extends CustomPainter {
       canvas.drawPath(
         activeSegment,
         Paint()
-          ..color = QColors.primaryGreen
+          ..color = accentColor
           ..strokeWidth = 5.5
           ..strokeCap = StrokeCap.round
           ..style = PaintingStyle.stroke,
@@ -884,9 +888,9 @@ class _SimulatedMapPainter extends CustomPainter {
     canvas.drawCircle(
       startHub,
       9,
-      Paint()..color = QColors.deepSlate.withValues(alpha: 0.2),
+      Paint()..color = inkColor.withValues(alpha: 0.2),
     );
-    canvas.drawCircle(startHub, 5, Paint()..color = QColors.deepSlate);
+    canvas.drawCircle(startHub, 5, Paint()..color = inkColor);
   }
 
   @override

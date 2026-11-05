@@ -42,7 +42,7 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
   Future<void> _confirmBooking() async {
     if (_paymentMode == PaymentMode.dummyOnline) {
       setState(() => _isProcessingDummyPg = true);
-      await Future.delayed(const Duration(milliseconds: 900));
+      await Future.delayed(Duration(milliseconds: 900));
       if (!mounted) return;
       setState(() => _isProcessingDummyPg = false);
     }
@@ -75,11 +75,11 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
         (pkg.originalPriceRupees - pkg.priceRupees) + _couponDiscount;
 
     return Scaffold(
-      backgroundColor: QColors.warmIvoryBg,
+      backgroundColor: QSevaColors.of(context).base,
       appBar: AppBar(
         title: Text(
           context.trPair('Review & Checkout', 'समीक्षा और भुगतान'),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w800,
           ),
@@ -96,34 +96,34 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 children: [
                   // Stitch Escrow Protection Header Banner (Layered Solid Shapes)
                   LayeredShapeCard(
-                    margin: const EdgeInsets.only(bottom: 14),
-                    backgroundColor: QColors.deepSlate,
-                    primaryShapeColor: QColors.deepSlateSurface,
-                    secondaryShapeColor: QColors.primaryGreen,
+                    margin: EdgeInsets.only(bottom: 14),
+                    backgroundColor: QSevaColors.of(context).ink,
+                    primaryShapeColor: QSevaColors.of(context).ink,
+                    secondaryShapeColor: QSevaColors.of(context).accentStart,
                     borderRadius: 16,
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 12,
                     ),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: QColors.primaryGreen,
+                            color: QSevaColors.of(context).accentStart,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.shield_rounded,
                             size: 18,
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,14 +135,14 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
                                   letterSpacing: 0.2,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              SizedBox(height: 2),
                               Text(
                                 context.trPair(
                                   'Payout is released only after job completion & OTP check.',
@@ -165,34 +165,34 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                   // Savings Celebration Strip
                   if (savedOnMrp > 0)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
+                      margin: EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 11,
                       ),
                       decoration: BoxDecoration(
-                        color: QColors.softGreenTint,
+                        color: QSevaColors.of(context).pistachio,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: QColors.softGreenBorder),
+                        border: Border.all(color: QSevaColors.of(context).border),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.celebration_rounded,
                             size: 18,
-                            color: QColors.primaryGreen,
+                            color: QSevaColors.of(context).accentStart,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               context.trPair(
                                 'You are saving ${BrandConfig.currency}$savedOnMrp on this booking!',
                                 'आप इस बुकिंग पर ${BrandConfig.currency}$savedOnMrp बचा रहे हैं!',
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
-                                color: QColors.primaryGreen,
+                                color: QSevaColors.of(context).accentStart,
                               ),
                             ),
                           ),
@@ -202,12 +202,12 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
 
                   // Service & Slot Summary Card
                   LayeredShapeCard(
-                    backgroundColor: QColors.cleanWhite,
-                    primaryShapeColor: QColors.softGreenTint,
-                    secondaryShapeColor: QColors.primaryGreen,
+                    backgroundColor: QSevaColors.of(context).surface,
+                    primaryShapeColor: QSevaColors.of(context).pistachio,
+                    secondaryShapeColor: QSevaColors.of(context).accentStart,
                     borderRadius: 16,
-                    padding: const EdgeInsets.all(16),
-                    border: Border.all(color: QColors.borderSubtle),
+                    padding: EdgeInsets.all(16),
+                    border: Border.all(color: QSevaColors.of(context).border),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -220,26 +220,26 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                               borderRadius: BorderRadius.circular(10),
                               fallbackIcon: Icons.cleaning_services_rounded,
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     context.tr(widget.service.name),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15.5,
                                       fontWeight: FontWeight.w800,
-                                      color: QColors.inkDark,
+                                      color: QSevaColors.of(context).ink,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     context.tr(pkg.title),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: QColors.primaryGreen,
+                                      color: QSevaColors.of(context).accentStart,
                                     ),
                                   ),
                                 ],
@@ -247,15 +247,15 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                             ),
                             Text(
                               '${BrandConfig.currency}${pkg.priceRupees}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w900,
-                                color: QColors.inkDark,
+                                color: QSevaColors.of(context).ink,
                               ),
                             ),
                           ],
                         ),
-                        const Divider(height: 24),
+                        Divider(height: 24),
                         Row(
                           children: [
                             Icon(
@@ -263,36 +263,36 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                                   ? Icons.bolt_rounded
                                   : Icons.schedule_rounded,
                               size: 18,
-                              color: QColors.primaryGreen,
+                              color: QSevaColors.of(context).accentStart,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 widget.scheduleLabel,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w700,
-                                  color: QColors.inkBody,
+                                  color: QSevaColors.of(context).inkSecondary,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.location_on_outlined,
                               size: 18,
-                              color: QColors.inkMuted,
+                              color: QSevaColors.of(context).inkMuted,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 '${context.tr(BrandConfig.defaultAddressLabel)} • ${context.tr(BrandConfig.defaultAddressLine)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
-                                  color: QColors.inkMuted,
+                                  color: QSevaColors.of(context).inkMuted,
                                 ),
                               ),
                             ),
@@ -301,34 +301,34 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Coupon Toggle Card
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: QColors.cleanWhite,
+                      color: QSevaColors.of(context).surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: QColors.borderSubtle),
+                      border: Border.all(color: QSevaColors.of(context).border),
                     ),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: QColors.softGreenTint,
+                            color: QSevaColors.of(context).pistachio,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.discount_rounded,
                             size: 18,
-                            color: QColors.primaryGreen,
+                            color: QSevaColors.of(context).accentStart,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,10 +338,10 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                                   'Code QUICK20 Applied',
                                   'कूपन QUICK20 लागू है',
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
-                                  color: QColors.inkDark,
+                                  color: QSevaColors.of(context).ink,
                                 ),
                               ),
                               Text(
@@ -349,9 +349,9 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                                   'Extra ₹20 instant platform discount',
                                   '₹20 की अतिरिक्त छूट',
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: QColors.inkMuted,
+                                  color: QSevaColors.of(context).inkMuted,
                                 ),
                               ),
                             ],
@@ -359,21 +359,21 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                         ),
                         Switch(
                           value: _applyCoupon,
-                          activeTrackColor: QColors.primaryGreen,
+                          activeTrackColor: QSevaColors.of(context).accentStart,
                           onChanged: (v) => setState(() => _applyCoupon = v),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Payment Mode Selector (Cash vs Dummy PG)
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: QColors.cleanWhite,
+                      color: QSevaColors.of(context).surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: QColors.borderSubtle),
+                      border: Border.all(color: QSevaColors.of(context).border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,30 +383,30 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                             'Payment Method (Cash or Demo PG)',
                             'भुगतान का तरीका चुनें (नकद या डेमो PG)',
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: QColors.inkDark,
+                            color: QSevaColors.of(context).ink,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         _PaymentOptionTile(
                           mode: PaymentMode.cash,
                           selected: _paymentMode == PaymentMode.cash,
                           icon: Icons.payments_outlined,
-                          subtitle: const Tr(
+                          subtitle: Tr(
                             'Pay directly to the professional after job completion',
                             'काम पूरा होने के बाद प्रोफेशनल को नकद या UPI दें',
                           ),
                           onTap: () =>
                               setState(() => _paymentMode = PaymentMode.cash),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         _PaymentOptionTile(
                           mode: PaymentMode.dummyOnline,
                           selected: _paymentMode == PaymentMode.dummyOnline,
                           icon: Icons.qr_code_scanner_rounded,
-                          subtitle: const Tr(
+                          subtitle: Tr(
                             'Simulates instant gateway split settlement (No real charge)',
                             'तुरंत ऑनलाइन डेमो पेमेंट सिम्युलेटर (कोई वास्तविक शुल्क नहीं)',
                           ),
@@ -417,28 +417,28 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Itemized Bill Summary
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: QColors.cleanWhite,
+                      color: QSevaColors.of(context).surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: QColors.borderSubtle),
+                      border: Border.all(color: QSevaColors.of(context).border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           context.trPair('Bill Details', 'बिल विवरण'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: QColors.inkDark,
+                            color: QSevaColors.of(context).ink,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         _BillRow(
                           label: context.trPair('Item Total', 'पैकेज शुल्क'),
                           value: '${BrandConfig.currency}${pkg.priceRupees}',
@@ -468,24 +468,24 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                             value: '- ${BrandConfig.currency}$_couponDiscount',
                             isGreen: true,
                           ),
-                        const Divider(height: 22),
+                        Divider(height: 22),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               context.trPair('Total Payable', 'कुल देय राशि'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
-                                color: QColors.inkDark,
+                                color: QSevaColors.of(context).ink,
                               ),
                             ),
                             RollingRupeeText(
                               amountRupees: _grandTotal,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w900,
-                                color: QColors.primaryGreen,
+                                color: QSevaColors.of(context).accentStart,
                               ),
                             ),
                           ],
@@ -497,68 +497,30 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
               ),
             ),
 
-            // Sticky Bottom Confirm Button with Elastic Bounce on Coupon / Payment Change
-            ElasticBounceWrapper(
+            // Sticky Bottom Confirm Button with Glass Surface
+            GlassSurface(
+              borderRadius: 0,
+              boxShadow: QSevaColors.of(context).e2,
+              child: ElasticBounceWrapper(
               triggerKey: '$_grandTotal-$_paymentMode',
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
-                decoration: BoxDecoration(
-                  color: QColors.cleanWhite,
-                  border: const Border(
-                    top: BorderSide(color: QColors.borderSubtle),
-                  ),
-                  boxShadow: QTheme.softShadow,
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isProcessingDummyPg ? null : _confirmBooking,
-                    child: _isProcessingDummyPg
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.4,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                                child: Text(
-                                  context.trPair(
-                                    'Simulating Dummy PG Approval...',
-                                    'डेमो पेमेंट सत्यापित हो रहा है...',
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Text(
-                            _paymentMode == PaymentMode.cash
-                                ? context.trPair(
-                                    'Confirm Booking • Pay ${BrandConfig.currency}$_grandTotal by Cash',
-                                    'बुकिंग पक्की करें • ${BrandConfig.currency}$_grandTotal नकद दें',
-                                  )
-                                : context.trPair(
-                                    'Pay ${BrandConfig.currency}$_grandTotal via Dummy PG & Book',
-                                    'डेमो PG से ${BrandConfig.currency}$_grandTotal भुगतान करें',
-                                  ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                  ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(18, 12, 18, 16),
+                child: AccentGradientButton(
+                  label: _paymentMode == PaymentMode.cash
+                      ? context.trPair(
+                          'Confirm • ${BrandConfig.currency}$_grandTotal Cash',
+                          'बुकिंग • ${BrandConfig.currency}$_grandTotal नकद',
+                        )
+                      : context.trPair(
+                          'Pay ${BrandConfig.currency}$_grandTotal & Book',
+                          '${BrandConfig.currency}$_grandTotal भुगतान करें',
+                        ),
+                  icon: Icons.check_circle_rounded,
+                  isLoading: _isProcessingDummyPg,
+                  onPressed: _isProcessingDummyPg ? null : _confirmBooking,
                 ),
               ),
+            ),
             ),
           ],
         ),
@@ -587,13 +549,13 @@ class _PaymentOptionTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.all(14),
+        duration: Duration(milliseconds: 180),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? QColors.softGreenTint : QColors.warmIvoryBg,
+          color: selected ? QSevaColors.of(context).pistachio : QSevaColors.of(context).base,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? QColors.primaryGreen : QColors.borderSubtle,
+            color: selected ? QSevaColors.of(context).accentStart : QSevaColors.of(context).border,
             width: selected ? 1.8 : 1.0,
           ),
         ),
@@ -601,27 +563,27 @@ class _PaymentOptionTile extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: selected ? QColors.primaryGreen : QColors.inkBody,
+              color: selected ? QSevaColors.of(context).accentStart : QSevaColors.of(context).inkSecondary,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     context.tr(mode.label),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: QColors.inkDark,
+                      color: QSevaColors.of(context).ink,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     context.tr(subtitle),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: QColors.inkMuted,
+                      color: QSevaColors.of(context).inkMuted,
                     ),
                   ),
                 ],
@@ -631,7 +593,7 @@ class _PaymentOptionTile extends StatelessWidget {
               selected
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_off_rounded,
-              color: selected ? QColors.primaryGreen : QColors.inkLight,
+              color: selected ? QSevaColors.of(context).accentStart : QSevaColors.of(context).inkMuted,
             ),
           ],
         ),
@@ -654,7 +616,7 @@ class _BillRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -663,19 +625,19 @@ class _BillRow extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.5,
-                color: QColors.inkMuted,
+                color: QSevaColors.of(context).inkMuted,
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Text(
             value,
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
-              color: isGreen ? QColors.primaryGreen : QColors.inkDark,
+              color: isGreen ? QSevaColors.of(context).accentStart : QSevaColors.of(context).ink,
             ),
           ),
         ],

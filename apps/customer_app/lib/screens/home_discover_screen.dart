@@ -124,11 +124,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: QColors.warmIvoryBg,
+      backgroundColor: QSevaColors.of(context).base,
       body: Stack(
         children: [
+          // Peach Pop pastel blob backdrop
+          PastelBackdrop(),
+
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 240),
+            duration: Duration(milliseconds: 240),
             switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
             child: KeyedSubtree(
@@ -143,17 +146,29 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               left: 16,
               right: 16,
               bottom: 12,
-              child: _buildFloatingCartPill(
+              child: GlassSurface(
+                borderRadius: 16,
+                boxShadow: QSevaColors.of(context).e3,
+                child: _buildFloatingCartPill(
                 context,
                 _cartService,
                 _cartPackage,
               ),
+              ),
             ),
         ],
       ),
-      bottomNavigationBar: QFloatingNavBar(
-        selectedIndex: _tabIndex,
-        onSelected: (idx) => setState(() => _tabIndex = idx),
+      bottomNavigationBar: GlassSurface(
+        borderRadius: QRadius.xl,
+        margin: EdgeInsets.fromLTRB(16, 0, 16, 10),
+        padding: EdgeInsets.zero,
+        boxShadow: QSevaColors.of(context).e3,
+        child: QFloatingNavBar(
+          selectedIndex: _tabIndex,
+          onSelected: (idx) => setState(() => _tabIndex = idx),
+          backgroundColor: QSevaColors.of(context).ink,
+          indicatorColor: QSevaColors.of(context).accentStart,
+          activeColor: QSevaColors.of(context).onAccent,
         items: [
           QNavItem(
             icon: Icons.home_outlined,
@@ -172,6 +187,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             badgeCount: _bookings.length,
           ),
         ],
+      ),
       ),
     );
   }
@@ -195,12 +211,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
     return ElasticBounceWrapper(
       triggerKey: '${service.id}_${pkg.id}_${pkg.priceRupees}_$_homeInstantToggle',
       child: LayeredShapeCard(
-        backgroundColor: QColors.deepSlate,
-        primaryShapeColor: QColors.deepSlateSurface,
-        secondaryShapeColor: QColors.primaryGreen,
+        backgroundColor: QSevaColors.of(context).ink,
+        primaryShapeColor: QSevaColors.of(context).ink,
+        secondaryShapeColor: QSevaColors.of(context).accentStart,
         borderRadius: 16,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        boxShadow: QTheme.darkSlateShadow,
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        boxShadow: QSevaColors.of(context).e3,
         onTap: () {
           if (_homeInstantToggle) {
             _openDirectCheckout(service, pkg);
@@ -214,16 +230,16 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: QColors.primaryGreen,
+                color: QSevaColors.of(context).accentStart,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.shopping_bag_rounded,
                 color: Colors.white,
                 size: 18,
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +252,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                           '${context.tr(service.name)} • ${context.tr(pkg.title)} • ',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -245,10 +261,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       ),
                       RollingRupeeText(
                         amountRupees: pkg.priceRupees,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFFFDE68A),
+                          color: QSevaColors.of(context).highlight,
                         ),
                       ),
                     ],
@@ -260,9 +276,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             ? Icons.bolt_rounded
                             : Icons.calendar_today_rounded,
                         size: 13,
-                        color: const Color(0xFFFDE68A),
+                        color: QSevaColors.of(context).highlight,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           _homeInstantToggle
@@ -288,16 +304,16 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: QColors.primaryGreen,
+                color: QSevaColors.of(context).accentStart,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 context.trPair('Checkout →', 'चेकआउट →'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -339,15 +355,17 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         },
         child: Stack(
           children: [
+            // Pastel blob background for home tab
+            PastelBackdrop(),
             CustomScrollView(
               slivers: [
                 // Top Header with Stitch Live Availability Strip, Address, Brand & EN/HI Switcher
           SliverToBoxAdapter(
             child: Container(
-              decoration: const BoxDecoration(
-                color: QColors.cleanWhite,
+              decoration: BoxDecoration(
+                color: QSevaColors.of(context).surface,
                 border: Border(
-                  bottom: BorderSide(color: QColors.borderSubtle),
+                  bottom: BorderSide(color: QSevaColors.of(context).border),
                 ),
               ),
               child: Stack(
@@ -361,49 +379,49 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       height: 110,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: QColors.softGreenTint.withValues(alpha: 0.65),
+                        color: QSevaColors.of(context).rose.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+                    padding: EdgeInsets.fromLTRB(18, 12, 18, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Top Status Row: Live Availability Pill + Compact Active Booking Chip
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: EdgeInsets.only(bottom: 12),
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 6,
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: QColors.softGreenTint,
+                                  color: QSevaColors.of(context).pistachio,
                                   borderRadius: BorderRadius.circular(999),
                                   border: Border.all(
-                                    color: QColors.softGreenBorder,
+                                    color: QSevaColors.of(context).border,
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const LiveStatusDot(
-                                      color: QColors.primaryGreen,
+                                    LiveStatusDot(
+                                      color: QSevaColors.of(context).accentStart,
                                       size: 7,
                                     ),
-                                    const SizedBox(width: 5),
-                                    const Icon(
+                                    SizedBox(width: 5),
+                                    Icon(
                                       Icons.bolt_rounded,
                                       size: 13,
-                                      color: QColors.primaryGreenDark,
+                                      color: QSevaColors.of(context).accentEnd,
                                     ),
-                                    const SizedBox(width: 2),
+                                    SizedBox(width: 2),
                                     Flexible(
                                       child: Text(
                                         context.trPair(
@@ -412,10 +430,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 10.5,
                                           fontWeight: FontWeight.w800,
-                                          color: QColors.primaryGreenDark,
+                                          color: QSevaColors.of(context).accentEnd,
                                           letterSpacing: 0.1,
                                         ),
                                       ),
@@ -435,23 +453,23 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     );
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                       horizontal: 10,
                                       vertical: 5,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: QColors.deepSlate,
+                                      color: QSevaColors.of(context).ink,
                                       borderRadius: BorderRadius.circular(999),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.two_wheeler_rounded,
                                           size: 13,
-                                          color: Color(0xFFFDE68A),
+                                          color: QSevaColors.of(context).highlight,
                                         ),
-                                        const SizedBox(width: 5),
+                                        SizedBox(width: 5),
                                         Flexible(
                                           child: Text(
                                             context.trPair(
@@ -460,7 +478,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                             ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 10.5,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
@@ -479,18 +497,18 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(9),
+                              padding: EdgeInsets.all(9),
                               decoration: BoxDecoration(
-                                color: QColors.softGreenTint,
+                                color: QSevaColors.of(context).pistachio,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.location_on_rounded,
-                                color: QColors.primaryGreen,
+                                color: QSevaColors.of(context).accentStart,
                                 size: 20,
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -502,17 +520,17 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                           '${BrandConfig.name(context.lang)} • ${context.tr(BrandConfig.defaultAddressLabel)}',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 13.5,
                                             fontWeight: FontWeight.w800,
-                                            color: QColors.inkDark,
+                                            color: QSevaColors.of(context).ink,
                                           ),
                                         ),
                                       ),
-                                      const Icon(
+                                      Icon(
                                         Icons.keyboard_arrow_down_rounded,
                                         size: 18,
-                                        color: QColors.inkDark,
+                                        color: QSevaColors.of(context).ink,
                                       ),
                                     ],
                                   ),
@@ -520,18 +538,18 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     context.tr(BrandConfig.defaultAddressLine),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: QColors.inkMuted,
+                                      color: QSevaColors.of(context).inkMuted,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const LanguageTogglePill(),
+                            LanguageTogglePill(),
                           ],
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
 
                         // Search Bar with Animated Rotating Placeholder & Voice Mic Pill
                         Stack(
@@ -542,38 +560,38 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   setState(() => _searchQuery = v),
                               decoration: InputDecoration(
                                 hintText: '',
-                                prefixIcon: const Icon(
+                                prefixIcon: Icon(
                                   Icons.search_rounded,
-                                  color: QColors.primaryGreen,
+                                  color: QSevaColors.of(context).accentStart,
                                 ),
                                 suffixIcon: Container(
-                                  margin: const EdgeInsets.all(6),
+                                  margin: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: QColors.softGreenTint,
+                                    color: QSevaColors.of(context).pistachio,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.mic_none_rounded,
                                     size: 18,
-                                    color: QColors.primaryGreen,
+                                    color: QSevaColors.of(context).accentStart,
                                   ),
                                 ),
                                 filled: true,
-                                fillColor: QColors.warmIvoryBg,
-                                contentPadding: const EdgeInsets.symmetric(
+                                fillColor: QSevaColors.of(context).base,
+                                contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16,
                                   vertical: 12,
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: QColors.borderSubtle,
+                                  borderSide: BorderSide(
+                                    color: QSevaColors.of(context).border,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: QColors.primaryGreen,
+                                  borderSide: BorderSide(
+                                    color: QSevaColors.of(context).accentStart,
                                     width: 1.5,
                                   ),
                                 ),
@@ -604,14 +622,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                             '"Salon & facial at home"',
                                             '"Electrician & MCB fix"',
                                           ],
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13,
-                                      color: QColors.inkLight,
+                                      color: QSevaColors.of(context).inkMuted,
                                       fontWeight: FontWeight.w500,
                                     ),
-                                    highlightStyle: const TextStyle(
+                                    highlightStyle: TextStyle(
                                       fontSize: 13,
-                                      color: QColors.inkMuted,
+                                      color: QSevaColors.of(context).inkMuted,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -631,19 +649,21 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // AUTO-ADVANCING PROMO CAROUSEL (TURBO + SUPER SAVER + ESCROW)
           // =================================================================
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 14, bottom: 4),
+            child: StaggeredEntrance(
+              index: 0,
+              child: Padding(
+              padding: EdgeInsets.only(top: 14, bottom: 4),
               child: PromoCarousel(
                 height: 174,
                 slides: [
                   // Slide 1: Turbo 14-Min Express Hero
                   LayeredShapeCard(
-                    backgroundColor: QColors.deepSlate,
-                    primaryShapeColor: QColors.deepSlateSurface,
-                    secondaryShapeColor: QColors.karmicOrange,
+                    backgroundColor: QSevaColors.of(context).ink,
+                    primaryShapeColor: QSevaColors.of(context).ink,
+                    secondaryShapeColor: QSevaColors.of(context).warning,
                     borderRadius: 20,
-                    padding: const EdgeInsets.all(16),
-                    boxShadow: QTheme.darkSlateShadow,
+                    padding: EdgeInsets.all(16),
+                    boxShadow: QSevaColors.of(context).e3,
                     onTap: () => _openService(
                       houseHelpService,
                       heroTag: 'turbo-hero-${houseHelpService.id}',
@@ -658,23 +678,23 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 9,
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: QColors.karmicOrange,
+                                color: QSevaColors.of(context).warning,
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.bolt_rounded,
                                     size: 12,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(width: 3),
+                                  SizedBox(width: 3),
                                   Flexible(
                                     child: Text(
                                       context.trPair(
@@ -683,7 +703,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w900,
                                         color: Colors.white,
@@ -695,7 +715,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 9,
                                 vertical: 4,
                               ),
@@ -710,7 +730,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -734,7 +754,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18.5,
                                       fontWeight: FontWeight.w900,
                                       color: Colors.white,
@@ -742,7 +762,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                       letterSpacing: -0.4,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     context.trPair(
                                       'Instant House Help, Plumber, Electrician & AC Pros.',
@@ -759,14 +779,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 9,
                               ),
                               decoration: BoxDecoration(
-                                color: QColors.primaryGreen,
+                                color: QSevaColors.of(context).accentStart,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -774,7 +794,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   'From ₹49 →',
                                   '₹49 से →',
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
@@ -789,35 +809,35 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
                   // Slide 2: Super Saver 3-Visits Pack
                   LayeredShapeCard(
-                    backgroundColor: QColors.primaryGreenDark,
-                    primaryShapeColor: QColors.primaryGreen,
-                    secondaryShapeColor: QColors.amberGold,
+                    backgroundColor: QSevaColors.of(context).accentEnd,
+                    primaryShapeColor: QSevaColors.of(context).accentStart,
+                    secondaryShapeColor: QSevaColors.of(context).warning,
                     borderRadius: 20,
-                    padding: const EdgeInsets.all(16),
-                    boxShadow: QTheme.elevatedShadow,
+                    padding: EdgeInsets.all(16),
+                    boxShadow: QSevaColors.of(context).e2,
                     onTap: () => _openService(houseHelpService),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 9,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: QColors.amberGold,
+                            color: QSevaColors.of(context).warning,
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.local_offer_rounded,
                                 size: 11,
                                 color: Colors.white,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Flexible(
                                 child: Text(
                                   context.trPair(
@@ -826,7 +846,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w900,
                                     color: Colors.white,
@@ -851,14 +871,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18.5,
                                       fontWeight: FontWeight.w900,
-                                      color: Color(0xFFFDE68A),
+                                      color: QSevaColors.of(context).highlight,
                                       letterSpacing: -0.4,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     context.trPair(
                                       'Valid 30 days • Sweeping, mopping, dishes & bathroom.',
@@ -875,9 +895,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 9,
                               ),
@@ -887,10 +907,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                               ),
                               child: Text(
                                 context.trPair('Claim →', 'लें →'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w900,
-                                  color: QColors.primaryGreenDark,
+                                  color: QSevaColors.of(context).accentEnd,
                                 ),
                               ),
                             ),
@@ -902,12 +922,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
                   // Slide 3: QuickSeva Escrow & Safety Shield
                   LayeredShapeCard(
-                    backgroundColor: QColors.deepSlateSurface,
-                    primaryShapeColor: QColors.deepSlate,
-                    secondaryShapeColor: QColors.trustBlue,
+                    backgroundColor: QSevaColors.of(context).ink,
+                    primaryShapeColor: QSevaColors.of(context).ink,
+                    secondaryShapeColor: QSevaColors.of(context).highlight,
                     borderRadius: 20,
-                    padding: const EdgeInsets.all(16),
-                    boxShadow: QTheme.darkSlateShadow,
+                    padding: EdgeInsets.all(16),
+                    boxShadow: QSevaColors.of(context).e3,
                     onTap: () => _openSubCategoryRateCardSheet(
                       initialCategoryId: 'cat_repairs',
                     ),
@@ -916,23 +936,23 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 9,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: QColors.trustBlue,
+                            color: QSevaColors.of(context).highlight,
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.verified_user_rounded,
                                 size: 12,
                                 color: Colors.white,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Flexible(
                                 child: Text(
                                   context.trPair(
@@ -941,7 +961,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w900,
                                     color: Colors.white,
@@ -966,14 +986,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w900,
                                       color: Colors.white,
                                       letterSpacing: -0.4,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     context.trPair(
                                       'Police-verified pros • Fixed spare-parts tariff card.',
@@ -990,19 +1010,19 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 9,
                               ),
                               decoration: BoxDecoration(
-                                color: QColors.trustBlue,
+                                color: QSevaColors.of(context).highlight,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 context.trPair('Tariff →', 'रेट कार्ड →'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
@@ -1017,6 +1037,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ],
               ),
             ),
+            ),
           ),
 
           // =================================================================
@@ -1025,12 +1046,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(18, 14, 18, 8),
+              margin: EdgeInsets.fromLTRB(18, 14, 18, 8),
               decoration: BoxDecoration(
-                color: QColors.cleanWhite,
+                color: QSevaColors.of(context).surface,
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: QColors.borderSubtle),
-                boxShadow: QTheme.softShadow,
+                border: Border.all(color: QSevaColors.of(context).border),
+                boxShadow: QSevaColors.of(context).e1,
               ),
               clipBehavior: Clip.antiAlias,
               child: Stack(
@@ -1044,7 +1065,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       height: 128,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: QColors.softGreenTint.withValues(alpha: 0.7),
+                        color: QSevaColors.of(context).rose.withValues(alpha: 0.55),
                       ),
                     ),
                   ),
@@ -1056,12 +1077,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       height: 72,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: QColors.warmIvorySurface.withValues(alpha: 0.7),
+                        color: QSevaColors.of(context).surfaceSunken.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(18),
+                    padding: EdgeInsets.all(18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1074,10 +1095,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   'House help by ${BrandConfig.brandName},\ncleaning & more',
                                   '${BrandConfig.brandNameHindi} द्वारा हाउस हेल्प,\nसफाई और बहुत कुछ',
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w900,
-                                  color: QColors.inkDark,
+                                  color: QSevaColors.of(context).ink,
                                   height: 1.18,
                                   letterSpacing: -0.5,
                                 ),
@@ -1085,20 +1106,20 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             ),
                             TextButton.icon(
                               onPressed: () => _openService(houseHelpService),
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.open_in_full_rounded,
                                 size: 15,
                               ),
                               label: Text(
                                 context.trPair('Full View', 'पूरा देखें'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
 
                         // "⚡ In 14 mins" vs "Later" Toggle
                         InstantLaterSegmentedControl(
@@ -1115,7 +1136,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             }
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         // Horizontal Package Cards (45 mins ₹49, 1 hour ₹59, 1.5 hours ₹89 Bestseller)
                         SizedBox(
@@ -1124,7 +1145,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             scrollDirection: Axis.horizontal,
                             itemCount: houseHelpService.packages.length,
                             separatorBuilder: (_, _) =>
-                                const SizedBox(width: 12),
+                                SizedBox(width: 12),
                             itemBuilder: (context, idx) {
                               final tier = houseHelpService.packages[idx];
                               return PackageDurationCard(
@@ -1146,7 +1167,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 18),
+                        SizedBox(height: 18),
 
                         // Super Saver Pack Banner ("3-visits pack at ₹225 -> ₹33/visit")
                         if (houseHelpService.superSaverPack != null)
@@ -1154,7 +1175,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             pack: houseHelpService.superSaverPack!,
                             onBookTap: () => _openService(houseHelpService),
                           ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         // "One help who can do it all" strip
                         Row(
@@ -1167,22 +1188,22 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
-                                  color: QColors.inkDark,
+                                  color: QSevaColors.of(context).ink,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             GestureDetector(
                               onTap: () => _openService(houseHelpService),
                               child: Text(
                                 context.trPair('See all →', 'सभी देखें →'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w700,
-                                  color: QColors.primaryGreen,
+                                  color: QSevaColors.of(context).accentStart,
                                 ),
                               ),
                             ),
@@ -1201,7 +1222,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 4),
+              padding: EdgeInsets.fromLTRB(18, 12, 18, 4),
               child: _buildStitchEssentialBentoGrid(context),
             ),
           ),
@@ -1211,7 +1232,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
+              padding: EdgeInsets.fromLTRB(18, 16, 18, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1225,10 +1246,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 19,
                             fontWeight: FontWeight.w900,
-                            color: QColors.inkDark,
+                            color: QSevaColors.of(context).ink,
                             letterSpacing: -0.4,
                           ),
                         ),
@@ -1243,13 +1264,13 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SizedBox(
                     height: 108,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: CatalogData.categories.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 10),
+                      separatorBuilder: (_, _) => SizedBox(width: 10),
                       itemBuilder: (context, idx) {
                         final cat = CatalogData.categories[idx];
                         final isSelected = _selectedCategoryId == cat.id;
@@ -1261,19 +1282,19 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             });
                           },
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
+                            duration: Duration(milliseconds: 200),
                             curve: Curves.easeOutCubic,
                             width: 106,
-                            padding: const EdgeInsets.all(10),
+                            padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? QColors.softGreenTint
-                                  : QColors.cleanWhite,
+                                  ? QSevaColors.of(context).pistachio
+                                  : QSevaColors.of(context).surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: isSelected
-                                    ? QColors.primaryGreen
-                                    : QColors.borderSubtle,
+                                    ? QSevaColors.of(context).accentStart
+                                    : QSevaColors.of(context).border,
                                 width: isSelected ? 1.8 : 1.0,
                               ),
                             ),
@@ -1284,11 +1305,11 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   clipBehavior: Clip.none,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.all(9),
+                                      padding: EdgeInsets.all(9),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? QColors.primaryGreen
-                                            : QColors.warmIvorySurface,
+                                            ? QSevaColors.of(context).accentStart
+                                            : QSevaColors.of(context).supportColor(idx),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
@@ -1296,7 +1317,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                         size: 22,
                                         color: isSelected
                                             ? Colors.white
-                                            : QColors.primaryGreen,
+                                            : QSevaColors.of(context).accentStart,
                                       ),
                                     ),
                                     if (cat.badgeText != null)
@@ -1304,18 +1325,18 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                         top: -6,
                                         right: -18,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
+                                          padding: EdgeInsets.symmetric(
                                             horizontal: 5,
                                             vertical: 1.5,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: QColors.primaryGreen,
+                                            color: QSevaColors.of(context).accentStart,
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
                                           child: Text(
                                             context.tr(cat.badgeText!),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 8.5,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
@@ -1325,7 +1346,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                       ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Text(
                                   context.tr(cat.name),
                                   textAlign: TextAlign.center,
@@ -1336,7 +1357,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     fontWeight: isSelected
                                         ? FontWeight.w800
                                         : FontWeight.w700,
-                                    color: QColors.inkDark,
+                                    color: QSevaColors.of(context).ink,
                                     height: 1.15,
                                   ),
                                 ),
@@ -1357,7 +1378,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 10),
+              padding: EdgeInsets.fromLTRB(18, 12, 18, 10),
               child: _buildMasonrySection(context),
             ),
           ),
@@ -1367,7 +1388,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+              padding: EdgeInsets.fromLTRB(18, 8, 18, 8),
               child: _buildEscrowShieldCard(context),
             ),
           ),
@@ -1377,16 +1398,16 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           // =================================================================
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
+              padding: EdgeInsets.fromLTRB(18, 16, 18, 10),
               child: Text(
                 context.trPair(
                   'All Services & Express Packages (${filteredServices.length})',
                   'सभी सेवाएं और पैकेज (${filteredServices.length})',
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: QSevaColors.of(context).ink,
                   letterSpacing: -0.4,
                 ),
               ),
@@ -1395,10 +1416,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
           SliverPadding(
             // Extra bottom padding so the floating cart bar never covers the last card
-            padding: const EdgeInsets.fromLTRB(18, 0, 18, 96),
+            padding: EdgeInsets.fromLTRB(18, 0, 18, 96),
             sliver: SliverList.separated(
               itemCount: filteredServices.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final s = filteredServices[index];
                 final heroTag = 'list-svc-${s.id}';
@@ -1424,30 +1445,30 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         right: 16,
         child: IgnorePointer(
           child: AnimatedSlide(
-            duration: const Duration(milliseconds: 220),
+            duration: Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-            offset: _homeScrolledCompact ? Offset.zero : const Offset(0, -1.5),
+            offset: _homeScrolledCompact ? Offset.zero : Offset(0, -1.5),
             child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
+              duration: Duration(milliseconds: 200),
               opacity: _homeScrolledCompact ? 1.0 : 0.0,
               child: LayeredShapeCard(
-                backgroundColor: QColors.deepSlate,
-                primaryShapeColor: QColors.deepSlateSurface,
-                secondaryShapeColor: QColors.primaryGreen,
+                backgroundColor: QSevaColors.of(context).ink,
+                primaryShapeColor: QSevaColors.of(context).ink,
+                secondaryShapeColor: QSevaColors.of(context).accentStart,
                 borderRadius: 999,
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 8,
                 ),
-                boxShadow: QTheme.darkSlateShadow,
+                boxShadow: QSevaColors.of(context).e3,
                 child: Row(
                   children: [
-                    const DispatchClockGraphic(
+                    DispatchClockGraphic(
                       size: 16,
-                      color: QColors.vibrantMint,
+                      color: QSevaColors.of(context).highlight,
                       active: true,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         context.trPair(
@@ -1456,7 +1477,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -1464,17 +1485,17 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: QColors.primaryGreen,
+                        color: QSevaColors.of(context).accentStart,
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
                         context.trPair('Fixed Rate', 'फिक्स रेट'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
@@ -1502,46 +1523,46 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
       (
         serviceId: 'svc_plumber_repair',
         categoryId: 'cat_repairs',
-        title: const Tr('Plumber', 'प्लम्बर'),
+        title: Tr('Plumber', 'प्लम्बर'),
         subtitle:
-            const Tr('प्लम्बर • Tap, Pipe, Flush', 'नल, पाइप और फ्लश रिपेयर'),
-        badge: const Tr('Fast 14m', 'तेज़ 14m'),
+            Tr('प्लम्बर • Tap, Pipe, Flush', 'नल, पाइप और फ्लश रिपेयर'),
+        badge: Tr('Fast 14m', 'तेज़ 14m'),
         icon: Icons.plumbing_rounded,
-        iconBg: QColors.trustBlueSoft,
-        iconColor: QColors.trustBlue,
+        iconBg: QSevaColors.of(context).sky,
+        iconColor: QSevaColors.of(context).highlight,
       ),
       (
         serviceId: 'svc_electrician_repair',
         categoryId: 'cat_repairs',
-        title: const Tr('Electrician', 'इलेक्ट्रीशियन'),
+        title: Tr('Electrician', 'इलेक्ट्रीशियन'),
         subtitle:
-            const Tr('इलेक्ट्रीशियन • Fan, MCB, Wiring', 'पंखा, MCB, वायरिंग'),
-        badge: const Tr('Top Pick', 'टॉप पिक'),
+            Tr('इलेक्ट्रीशियन • Fan, MCB, Wiring', 'पंखा, MCB, वायरिंग'),
+        badge: Tr('Top Pick', 'टॉप पिक'),
         icon: Icons.electrical_services_rounded,
-        iconBg: QColors.amberSoftBg,
-        iconColor: QColors.amberGold,
+        iconBg: QSevaColors.of(context).peachTint,
+        iconColor: QSevaColors.of(context).warning,
       ),
       (
         serviceId: 'svc_ac_foam_jet',
         categoryId: 'cat_ac_appliance',
-        title: const Tr('AC & Appliance', 'AC और उपकरण'),
+        title: Tr('AC & Appliance', 'AC और उपकरण'),
         subtitle:
-            const Tr('एसी रिपेयर • Foam-Jet, Gas', 'फोम-जेट सर्विस, कूलिंग'),
-        badge: const Tr('30-day War.', '30-दिन वारंटी'),
+            Tr('एसी रिपेयर • Foam-Jet, Gas', 'फोम-जेट सर्विस, कूलिंग'),
+        badge: Tr('30-day War.', '30-दिन वारंटी'),
         icon: Icons.ac_unit_rounded,
-        iconBg: QColors.softGreenTint,
-        iconColor: QColors.primaryGreen,
+        iconBg: QSevaColors.of(context).pistachio,
+        iconColor: QSevaColors.of(context).accentStart,
       ),
       (
         serviceId: 'svc_carpenter_work',
         categoryId: 'cat_repairs',
-        title: const Tr('Carpenter', 'बढ़ई (कारपेंटर)'),
+        title: Tr('Carpenter', 'बढ़ई (कारपेंटर)'),
         subtitle:
-            const Tr('बढ़ई • Locks, Door & Wood', 'ताला, दरवाज़ा और फर्नीचर'),
-        badge: const Tr('Fixed Rate', 'फिक्स रेट'),
+            Tr('बढ़ई • Locks, Door & Wood', 'ताला, दरवाज़ा और फर्नीचर'),
+        badge: Tr('Fixed Rate', 'फिक्स रेट'),
         icon: Icons.handyman_rounded,
-        iconBg: QColors.karmicOrangeSoft,
-        iconColor: QColors.karmicOrange,
+        iconBg: QSevaColors.of(context).peachTint,
+        iconColor: QSevaColors.of(context).warning,
       ),
     ];
 
@@ -1558,38 +1579,38 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: QSevaColors.of(context).ink,
                   letterSpacing: -0.4,
                 ),
               ),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             PressableScale(
-              key: const ValueKey('open-rate-card-sheet'),
+              key: ValueKey('open-rate-card-sheet'),
               onTap: () => _openSubCategoryRateCardSheet(
                 initialCategoryId: 'cat_repairs',
               ),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                 decoration: BoxDecoration(
-                  color: QColors.deepSlate,
+                  color: QSevaColors.of(context).ink,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.receipt_long_rounded,
                       size: 13,
                       color: Colors.white,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       context.trPair('Rate Card +', 'रेट कार्ड +'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -1601,7 +1622,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -1615,7 +1636,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: _EssentialBentoTile(
                 data: essentials[1],
@@ -1629,7 +1650,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -1643,7 +1664,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: _EssentialBentoTile(
                 data: essentials[3],
@@ -1666,31 +1687,31 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   // ===========================================================================
   Widget _buildEscrowShieldCard(BuildContext context) {
     return LayeredShapeCard(
-      backgroundColor: QColors.cleanWhite,
-      primaryShapeColor: QColors.softGreenTint,
-      secondaryShapeColor: QColors.primaryGreen,
+      backgroundColor: QSevaColors.of(context).surface,
+      primaryShapeColor: QSevaColors.of(context).pistachio,
+      secondaryShapeColor: QSevaColors.of(context).accentStart,
       borderRadius: 18,
-      padding: const EdgeInsets.all(16),
-      border: Border.all(color: QColors.softGreenBorder, width: 1.2),
-      boxShadow: QTheme.softShadow,
+      padding: EdgeInsets.all(16),
+      border: Border.all(color: QSevaColors.of(context).border, width: 1.2),
+      boxShadow: QSevaColors.of(context).e1,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: QColors.primaryGreen,
+                  color: QSevaColors.of(context).accentStart,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.verified_user_rounded,
                   color: Colors.white,
                   size: 18,
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1702,10 +1723,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: QColors.inkDark,
+                        color: QSevaColors.of(context).ink,
                       ),
                     ),
                     Text(
@@ -1715,9 +1736,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
-                        color: QColors.inkMuted,
+                        color: QSevaColors.of(context).inkMuted,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1726,7 +1747,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           QMarquee(
             height: 30,
             pixelsPerSecond: 24,
@@ -1779,26 +1800,23 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
       children: [
         Text(
           context.trPair('Discover', 'डिस्कवर'),
-          style: const TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-            color: QColors.inkDark,
-            letterSpacing: -0.6,
+          style: QText.displayM.copyWith(
+            color: QSevaColors.of(context).ink,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           context.trPair(
             'Choose from services for you and your home',
             'अपने और अपने घर के लिए बेहतरीन सेवाएं चुनें',
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14.5,
-            color: QColors.inkMuted,
+            color: QSevaColors.of(context).inkMuted,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1809,7 +1827,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                   final card = leftCards[i];
                   final heroTag = '$prefix-masonry-${card.id}';
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    padding: EdgeInsets.only(bottom: 14),
                     child: ScrollDepthCard(
                       index: i * 2,
                       child: MasonryDiscoveryCard(
@@ -1826,17 +1844,17 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 }),
               ),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             // Right Column (staggered top offset like UC Screenshot #2!)
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(top: 26),
+                padding: EdgeInsets.only(top: 26),
                 child: Column(
                   children: List.generate(rightCards.length, (i) {
                     final card = rightCards[i];
                     final heroTag = '$prefix-masonry-${card.id}';
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
+                      padding: EdgeInsets.only(bottom: 14),
                       child: ScrollDepthCard(
                         index: (i * 2) + 1,
                         child: MasonryDiscoveryCard(
@@ -1866,9 +1884,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   Widget _buildDiscoverMasonryTab(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.all(18),
+        padding: EdgeInsets.all(18),
         children: [
-          const Align(
+          Align(
             alignment: Alignment.centerRight,
             child: LanguageTogglePill(),
           ),
@@ -1884,7 +1902,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   Widget _buildBookingsTab(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.all(18),
+        padding: EdgeInsets.all(18),
         children: [
           Row(
             children: [
@@ -1893,28 +1911,26 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                   context.trPair('My Bookings', 'मेरी बुकिंग्स'),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: QColors.inkDark,
+                  style: QText.titleL.copyWith(
+                    color: QSevaColors.of(context).ink,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              const LanguageTogglePill(),
+              SizedBox(width: 8),
+              LanguageTogglePill(),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ..._bookings.map((b) {
             return LayeredShapeCard(
-              margin: const EdgeInsets.only(bottom: 14),
-              padding: const EdgeInsets.all(16),
-              backgroundColor: QColors.cleanWhite,
-              primaryShapeColor: QColors.softGreenTint,
-              secondaryShapeColor: QColors.primaryGreen,
+              margin: EdgeInsets.only(bottom: 14),
+              padding: EdgeInsets.all(16),
+              backgroundColor: QSevaColors.of(context).surface,
+              primaryShapeColor: QSevaColors.of(context).pistachio,
+              secondaryShapeColor: QSevaColors.of(context).accentStart,
               borderRadius: 16,
-              border: Border.all(color: QColors.borderSubtle),
-              boxShadow: QTheme.softShadow,
+              border: Border.all(color: QSevaColors.of(context).border),
+              boxShadow: QSevaColors.of(context).e1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1922,55 +1938,55 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                     children: [
                       Flexible(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 9,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: QColors.softGreenTint,
+                            color: QSevaColors.of(context).pistachio,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             '#${b.id} • ${b.status.name.toUpperCase()}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
-                              color: QColors.primaryGreen,
+                              color: QSevaColors.of(context).accentStart,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         '${BrandConfig.currency}${b.totalAmountRupees}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w900,
-                          color: QColors.inkDark,
+                          color: QSevaColors.of(context).ink,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Text(
                     context.tr(b.service.name),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: QColors.inkDark,
+                      color: QSevaColors.of(context).ink,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${context.tr(b.selectedPackage.title)} • ${b.scheduleLabel}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: QColors.inkMuted,
+                      color: QSevaColors.of(context).inkMuted,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -1982,7 +1998,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 12,
                         ),
@@ -1990,11 +2006,11 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_searching_rounded,
                             size: 17,
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Flexible(
                             child: Text(
                               context.trPair(
@@ -2045,13 +2061,13 @@ class _EssentialBentoTile extends StatelessWidget {
       index: data.serviceId.hashCode.abs() % 4,
       parallaxStrength: 2.5,
       child: LayeredShapeCard(
-        backgroundColor: QColors.cleanWhite,
+        backgroundColor: QSevaColors.of(context).surface,
         primaryShapeColor: data.iconBg.withValues(alpha: 0.72),
         secondaryShapeColor: data.iconColor,
         borderRadius: 18,
-        padding: const EdgeInsets.all(13),
-        border: Border.all(color: QColors.borderSubtle),
-        boxShadow: QTheme.softShadow,
+        padding: EdgeInsets.all(13),
+        border: Border.all(color: QSevaColors.of(context).border),
+        boxShadow: QSevaColors.of(context).e1,
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2060,7 +2076,7 @@ class _EssentialBentoTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(9),
+                  padding: EdgeInsets.all(9),
                   decoration: BoxDecoration(
                     color: data.iconBg,
                     borderRadius: BorderRadius.circular(12),
@@ -2071,27 +2087,27 @@ class _EssentialBentoTile extends StatelessWidget {
                     color: data.iconColor,
                   ),
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Flexible(
                   child: GestureDetector(
                     onTap: onQuickRateTap,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 7,
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: QColors.warmIvorySurface,
+                        color: QSevaColors.of(context).surfaceSunken,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         context.tr(data.badge),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w800,
-                          color: QColors.inkDark,
+                          color: QSevaColors.of(context).ink,
                         ),
                       ),
                     ),
@@ -2099,26 +2115,26 @@ class _EssentialBentoTile extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
               context.tr(data.title),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w900,
-                color: QColors.inkDark,
+                color: QSevaColors.of(context).ink,
                 letterSpacing: -0.2,
               ),
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Text(
               context.tr(data.subtitle),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: QColors.inkMuted,
+                color: QSevaColors.of(context).inkMuted,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -2138,26 +2154,26 @@ class _TrustPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: QColors.warmIvoryBg,
+        color: QSevaColors.of(context).base,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: QColors.borderSubtle),
+        border: Border.all(color: QSevaColors.of(context).border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: QColors.primaryGreen),
-          const SizedBox(width: 5),
+          Icon(icon, size: 13, color: QSevaColors.of(context).accentStart),
+          SizedBox(width: 5),
           Flexible(
             child: Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
-                color: QColors.inkBody,
+                color: QSevaColors.of(context).inkSecondary,
               ),
             ),
           ),
@@ -2186,10 +2202,10 @@ class _ServiceListRowCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: QColors.cleanWhite,
+          color: QSevaColors.of(context).surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: QColors.borderSubtle),
-          boxShadow: QTheme.softShadow,
+          border: Border.all(color: QSevaColors.of(context).border),
+          boxShadow: QSevaColors.of(context).e1,
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -2202,12 +2218,12 @@ class _ServiceListRowCard extends StatelessWidget {
                 height: 72,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: QColors.softGreenTint.withValues(alpha: 0.6),
+                  color: QSevaColors.of(context).pistachio.withValues(alpha: 0.6),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -2220,40 +2236,40 @@ class _ServiceListRowCard extends StatelessWidget {
                       radius: 12,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (service.supportsInstant)
                           Container(
-                            margin: const EdgeInsets.only(bottom: 5),
-                            padding: const EdgeInsets.symmetric(
+                            margin: EdgeInsets.only(bottom: 5),
+                            padding: EdgeInsets.symmetric(
                               horizontal: 7,
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: QColors.softGreenTint,
+                              color: QSevaColors.of(context).pistachio,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.bolt_rounded,
                                   size: 12,
-                                  color: QColors.primaryGreen,
+                                  color: QSevaColors.of(context).accentStart,
                                 ),
-                                const SizedBox(width: 2),
+                                SizedBox(width: 2),
                                 Text(
                                   context.trPair(
                                     'In ${service.instantEtaMinutes} mins',
                                     '${service.instantEtaMinutes} मिनट में',
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10.5,
                                     fontWeight: FontWeight.w800,
-                                    color: QColors.primaryGreen,
+                                    color: QSevaColors.of(context).accentStart,
                                   ),
                                 ),
                               ],
@@ -2261,23 +2277,23 @@ class _ServiceListRowCard extends StatelessWidget {
                           ),
                         Text(
                           context.tr(service.name),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15.5,
                             fontWeight: FontWeight.w800,
-                            color: QColors.inkDark,
+                            color: QSevaColors.of(context).ink,
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        SizedBox(height: 3),
                         Text(
                           context.tr(service.tagline),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: QColors.inkMuted,
+                            color: QSevaColors.of(context).inkMuted,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
@@ -2287,31 +2303,31 @@ class _ServiceListRowCard extends StatelessWidget {
                                 children: [
                                   Text(
                                     '${BrandConfig.currency}${service.startingPriceRupees}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w900,
-                                      color: QColors.inkDark,
+                                      color: QSevaColors.of(context).ink,
                                     ),
                                   ),
                                   Text(
                                     '${BrandConfig.currency}${service.originalStartingPriceRupees}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: QColors.inkLight,
+                                      color: QSevaColors.of(context).inkMuted,
                                       decoration: TextDecoration.lineThrough,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             SizedBox(
                               height: 34,
                               child: OutlinedButton(
                                 onPressed: onTap,
                                 style: OutlinedButton.styleFrom(
-                                  backgroundColor: QColors.cleanWhite,
-                                  padding: const EdgeInsets.symmetric(
+                                  backgroundColor: QSevaColors.of(context).surface,
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 12,
                                   ),
                                 ),
@@ -2368,7 +2384,7 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
   late ServiceItem _selectedService;
   late ServicePackageTier _selectedPackage;
 
-  static const List<({Tr name, int priceRupees, Tr warranty})> _sparePartRates =
+  static final List<({Tr name, int priceRupees, Tr warranty})> _sparePartRates =
       [
     (
       name: Tr('ISI Brass Tap Spindle / Washer', 'ISI ब्रास नल स्पिंडल / वॉशर'),
@@ -2407,12 +2423,12 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.82,
         ),
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
         decoration: BoxDecoration(
-          color: QColors.warmIvoryBg,
+          color: QSevaColors.of(context).base,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: QColors.borderSubtle, width: 1.5),
-          boxShadow: QTheme.darkSlateShadow,
+          border: Border.all(color: QSevaColors.of(context).border, width: 1.5),
+          boxShadow: QSevaColors.of(context).e3,
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -2420,23 +2436,23 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
           children: [
             // Layered Deep Slate Header
             LayeredShapeCard(
-              backgroundColor: QColors.deepSlate,
-              primaryShapeColor: QColors.deepSlateSurface,
-              secondaryShapeColor: QColors.primaryGreen,
+              backgroundColor: QSevaColors.of(context).ink,
+              primaryShapeColor: QSevaColors.of(context).ink,
+              secondaryShapeColor: QSevaColors.of(context).accentStart,
               borderRadius: 0,
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+              padding: EdgeInsets.fromLTRB(18, 16, 18, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: QColors.karmicOrange,
+                          color: QSevaColors.of(context).warning,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -2444,18 +2460,18 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                             'FIXED RATE CARD',
                             'फिक्स रेट कार्ड',
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      const Spacer(),
+                      Spacer(),
                       IconButton(
                         visualDensity: VisualDensity.compact,
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close_rounded,
                           color: Colors.white,
                         ),
@@ -2467,13 +2483,13 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                       'Quick Add Sub-Services & Standard Tariff',
                       'सब-सर्विसेज और फिक्स रेट कार्ड',
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     context.trPair(
                       'Select any package directly into your cart with zero hidden charges.',
@@ -2491,25 +2507,25 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
             // Category Filter Chips
             Container(
               height: 50,
-              color: QColors.cleanWhite,
+              color: QSevaColors.of(context).surface,
               child: ListView.separated(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 scrollDirection: Axis.horizontal,
                 itemCount: CatalogData.categories.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => SizedBox(width: 8),
                 itemBuilder: (context, idx) {
                   final cat = CatalogData.categories[idx];
                   final active = _activeCatId == cat.id;
                   return ChoiceChip(
                     label: Text(context.tr(cat.name)),
                     selected: active,
-                    selectedColor: QColors.softGreenTint,
-                    backgroundColor: QColors.warmIvoryBg,
+                    selectedColor: QSevaColors.of(context).pistachio,
+                    backgroundColor: QSevaColors.of(context).base,
                     labelStyle: TextStyle(
                       fontSize: 12,
                       fontWeight: active ? FontWeight.w800 : FontWeight.w600,
-                      color: active ? QColors.primaryGreen : QColors.inkBody,
+                      color: active ? QSevaColors.of(context).accentStart : QSevaColors.of(context).inkSecondary,
                     ),
                     onSelected: (_) => setState(() => _activeCatId = cat.id),
                   );
@@ -2521,16 +2537,16 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
             Flexible(
               child: ListView(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 children: [
                   ...servicesInCat.map((svc) {
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(14),
+                      margin: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: QColors.cleanWhite,
+                        color: QSevaColors.of(context).surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: QColors.borderSubtle),
+                        border: Border.all(color: QSevaColors.of(context).border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2540,10 +2556,10 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                               Expanded(
                                 child: Text(
                                   context.tr(svc.name),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w900,
-                                    color: QColors.inkDark,
+                                    color: QSevaColors.of(context).ink,
                                   ),
                                 ),
                               ),
@@ -2552,7 +2568,7 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                                     widget.onOpenFullService(svc),
                                 child: Text(
                                   context.trPair('Details →', 'विवरण →'),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -2564,7 +2580,7 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                             final isSelected = _selectedService.id == svc.id &&
                                 _selectedPackage.id == pkg.id;
                             return Padding(
-                              padding: const EdgeInsets.only(top: 8),
+                              padding: EdgeInsets.only(top: 8),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -2574,18 +2590,18 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                                       children: [
                                         Text(
                                           context.tr(pkg.title),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 13.5,
                                             fontWeight: FontWeight.w700,
-                                            color: QColors.inkBody,
+                                            color: QSevaColors.of(context).inkSecondary,
                                           ),
                                         ),
                                         Text(
                                           '${BrandConfig.currency}${pkg.priceRupees} (${pkg.discountPercent}% OFF)',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w800,
-                                            color: QColors.primaryGreen,
+                                            color: QSevaColors.of(context).accentStart,
                                           ),
                                         ),
                                       ],
@@ -2601,13 +2617,13 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                                     },
                                     style: OutlinedButton.styleFrom(
                                       backgroundColor: isSelected
-                                          ? QColors.primaryGreen
-                                          : QColors.cleanWhite,
+                                          ? QSevaColors.of(context).accentStart
+                                          : QSevaColors.of(context).surface,
                                       foregroundColor: isSelected
                                           ? Colors.white
-                                          : QColors.primaryGreen,
-                                      minimumSize: const Size(82, 34),
-                                      padding: const EdgeInsets.symmetric(
+                                          : QSevaColors.of(context).accentStart,
+                                      minimumSize: Size(82, 34),
+                                      padding: EdgeInsets.symmetric(
                                         horizontal: 12,
                                       ),
                                     ),
@@ -2615,7 +2631,7 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                                       isSelected
                                           ? context.trPair('Added ✓', 'जुड़ गया ✓')
                                           : context.trPair('Add +', 'जोड़ें +'),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w800,
                                       ),
@@ -2632,11 +2648,11 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
 
                   // Standard Spare Parts Rate Card Reference
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: QColors.cleanWhite,
+                      color: QSevaColors.of(context).surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: QColors.softGreenBorder),
+                      border: Border.all(color: QSevaColors.of(context).border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2646,35 +2662,35 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                             'Standard Spare Parts Tariff (If Needed)',
                             'मानक स्पेयर पार्ट्स रेट कार्ड (यदि आवश्यक हो)',
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w900,
-                            color: QColors.primaryGreenDark,
+                            color: QSevaColors.of(context).accentEnd,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         ..._sparePartRates.map((item) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: EdgeInsets.symmetric(vertical: 4),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
                                     '${context.tr(item.name)} (${context.tr(item.warranty)})',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: QColors.inkBody,
+                                      color: QSevaColors.of(context).inkSecondary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Text(
                                   '${BrandConfig.currency}${item.priceRupees}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12.5,
                                     fontWeight: FontWeight.w900,
-                                    color: QColors.inkDark,
+                                    color: QSevaColors.of(context).ink,
                                   ),
                                 ),
                               ],
@@ -2693,10 +2709,10 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
               triggerKey:
                   '${_selectedService.id}_${_selectedPackage.id}_${_selectedPackage.priceRupees}',
               child: Container(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-                decoration: const BoxDecoration(
-                  color: QColors.cleanWhite,
-                  border: Border(top: BorderSide(color: QColors.borderSubtle)),
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 14),
+                decoration: BoxDecoration(
+                  color: QSevaColors.of(context).surface,
+                  border: Border(top: BorderSide(color: QSevaColors.of(context).border)),
                 ),
                 child: Row(
                   children: [
@@ -2709,10 +2725,10 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                             context.tr(_selectedService.name),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: QColors.inkMuted,
+                              color: QSevaColors.of(context).inkMuted,
                             ),
                           ),
                           Row(
@@ -2722,19 +2738,19 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                                   '${context.tr(_selectedPackage.title)} • ',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14.5,
                                     fontWeight: FontWeight.w900,
-                                    color: QColors.inkDark,
+                                    color: QSevaColors.of(context).ink,
                                   ),
                                 ),
                               ),
                               RollingRupeeText(
                                 amountRupees: _selectedPackage.priceRupees,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w900,
-                                  color: QColors.primaryGreen,
+                                  color: QSevaColors.of(context).accentStart,
                                 ),
                               ),
                             ],
@@ -2742,12 +2758,12 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Flexible(
                       child: ElevatedButton(
-                        key: const ValueKey('rate-card-checkout'),
+                        key: ValueKey('rate-card-checkout'),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 12,
                           ),
@@ -2760,7 +2776,7 @@ class _SubCategoryRateCardSheetState extends State<_SubCategoryRateCardSheet> {
                           context.trPair('Book Instant →', 'तुरंत बुक →'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                           ),

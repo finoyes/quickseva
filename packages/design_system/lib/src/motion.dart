@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -1011,6 +1012,358 @@ class _QMarqueeState extends State<QMarquee>
         itemCount: items.length,
         separatorBuilder: (_, _) => SizedBox(width: widget.gap),
         itemBuilder: (_, i) => Center(child: items[i]),
+      ),
+    );
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// 9. MOTION POLICY (Peach Pop)
+// ---------------------------------------------------------------------------
+
+/// Central motion policy provider. Wraps the app to provide reduced-motion
+/// and low-end device detection from a single [InheritedWidget].
+///
+/// Usage: `MotionPolicy.shouldAnimate(context)`.
+class MotionPolicy extends InheritedWidget {
+  /// True when the OS requests reduced motion.
+  final bool isReduced;
+
+  /// True on low-end devices where blur/heavy animation should be avoided.
+  final bool isLowEnd;
+
+  const MotionPolicy({
+    super.key,
+    required this.isReduced,
+    this.isLowEnd = false,
+    required super.child,
+  });
+
+  /// Wraps the app, reading the OS reduced-motion flag automatically.
+  static Widget wrap({required Widget child}) {
+    return _MotionPolicyAuto(child: child);
+  }
+
+  static MotionPolicy? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<MotionPolicy>();
+
+  static MotionPolicy of(BuildContext context) {
+    final policy = maybeOf(context);
+    assert(policy != null, 'No MotionPolicy found in context');
+    return policy!;
+  }
+
+  /// Whether animations should play.
+  static bool shouldAnimate(BuildContext context) {
+    final policy = maybeOf(context);
+    if (policy != null) return !policy.isReduced;
+    return !QMotion.reduced(context); // fallback
+  }
+
+  /// Whether the device can handle blur/glass.
+  static bool canBlur(BuildContext context) {
+    final policy = maybeOf(context);
+    if (policy != null) return !policy.isLowEnd && !policy.isReduced;
+    return !QMotion.reduced(context);
+  }
+
+  /// Returns [d] or a 120 ms fade when reduced motion is active.
+  static Duration duration(BuildContext context, Duration d) {
+    return shouldAnimate(context) ? d : const Duration(milliseconds: 120);
+  }
+
+  @override
+  bool updateShouldNotify(MotionPolicy oldWidget) =>
+      isReduced != oldWidget.isReduced || isLowEnd != oldWidget.isLowEnd;
+}
+
+class _MotionPolicyAuto extends StatelessWidget {
+  final Widget child;
+  const _MotionPolicyAuto({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = QMotion.reduced(context);
+    // Heuristic: low-end if device pixel ratio <= 2 and short dimension < 360
+    final mq = MediaQuery.maybeOf(context);
+    final lowEnd = mq != null &&
+        mq.devicePixelRatio <= 2.0 &&
+        mq.size.shortestSide < 360;
+    return MotionPolicy(
+      isReduced: reduced,
+      isLowEnd: lowEnd,
+      child: child,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. GLASS SURFACE (Peach Pop)
+// ---------------------------------------------------------------------------
+
+/// Glassmorphism surface with automatic opaque fallback on low-end devices.
+///
+/// Uses [QGlass] tokens for blur, fill, border, and hairline.
+/// Falls back to opaque surface with border when [MotionPolicy.canBlur] is
+/// false or when no [MotionPolicy] ancestor exists and reduced motion is on.
+class GlassSurface extends StatelessWidget {
+  final Widget child;
+  final double borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final List<BoxShadow>? boxShadow;
+
+  const GlassSurface({
+    super.key,
+    required this.child,
+    this.borderRadius = QRadius.lg,
+    this.padding,
+    this.margin,
+    this.boxShadow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final glass = isDark ? QGlass.dark : QGlass.light;
+    final canBlur = MotionPolicy.canBlur(context);
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final opaqueColor = seva?.surface ?? Colors.white;
+
+    final br = BorderRadius.circular(borderRadius);
+
+    final innerChild = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: canBlur ? glass.fill : opaqueColor.withValues(alpha: 0.95),
+        borderRadius: br,
+        border: Border.all(
+          color: canBlur ? glass.border : (seva?.border ?? Colors.grey.shade300),
+          width: glass.borderWidth,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Top highlight line
+          if (canBlur)
+            Container(
+              height: 0.5,
+              margin: EdgeInsets.symmetric(horizontal: borderRadius * 0.3),
+              decoration: BoxDecoration(
+                color: glass.topHighlight,
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+          Flexible(child: child),
+        ],
+      ),
+    );
+
+    Widget result;
+    if (canBlur) {
+      result = ClipRRect(
+        borderRadius: br,
+        child: RepaintBoundary(
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(
+              sigmaX: glass.blurSigma,
+              sigmaY: glass.blurSigma,
+            ),
+            child: innerChild,
+          ),
+        ),
+      );
+    } else {
+      result = ClipRRect(borderRadius: br, child: innerChild);
+    }
+
+    if (margin != null || boxShadow != null) {
+      result = Container(
+        margin: margin,
+        decoration: BoxDecoration(
+          borderRadius: br,
+          boxShadow: boxShadow,
+        ),
+        child: result,
+      );
+    }
+
+    return result;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. PASTEL BACKDROP (Peach Pop)
+// ---------------------------------------------------------------------------
+
+/// Static pre-blurred pastel blob background.
+///
+/// Paints the four backdrop blobs from `design_tokens.json` once using a
+/// [CustomPainter] with [MaskFilter.blur]. Never uses live
+/// [BackdropFilter], so it is GPU-cheap.
+class PastelBackdrop extends StatelessWidget {
+  const PastelBackdrop({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final seva = Theme.of(context).extension<QSevaColors>();
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: RepaintBoundary(
+          child: CustomPaint(
+            painter: _PastelBlobPainter(
+              isDark: isDark,
+              rose: seva?.rose ?? const Color(0xFFFFD6E4),
+              lilac: seva?.lilac ?? const Color(0xFFE6D9FF),
+              sky: seva?.sky ?? const Color(0xFFCFE6FF),
+              peachTint: seva?.peachTint ?? const Color(0xFFFFE3D6),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PastelBlobPainter extends CustomPainter {
+  final bool isDark;
+  final Color rose;
+  final Color lilac;
+  final Color sky;
+  final Color peachTint;
+
+  const _PastelBlobPainter({
+    required this.isDark,
+    required this.rose,
+    required this.lilac,
+    required this.sky,
+    required this.peachTint,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final blobs = [
+      _Blob(rose,    0.05, 0.02, 0.55, 90, isDark ? 0.30 : 0.75),
+      _Blob(lilac,   0.95, 0.12, 0.50, 90, isDark ? 0.28 : 0.70),
+      _Blob(sky,     0.50, 0.45, 0.45, 100, isDark ? 0.22 : 0.55),
+      _Blob(peachTint, 0.15, 0.85, 0.50, 100, isDark ? 0.25 : 0.80),
+    ];
+
+    for (final b in blobs) {
+      final center = Offset(size.width * b.x, size.height * b.y);
+      final radius = size.width * b.radiusFrac;
+      final paint = Paint()
+        ..color = b.color.withValues(alpha: b.opacity)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, b.blurPx);
+      canvas.drawCircle(center, radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PastelBlobPainter old) =>
+      isDark != old.isDark;
+}
+
+class _Blob {
+  final Color color;
+  final double x;
+  final double y;
+  final double radiusFrac;
+  final double blurPx;
+  final double opacity;
+  const _Blob(this.color, this.x, this.y, this.radiusFrac, this.blurPx,
+      this.opacity);
+}
+
+// ---------------------------------------------------------------------------
+// 12. FLOATING ASSET (Peach Pop – 3D icon float loop)
+// ---------------------------------------------------------------------------
+
+/// Animates a child widget (typically a 3D WebP icon) in a gentle vertical
+/// float loop with a scaling shadow ellipse underneath.
+///
+/// Respects reduced motion: freezes at midpoint. Pauses when not visible via
+/// [TickerMode].
+class FloatingAsset extends StatefulWidget {
+  final Widget child;
+  final double size;
+
+  const FloatingAsset({
+    super.key,
+    required this.child,
+    this.size = 64,
+  });
+
+  @override
+  State<FloatingAsset> createState() => _FloatingAssetState();
+}
+
+class _FloatingAssetState extends State<FloatingAsset>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: QMotion.floatPeriod,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (QMotion.reduced(context)) {
+      _c.value = 0.25; // midpoint
+      _c.stop();
+    } else if (!_c.isAnimating) {
+      _c.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: widget.size,
+      height: widget.size + QMotion.floatAmplitude + 8,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, child) {
+          final t = math.sin(_c.value * 2 * math.pi);
+          final dy = t * QMotion.floatAmplitude;
+          final shadowScale = QMotion.floatShadowMin +
+              (QMotion.floatShadowMax - QMotion.floatShadowMin) *
+                  ((1 - t) / 2); // inverse: shadow shrinks when icon rises
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Transform.translate(
+                offset: Offset(0, dy),
+                child: child!,
+              ),
+              const SizedBox(height: 4),
+              Transform.scale(
+                scaleX: shadowScale,
+                child: Container(
+                  width: widget.size * 0.5,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(QRadius.pill),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+        child: SizedBox.square(
+          dimension: widget.size,
+          child: widget.child,
+        ),
       ),
     );
   }

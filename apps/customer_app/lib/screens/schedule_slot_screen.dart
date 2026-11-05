@@ -54,15 +54,15 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: QColors.cleanWhite,
+      backgroundColor: QSevaColors.of(context).surface,
       appBar: AppBar(
-        backgroundColor: QColors.cleanWhite,
+        backgroundColor: QSevaColors.of(context).surface,
         title: Text(
           context.trPair('Schedule Slot', 'समय और तारीख चुनें'),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: QColors.inkDark,
+            color: QSevaColors.of(context).ink,
           ),
         ),
         actions: const [
@@ -77,48 +77,48 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
                 children: [
                   // Top Address Bar (Matches UC Screenshot #3) inside a LayeredShapeCard
                   LayeredShapeCard(
-                    backgroundColor: QColors.warmIvoryBg,
-                    primaryShapeColor: QColors.softGreenTint,
-                    secondaryShapeColor: QColors.primaryGreen,
+                    backgroundColor: QSevaColors.of(context).base,
+                    primaryShapeColor: QSevaColors.of(context).pistachio,
+                    secondaryShapeColor: QSevaColors.of(context).accentStart,
                     borderRadius: 16,
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 14,
                     ),
-                    border: Border.all(color: QColors.borderSubtle),
+                    border: Border.all(color: QSevaColors.of(context).border),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.home_outlined,
                           size: 21,
-                          color: QColors.inkDark,
+                          color: QSevaColors.of(context).ink,
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: RichText(
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: QColors.inkDark,
+                                color: QSevaColors.of(context).ink,
                               ),
                               children: [
                                 TextSpan(
                                   text:
                                       '${context.tr(BrandConfig.defaultAddressLabel)} - ',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                                 TextSpan(
                                   text: context
                                       .tr(BrandConfig.defaultAddressLine),
-                                  style: const TextStyle(
-                                    color: QColors.inkBody,
+                                  style: TextStyle(
+                                    color: QSevaColors.of(context).inkSecondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -126,15 +126,15 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                             ),
                           ),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right_rounded,
                           size: 20,
-                          color: QColors.inkMuted,
+                          color: QSevaColors.of(context).inkMuted,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 22),
+                  SizedBox(height: 22),
 
                   // Title & Duration Subtitle
                   Text(
@@ -142,23 +142,23 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                       'Select date and time',
                       'तारीख और समय चुनें',
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: QColors.inkDark,
+                      color: QSevaColors.of(context).ink,
                       letterSpacing: -0.4,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5),
                   Text(
                     _durationText(context),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: QColors.inkMuted,
+                      color: QSevaColors.of(context).inkMuted,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Horizontal Date Selector Row (Matches UC Screenshot #3)
                   SizedBox(
@@ -167,7 +167,7 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                       scrollDirection: Axis.horizontal,
                       clipBehavior: Clip.none,
                       itemCount: CatalogData.dateSlots.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 12),
+                      separatorBuilder: (_, _) => SizedBox(width: 12),
                       itemBuilder: (context, index) {
                         final dateSlot = CatalogData.dateSlots[index];
                         return DateSlotCard(
@@ -178,7 +178,7 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 22),
+                  SizedBox(height: 22),
 
                   // Dotted / Subtle Divider
                   Row(
@@ -188,21 +188,21 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                         child: Container(
                           height: 1.2,
                           color: i.isEven
-                              ? QColors.borderSubtle
+                              ? QSevaColors.of(context).border
                               : Colors.transparent,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // 3-Column Time Slot Grid (Matches UC Screenshot #3)
                   GridView.builder(
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: CatalogData.timeSlots.length,
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                        SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 12,
@@ -223,13 +223,13 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
 
             // Sticky Bottom CTA ("Proceed to checkout")
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 18),
               decoration: BoxDecoration(
-                color: QColors.cleanWhite,
-                border: const Border(
-                  top: BorderSide(color: QColors.borderSubtle),
+                color: QSevaColors.of(context).surface,
+                border: Border(
+                  top: BorderSide(color: QSevaColors.of(context).border),
                 ),
-                boxShadow: QTheme.softShadow,
+                boxShadow: QSevaColors.of(context).e1,
               ),
               child: SizedBox(
                 width: double.infinity,
@@ -256,7 +256,7 @@ class _ScheduleSlotScreenState extends State<ScheduleSlotScreen> {
                       'Proceed to checkout',
                       'चेकआउट पर आगे बढ़ें',
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                     ),

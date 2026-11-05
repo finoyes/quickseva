@@ -91,12 +91,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     );
 
     return Scaffold(
-      backgroundColor: QColors.cleanWhite,
+      backgroundColor: QSevaColors.of(context).surface,
       appBar: AppBar(
-        backgroundColor: QColors.cleanWhite,
+        backgroundColor: QSevaColors.of(context).surface,
         leadingWidth: 64,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: EdgeInsets.only(left: 16),
           child: Center(
             child: InkWell(
               borderRadius: BorderRadius.circular(999),
@@ -106,10 +106,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: QColors.cleanWhite,
-                  border: Border.all(color: QColors.borderSubtle),
+                  color: QSevaColors.of(context).surface,
+                  border: Border.all(color: QSevaColors.of(context).border),
                 ),
-                child: const Icon(Icons.arrow_back_rounded, size: 20),
+                child: Icon(Icons.arrow_back_rounded, size: 20),
               ),
             ),
           ),
@@ -121,10 +121,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   '$brand द्वारा हाउस हेल्प',
                 )
               : context.tr(s.name),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w800,
-            color: QColors.inkDark,
+            color: QSevaColors.of(context).ink,
             letterSpacing: -0.3,
           ),
         ),
@@ -140,16 +140,16 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+                padding: EdgeInsets.fromLTRB(18, 10, 18, 28),
                 children: [
                   // Headline Banner inside a Layered Shape Header Card + Shared-Element Hero Thumbnail
                   LayeredShapeCard(
-                    backgroundColor: QColors.warmIvoryBg,
-                    primaryShapeColor: QColors.softGreenTint,
-                    secondaryShapeColor: QColors.primaryGreen,
+                    backgroundColor: QSevaColors.of(context).base,
+                    primaryShapeColor: QSevaColors.of(context).rose,
+                    secondaryShapeColor: QSevaColors.of(context).accentStart,
                     borderRadius: 20,
-                    padding: const EdgeInsets.all(16),
-                    border: Border.all(color: QColors.borderSubtle),
+                    padding: EdgeInsets.all(16),
+                    border: Border.all(color: QSevaColors.of(context).border),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -164,56 +164,53 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         '$brand हाउस हेल्प,\nसफाई और घर के काम',
                                       )
                                     : context.tr(s.name),
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  color: QColors.inkDark,
+                                style: QText.displayM.copyWith(
+                                  color: QSevaColors.of(context).ink,
                                   height: 1.18,
-                                  letterSpacing: -0.6,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 6,
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                       horizontal: 8,
                                       vertical: 3,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: QColors.softGreenTint,
+                                      color: QSevaColors.of(context).pistachio,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.star_rounded,
                                           size: 15,
-                                          color: QColors.primaryGreen,
+                                          color: QSevaColors.of(context).accentStart,
                                         ),
-                                        const SizedBox(width: 3),
+                                        SizedBox(width: 3),
                                         Text(
                                           '${s.rating} (${s.bookingsCountLabel})',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
-                                            color: QColors.primaryGreen,
+                                            color: QSevaColors.of(context).accentStart,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                       horizontal: 8,
                                       vertical: 3,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: QColors.deepSlate,
+                                      color: QSevaColors.of(context).ink,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -221,7 +218,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         'Escrow Verified',
                                         'एस्क्रो सुरक्षित',
                                       ),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 10.5,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.white,
@@ -230,20 +227,20 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
+                              SizedBox(height: 6),
                               Text(
                                 context.tr(s.tagline),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
-                                  color: QColors.inkMuted,
+                                  color: QSevaColors.of(context).inkMuted,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         if (widget.heroTag != null)
                           Hero(tag: widget.heroTag!, child: thumbImage)
                         else
@@ -251,7 +248,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  SizedBox(height: 18),
 
                   // Instant ("⚡ In 14 mins") vs "Later" Toggle (Matches UC Screenshot #1)
                   InstantLaterSegmentedControl(
@@ -259,7 +256,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     instantMinutes: s.instantEtaMinutes,
                     onChanged: (val) => setState(() => _isInstant = val),
                   ),
-                  const SizedBox(height: 18),
+                  SizedBox(height: 18),
 
                   // Horizontal Package / Duration Cards (Matches UC Screenshot #1)
                   SizedBox(
@@ -267,7 +264,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: s.packages.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 12),
+                      separatorBuilder: (_, _) => SizedBox(width: 12),
                       itemBuilder: (context, idx) {
                         final pkg = s.packages[idx];
                         return PackageDurationCard(
@@ -278,7 +275,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Super Saver Pack Banner (Matches UC Screenshot #1)
                   if (s.superSaverPack != null) ...[
@@ -300,21 +297,21 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         _proceedWithPackage(packTier);
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
 
                   // Interactive Before vs After Service Comparison Slider
                   BeforeAfterComparisonCard(serviceTitle: s.name),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // "One help who can do it all" Section (Matches UC Screenshot #1)
                   if (s.capabilities.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(18),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: QColors.warmIvoryBg,
+                        color: QSevaColors.of(context).base,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: QColors.borderSubtle),
+                        border: Border.all(color: QSevaColors.of(context).border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,14 +326,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                     'What is included in this service',
                                     'इस सर्विस में क्या शामिल है',
                                   ),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: QColors.inkDark,
+                              color: QSevaColors.of(context).ink,
                               letterSpacing: -0.3,
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           Wrap(
                             spacing: 10,
                             runSpacing: 10,
@@ -345,12 +342,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                 width:
                                     (MediaQuery.of(context).size.width - 86) /
                                         2,
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: QColors.cleanWhite,
+                                  color: QSevaColors.of(context).surface,
                                   borderRadius: BorderRadius.circular(12),
                                   border:
-                                      Border.all(color: QColors.borderSubtle),
+                                      Border.all(color: QSevaColors.of(context).border),
                                 ),
                                 child: Row(
                                   children: [
@@ -358,23 +355,23 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                       width: 28,
                                       height: 28,
                                       decoration: BoxDecoration(
-                                        color: QColors.softGreenTint,
+                                        color: QSevaColors.of(context).pistachio,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.check_circle_rounded,
                                         size: 16,
-                                        color: QColors.primaryGreen,
+                                        color: QSevaColors.of(context).accentStart,
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         context.tr(cap),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12.5,
                                           fontWeight: FontWeight.w700,
-                                          color: QColors.inkBody,
+                                          color: QSevaColors.of(context).inkSecondary,
                                           height: 1.25,
                                         ),
                                       ),
@@ -387,62 +384,62 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
 
                   // Dynamic Server-Driven Service Form Schema (Section 10 of ARCHITECTURE.md)
                   if (s.formFields.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(18),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: QColors.cleanWhite,
+                        color: QSevaColors.of(context).surface,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: QColors.borderSubtle),
+                        border: Border.all(color: QSevaColors.of(context).border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.tune_rounded,
                                 size: 18,
-                                color: QColors.primaryGreen,
+                                color: QSevaColors.of(context).accentStart,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   context.trPair(
                                     'Customize your service preferences',
                                     'अपनी सर्विस प्राथमिकताएं चुनें',
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15.5,
                                     fontWeight: FontWeight.w800,
-                                    color: QColors.inkDark,
+                                    color: QSevaColors.of(context).ink,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           ...s.formFields.map((field) {
                             if (field.type == FormFieldType.select) {
                               final selectedVal = _formValues[field.key];
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
+                                padding: EdgeInsets.only(bottom: 14),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       context.tr(field.label),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
-                                        color: QColors.inkMuted,
+                                        color: QSevaColors.of(context).inkMuted,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: 8),
                                     Wrap(
                                       spacing: 8,
                                       runSpacing: 8,
@@ -452,22 +449,22 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         return ChoiceChip(
                                           label: Text(context.tr(opt.label)),
                                           selected: active,
-                                          selectedColor: QColors.softGreenTint,
+                                          selectedColor: QSevaColors.of(context).pistachio,
                                           backgroundColor:
-                                              QColors.warmIvoryBg,
+                                              QSevaColors.of(context).base,
                                           labelStyle: TextStyle(
                                             fontSize: 12.5,
                                             fontWeight: active
                                                 ? FontWeight.w800
                                                 : FontWeight.w600,
                                             color: active
-                                                ? QColors.primaryGreen
-                                                : QColors.inkBody,
+                                                ? QSevaColors.of(context).accentStart
+                                                : QSevaColors.of(context).inkSecondary,
                                           ),
                                           side: BorderSide(
                                             color: active
-                                                ? QColors.primaryGreen
-                                                : QColors.borderSubtle,
+                                                ? QSevaColors.of(context).accentStart
+                                                : QSevaColors.of(context).border,
                                           ),
                                           onSelected: (_) {
                                             setState(() {
@@ -492,25 +489,25 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                   Expanded(
                                     child: Text(
                                       context.tr(field.label),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w700,
-                                        color: QColors.inkBody,
+                                        color: QSevaColors.of(context).inkSecondary,
                                       ),
                                     ),
                                   ),
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: QColors.warmIvorySurface,
+                                      color: QSevaColors.of(context).surfaceSunken,
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
-                                        color: QColors.borderSubtle,
+                                        color: QSevaColors.of(context).border,
                                       ),
                                     ),
                                     child: Row(
                                       children: [
                                         IconButton(
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.remove_rounded,
                                             size: 18,
                                           ),
@@ -522,13 +519,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         ),
                                         Text(
                                           '$count',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w800,
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.add_rounded,
                                             size: 18,
                                           ),
@@ -553,18 +550,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               ),
             ),
 
-            // Sticky Bottom Bar with Elastic Bounce & Rolling Rupee Counter
-            ElasticBounceWrapper(
+            // Sticky Bottom Bar with Glass Surface + Elastic Bounce
+            GlassSurface(
+              borderRadius: 0,
+              boxShadow: QSevaColors.of(context).e2,
+              child: ElasticBounceWrapper(
               triggerKey: '${_selectedPackage.id}_$_isInstant',
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
-                decoration: BoxDecoration(
-                  color: QColors.cleanWhite,
-                  border: const Border(
-                    top: BorderSide(color: QColors.borderSubtle),
-                  ),
-                  boxShadow: QTheme.softShadow,
-                ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(18, 12, 18, 16),
                 child: Row(
                   children: [
                     Expanded(
@@ -576,29 +569,29 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             context.tr(_selectedPackage.title),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
-                              color: QColors.inkMuted,
+                              color: QSevaColors.of(context).inkMuted,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2),
                           Row(
                             children: [
                               RollingRupeeText(
                                 amountRupees: _selectedPackage.priceRupees,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
-                                  color: QColors.inkDark,
+                                  color: QSevaColors.of(context).ink,
                                 ),
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 '${BrandConfig.currency}${_selectedPackage.originalPriceRupees}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
-                                  color: QColors.inkLight,
+                                  color: QSevaColors.of(context).inkMuted,
                                   decoration: TextDecoration.lineThrough,
                                 ),
                               ),
@@ -608,36 +601,27 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       ),
                     ),
                     Flexible(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              _proceedWithPackage(_selectedPackage),
-                          icon: Icon(
-                            _isInstant
-                                ? Icons.bolt_rounded
-                                : Icons.calendar_month_rounded,
-                            size: 19,
-                          ),
-                          label: Text(
-                            _isInstant
-                                ? context.trPair(
-                                    'Book Instant (${s.instantEtaMinutes}m)',
-                                    'तुरंत बुक (${s.instantEtaMinutes}m)',
-                                  )
-                                : context.trPair(
-                                    'Select Time Slot',
-                                    'समय स्लॉट चुनें',
-                                  ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                      child: AccentGradientButton(
+                        label: _isInstant
+                            ? context.trPair(
+                                'Book Instant (${s.instantEtaMinutes}m)',
+                                'तुरंत बुक (${s.instantEtaMinutes}m)',
+                              )
+                            : context.trPair(
+                                'Select Time Slot',
+                                'समय स्लॉट चुनें',
+                              ),
+                        icon: _isInstant
+                            ? Icons.bolt_rounded
+                            : Icons.calendar_month_rounded,
+                        onPressed: () =>
+                            _proceedWithPackage(_selectedPackage),
                       ),
                     ),
                   ],
                 ),
               ),
+            ),
             ),
           ],
         ),

@@ -17,9 +17,13 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
 flutter:
-  # Brand typography (SIL Open Font License, see assets/fonts/OFL-*.txt).
-  # Apps reference these as 'packages/design_system/<Family>' via QTheme.
+  # Brand typography (SIL Open Font License, see assets/fonts/OFL-*.txt
+  # and assets/LICENSES.md). Apps reference these as
+  # 'packages/design_system/<Family>' via QFonts / QTheme.
   fonts:
+    - family: BricolageGrotesque
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque-Variable.ttf
     - family: PlusJakartaSans
       fonts:
         - asset: assets/fonts/PlusJakartaSans-Regular.ttf

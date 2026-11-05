@@ -32,8 +32,13 @@ class _QuickSevaCustomerAppState extends State<QuickSevaCustomerApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: BrandConfig.brandName,
-            theme: QTheme.lightTheme(),
-            home: const CustomerMainShell(),
+            theme: QTheme.peachPopLight(),
+            darkTheme: QTheme.peachPopDark(),
+            themeMode: ThemeMode.light,
+            builder: (context, child) {
+              return MotionPolicy.wrap(child: child ?? const SizedBox.shrink());
+            },
+            home: CustomerMainShell(),
           );
         },
       ),

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'brand_config.dart';
 import 'l10n.dart';
 import 'models.dart';
@@ -2172,4 +2173,376 @@ class _GeometricBurstPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _GeometricBurstPainter oldDelegate) =>
       oldDelegate.progress != progress;
+}
+
+
+// =============================================================================
+// PEACH POP WIDGETS (customer app)
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// ACCENT GRADIENT BUTTON
+// ---------------------------------------------------------------------------
+
+/// Primary CTA button with the accent gradient (135°), accent glow shadow,
+/// press-scale feedback, and light haptic.
+///
+/// Spec: 56 dp height, pill shape, gradient fill, [QText.labelL] in onAccent,
+/// [QElevation.lightAccentGlow] shadow, 0.97 press scale, light haptic.
+class AccentGradientButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final IconData? icon;
+
+  const AccentGradientButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final gradient = seva?.accentGradient ??
+        const LinearGradient(colors: [Color(0xFFFF9E80), Color(0xFFFFC857)]);
+    final onAccent = seva?.onAccent ?? const Color(0xFF33201C);
+    final glow = seva?.accentGlow ?? QElevation.lightAccentGlow;
+    final disabled = onPressed == null && !isLoading;
+
+    return PressableScale(
+      onTap: disabled ? null : onPressed,
+      pressedScale: QMotion.pressScale,
+      child: AnimatedOpacity(
+        opacity: disabled ? 0.5 : 1.0,
+        duration: QMotion.fast,
+        child: Container(
+          height: 56,
+          constraints: const BoxConstraints(minWidth: 120),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(QRadius.pill),
+            boxShadow: disabled ? null : glow,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          alignment: Alignment.center,
+          child: isLoading
+              ? SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: onAccent,
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(icon, color: onAccent, size: 20),
+                      const SizedBox(width: QSpace.xs),
+                    ],
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: QText.labelL.copyWith(color: onAccent),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SECONDARY BUTTON
+// ---------------------------------------------------------------------------
+
+/// Secondary button: pill, surface fill, ink label, border, e1 shadow.
+class SecondaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+
+  const SecondaryButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final surface = seva?.surface ?? Colors.white;
+    final ink = seva?.ink ?? const Color(0xFF33201C);
+    final border = seva?.border ?? Colors.grey.shade300;
+    final e1 = seva?.e1 ?? QElevation.lightE1;
+    final disabled = onPressed == null;
+
+    return PressableScale(
+      onTap: disabled ? null : onPressed,
+      pressedScale: QMotion.pressScale,
+      child: AnimatedOpacity(
+        opacity: disabled ? 0.5 : 1.0,
+        duration: QMotion.fast,
+        child: Container(
+          height: 52,
+          constraints: const BoxConstraints(minWidth: 100),
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(QRadius.pill),
+            border: Border.all(color: border),
+            boxShadow: disabled ? null : e1,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: ink, size: 18),
+                const SizedBox(width: QSpace.xs),
+              ],
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: QText.labelL.copyWith(color: ink),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GHOST BUTTON
+// ---------------------------------------------------------------------------
+
+/// Ghost button: pill, transparent fill, ink label, no shadow.
+class GhostButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+
+  const GhostButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final ink = seva?.ink ?? const Color(0xFF33201C);
+    final disabled = onPressed == null;
+
+    return PressableScale(
+      onTap: disabled ? null : onPressed,
+      pressedScale: QMotion.pressScale,
+      child: AnimatedOpacity(
+        opacity: disabled ? 0.5 : 1.0,
+        duration: QMotion.fast,
+        child: Container(
+          height: 44,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: ink, size: 18),
+                const SizedBox(width: QSpace.xs),
+              ],
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: QText.label.copyWith(color: ink),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CATEGORY TILE (Peach Pop home grid)
+// ---------------------------------------------------------------------------
+
+/// Category tile with pastel support background, icon, label, and e2 shadow.
+///
+/// Rotate [backgroundColor] through [QSevaColors.supportColor] so the home
+/// grid is colourful, not just peach.
+class QCategoryTile extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color backgroundColor;
+  final VoidCallback? onTap;
+
+  const QCategoryTile({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.backgroundColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final ink = seva?.ink ?? const Color(0xFF33201C);
+    final e2 = seva?.e2 ?? QElevation.lightE2;
+
+    return PressableScale(
+      onTap: onTap,
+      pressedScale: QMotion.pressScale,
+      child: Container(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(QRadius.tile),
+          boxShadow: e2,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 36, color: ink.withValues(alpha: 0.7)),
+            const SizedBox(height: QSpace.xs),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: QText.label.copyWith(color: ink),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GLASS SEARCH BAR (Peach Pop home)
+// ---------------------------------------------------------------------------
+
+/// Tappable search bar with glassmorphism (or opaque fallback).
+class QGlassSearchBar extends StatelessWidget {
+  final String hintPrefix;
+  final List<String> hints;
+  final VoidCallback? onTap;
+
+  const QGlassSearchBar({
+    super.key,
+    this.hintPrefix = 'Search for ',
+    this.hints = const ['AC repair', 'cleaning', 'electrician', 'plumber'],
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final inkMuted = seva?.inkMuted ?? const Color(0xFFB39B92);
+
+    return PressableScale(
+      onTap: onTap,
+      pressedScale: QMotion.pressScale,
+      child: GlassSurface(
+        borderRadius: QRadius.pill,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        boxShadow: seva?.e1,
+        child: Row(
+          children: [
+            Icon(Icons.search_rounded, color: inkMuted, size: 22),
+            const SizedBox(width: QSpace.sm),
+            Expanded(
+              child: RotatingHintText(
+                prefix: hintPrefix,
+                hints: hints,
+                style: QText.body.copyWith(color: inkMuted),
+                highlightStyle: QText.body.copyWith(
+                  color: seva?.inkSecondary ?? inkMuted,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// STAR RATING (Peach Pop rating screen)
+// ---------------------------------------------------------------------------
+
+/// Interactive star rating with bouncy spring animation and haptic feedback.
+class QStarRating extends StatelessWidget {
+  final int rating;
+  final ValueChanged<int>? onChanged;
+  final double starSize;
+
+  const QStarRating({
+    super.key,
+    required this.rating,
+    this.onChanged,
+    this.starSize = 40,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final seva = Theme.of(context).extension<QSevaColors>();
+    final fillColor = seva?.accentStart ?? const Color(0xFFFF9E80);
+    final emptyColor = seva?.border ?? Colors.grey.shade300;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final filled = i < rating;
+        return GestureDetector(
+          onTap: onChanged != null
+              ? () {
+                  HapticFeedback.lightImpact();
+                  onChanged!(i + 1);
+                }
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('star_${i}_$filled'),
+              tween: Tween(begin: filled ? 0.5 : 1.0, end: 1.0),
+              duration: QMotion.of(context, QMotion.base),
+              curve: QMotion.spring,
+              builder: (context, scale, child) =>
+                  Transform.scale(scale: scale, child: child),
+              child: Icon(
+                filled ? Icons.star_rounded : Icons.star_outline_rounded,
+                color: filled ? fillColor : emptyColor,
+                size: starSize,
+                semanticLabel: 'Rate ${i + 1} of 5 stars',
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
 }
