@@ -1,0 +1,53 @@
+---
+description: "Peach pop design system, motion and 3D asset rules for the Flutter customer app UI"
+globs: "packages/design_system/**/*.dart,apps/customer_app/**/*.dart"
+alwaysApply: false
+---
+
+# Customer app UI rules (Peach pop)
+
+Source of truth for every visual value is `packages/design_system/tokens/design_tokens.json`.
+Read it before writing UI code. Dart token classes are generated from it.
+
+## Hard rules
+
+- No hex literals, raw sizes, radii, shadows or durations in feature code. Use generated tokens only. A test fails the build if a hex literal appears outside generated files.
+- Light theme is the default. Dark is a secondary theme built from the same tokens. Every screen must be checked in both.
+- Text is always ink, inkSecondary or inkMuted. Never put text on a pastel-on-pastel pairing. inkMuted is for placeholders only.
+- Respect reduced motion through a single `MotionPolicy` widget. Never read `MediaQuery.disableAnimations` ad hoc in feature code.
+- Third-party assets only if the licence permits commercial use. Log each in `assets/LICENSES.md` (file, source URL, licence, notice). Never copy designs or animations from other apps or sites.
+
+## Look and feel
+
+- Premium and glossy, pastel with pop: white glass cards over soft pastel backdrops, deep ink for text, the accent gradient for energy.
+- The accent gradient (135 degrees, accentStart to accentEnd) is allowed only on the primary button, hero surfaces, progress bars, selected states and the success moment. Nowhere else.
+- Glass uses the glass tokens. Maximum two blurred layers per screen (bottom bar plus one sheet or search bar). Provide an opaque fallback for low-end devices.
+- Depth comes from the elevation tokens (e1 chips and rows, e2 cards and tiles, e3 floating bar and sheets). Shadows are ink-tinted, never plain black or grey in light mode.
+- Radius follows the hierarchy in tokens (pill for buttons and chips, md for inputs, lg for cards and tiles, xl for sheet tops). Do not apply one radius to everything.
+- The highlight colour (teal) is only for live and success states.
+- Rotate category tiles through the support pastels (pistachio, sky, lilac, rose, peachTint) so the app is not only peach.
+- Spend boldness in one place per screen: one hero element, everything around it quiet. Cut decoration that does not explain state or guide the eye.
+- Typography: display font for headlines, prices and big numbers; body font elsewhere. Sentence case. No all-caps labels or eyebrow text above headings.
+- Copy: plain verbs, sentence case, buttons name the action ("Book now", "Cancel request"). Errors say what happened and what to do, with no apology.
+
+## Motion rules
+
+- Use motion tokens only (durations, curves, springs, stagger). Press feedback is the `press` token plus a light haptic.
+- Motion answers a user action or explains a state change (searching, assigned, arrived, paid). Do not add fade-and-slide-up to every section or animate every card on every visit.
+- Entrance reveals play once per session. Maximum 8 staggered items.
+- Every animation must be interruptible, and looping animations pause when off-screen or when the app is backgrounded.
+- 3D assets are static transparent WebP animated in code (float, tilt, squish, scaling shadow). Lottie and Rive are for hero moments only: "Finding your pro" and success.
+
+## Performance and quality
+
+- Target a steady 60 fps on a low-end Android phone. Check in profile mode, never debug.
+- Wrap animated regions in `RepaintBoundary`. Prefer pre-rendered gradients and blurred backdrops over live blur.
+- Lottie files 100 KB max, 3D icon WebP 40 KB max. Decode images at display size.
+- Touch targets at least 48 dp. All interactive elements have semantic labels. Text scales to 1.3x without clipping. Check button label contrast on the gradient.
+- Feature code lives under `lib/features/<feature>/{presentation,domain,data}`. Riverpod for state, go_router for navigation. Widgets stay under about 200 lines; extract when they grow.
+- New shared widgets go in `packages/design_system` with a Widgetbook entry and a golden test for light and dark.
+
+## Process
+
+- Before implementing a screen, write its motion plan: what moves, why, duration, curve, and what happens with reduced motion.
+- Work one stage at a time. After each stage, summarise what was built, list anything that deviated from the rules, and ask what to tune.

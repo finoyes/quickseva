@@ -1,0 +1,234 @@
+{
+  "$meta": {
+    "name": "Peach pop",
+    "version": "0.1.0",
+    "defaultTheme": "light",
+    "notes": "Single source of truth for the customer app. Flutter generates Dart from this file; admin web can generate CSS variables from it. Never hardcode these values in UI code. Colours are hex or rgba strings; sizes are logical pixels (dp); durations are milliseconds."
+  },
+
+  "color": {
+    "light": {
+      "base": "#FFF8F2",
+      "surface": "#FFFFFF",
+      "surfaceSunken": "#FFEFE4",
+      "glassFill": "rgba(255,255,255,0.70)",
+      "glassBorder": "rgba(255,255,255,0.80)",
+      "glassHairline": "rgba(51,32,28,0.06)",
+      "ink": "#33201C",
+      "inkSecondary": "#8A6A60",
+      "inkMuted": "#B39B92",
+      "border": "rgba(51,32,28,0.10)",
+      "accentStart": "#FF9E80",
+      "accentEnd": "#FFC857",
+      "onAccent": "#33201C",
+      "highlight": "#2BC6B4",
+      "danger": "#E5605F",
+      "warning": "#F5A524"
+    },
+    "dark": {
+      "base": "#1C1311",
+      "surface": "#2A1C19",
+      "surfaceSunken": "#241715",
+      "glassFill": "rgba(255,255,255,0.08)",
+      "glassBorder": "rgba(255,255,255,0.16)",
+      "glassHairline": "rgba(0,0,0,0.30)",
+      "ink": "#FFF3EC",
+      "inkSecondary": "#C9A99E",
+      "inkMuted": "#8C7168",
+      "border": "rgba(255,255,255,0.12)",
+      "accentStart": "#FF9E80",
+      "accentEnd": "#FFC857",
+      "onAccent": "#33201C",
+      "highlight": "#2BC6B4",
+      "danger": "#F27D7C",
+      "warning": "#F7B955"
+    },
+    "support": {
+      "pistachio": "#D4F0C8",
+      "sky": "#CFE6FF",
+      "lilac": "#E6D9FF",
+      "rose": "#FFD6E4",
+      "peachTint": "#FFE3D6"
+    },
+    "usage": {
+      "text": "Always ink, inkSecondary or inkMuted. Never place text on a pastel-on-pastel pairing.",
+      "highlight": "Reserved for live and success states: live dot, online badge, completed ticks.",
+      "support": "Category tiles, illustration backdrops, chips. Rotate through them so the UI is not only peach.",
+      "inkMuted": "Placeholders and decorative text only. Fails contrast for essential copy."
+    }
+  },
+
+  "gradient": {
+    "accent": {
+      "angleDeg": 135,
+      "stops": [
+        { "color": "accentStart", "at": 0.0 },
+        { "color": "accentEnd", "at": 1.0 }
+      ],
+      "allowedOn": [
+        "primary button",
+        "hero surface",
+        "progress bar",
+        "selected state",
+        "success moment"
+      ]
+    },
+    "backdropBlobs": {
+      "note": "Render once as a static pre-blurred image per theme. Do not blur live.",
+      "blobs": [
+        { "color": "rose",  "x": 0.05, "y": 0.02, "radius": 0.55, "blurPx": 90, "opacity": { "light": 0.75, "dark": 0.30 } },
+        { "color": "lilac", "x": 0.95, "y": 0.12, "radius": 0.50, "blurPx": 90, "opacity": { "light": 0.70, "dark": 0.28 } },
+        { "color": "sky",   "x": 0.50, "y": 0.45, "radius": 0.45, "blurPx": 100, "opacity": { "light": 0.55, "dark": 0.22 } },
+        { "color": "peachTint", "x": 0.15, "y": 0.85, "radius": 0.50, "blurPx": 100, "opacity": { "light": 0.80, "dark": 0.25 } }
+      ]
+    }
+  },
+
+  "glass": {
+    "light": { "blurSigma": 24, "fill": "glassFill", "border": "glassBorder", "hairline": "glassHairline", "borderWidth": 1, "topHighlight": "rgba(255,255,255,0.90)" },
+    "dark":  { "blurSigma": 24, "fill": "glassFill", "border": "glassBorder", "hairline": "glassHairline", "borderWidth": 1, "topHighlight": "rgba(255,255,255,0.18)" },
+    "rules": {
+      "maxBlurredLayersPerScreen": 2,
+      "allowedOn": ["bottom navigation", "one sheet or search bar per screen"],
+      "fallbackWhenLowEnd": "Opaque surface colour with the same border; no blur."
+    }
+  },
+
+  "radius": {
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 28,
+    "pill": 999,
+    "usage": {
+      "button": "pill",
+      "chip": "pill",
+      "input": "md",
+      "tile": "lg",
+      "card": "lg",
+      "sheetTop": "xl",
+      "thumbnail": "sm"
+    }
+  },
+
+  "spacing": {
+    "unit": 4,
+    "scale": [4, 8, 12, 16, 20, 24, 32, 40, 56],
+    "screenPaddingH": 20,
+    "sectionGap": 28
+  },
+
+  "elevation": {
+    "light": {
+      "e1": [
+        { "dx": 0, "dy": 1,  "blur": 2,  "spread": 0, "color": "rgba(51,32,28,0.06)" },
+        { "dx": 0, "dy": 4,  "blur": 12, "spread": 0, "color": "rgba(51,32,28,0.06)" }
+      ],
+      "e2": [
+        { "dx": 0, "dy": 2,  "blur": 4,  "spread": 0, "color": "rgba(51,32,28,0.06)" },
+        { "dx": 0, "dy": 12, "blur": 28, "spread": 0, "color": "rgba(51,32,28,0.10)" }
+      ],
+      "e3": [
+        { "dx": 0, "dy": 4,  "blur": 8,  "spread": 0, "color": "rgba(51,32,28,0.08)" },
+        { "dx": 0, "dy": 24, "blur": 48, "spread": 0, "color": "rgba(51,32,28,0.14)" }
+      ],
+      "accentGlow": [
+        { "dx": 0, "dy": 8,  "blur": 24, "spread": 0, "color": "rgba(255,158,128,0.45)" }
+      ]
+    },
+    "dark": {
+      "e1": [
+        { "dx": 0, "dy": 1,  "blur": 2,  "spread": 0, "color": "rgba(0,0,0,0.30)" },
+        { "dx": 0, "dy": 4,  "blur": 12, "spread": 0, "color": "rgba(0,0,0,0.30)" }
+      ],
+      "e2": [
+        { "dx": 0, "dy": 2,  "blur": 4,  "spread": 0, "color": "rgba(0,0,0,0.35)" },
+        { "dx": 0, "dy": 12, "blur": 28, "spread": 0, "color": "rgba(0,0,0,0.45)" }
+      ],
+      "e3": [
+        { "dx": 0, "dy": 4,  "blur": 8,  "spread": 0, "color": "rgba(0,0,0,0.40)" },
+        { "dx": 0, "dy": 24, "blur": 48, "spread": 0, "color": "rgba(0,0,0,0.55)" }
+      ],
+      "accentGlow": [
+        { "dx": 0, "dy": 8,  "blur": 24, "spread": 0, "color": "rgba(255,158,128,0.25)" }
+      ]
+    },
+    "usage": {
+      "e1": "Chips, list rows, small tiles",
+      "e2": "Cards, category tiles, pro card",
+      "e3": "Floating bottom bar, bottom sheets, dialogs",
+      "accentGlow": "Primary button only"
+    }
+  },
+
+  "typography": {
+    "fonts": {
+      "display": { "family": "Bricolage Grotesque", "fallback": ["Noto Sans Devanagari", "sans-serif"], "use": "Headlines, prices, big numbers" },
+      "body":    { "family": "Plus Jakarta Sans",    "fallback": ["Noto Sans Devanagari", "sans-serif"], "use": "Everything else" }
+    },
+    "scale": {
+      "displayL": { "font": "display", "size": 34, "line": 40, "weight": 700, "tracking": -0.5 },
+      "displayM": { "font": "display", "size": 28, "line": 34, "weight": 700, "tracking": -0.4 },
+      "titleL":   { "font": "display", "size": 22, "line": 28, "weight": 600, "tracking": -0.2 },
+      "titleM":   { "font": "body",    "size": 18, "line": 24, "weight": 700, "tracking": 0 },
+      "bodyL":    { "font": "body",    "size": 16, "line": 24, "weight": 500, "tracking": 0 },
+      "body":     { "font": "body",    "size": 15, "line": 22, "weight": 400, "tracking": 0 },
+      "bodyS":    { "font": "body",    "size": 13, "line": 18, "weight": 400, "tracking": 0 },
+      "labelL":   { "font": "body",    "size": 16, "line": 20, "weight": 700, "tracking": 0 },
+      "label":    { "font": "body",    "size": 13, "line": 16, "weight": 600, "tracking": 0 },
+      "caption":  { "font": "body",    "size": 12, "line": 16, "weight": 500, "tracking": 0 }
+    },
+    "rules": ["Sentence case everywhere", "No all-caps labels", "Respect system text scaling up to 1.3x without clipping"]
+  },
+
+  "motion": {
+    "durationMs": { "instant": 80, "fast": 150, "base": 280, "slow": 450, "hero": 700 },
+    "curve": {
+      "standard":   [0.2, 0.0, 0.0, 1.0],
+      "decelerate": [0.05, 0.7, 0.1, 1.0],
+      "accelerate": [0.3, 0.0, 0.8, 0.15]
+    },
+    "spring": {
+      "soft":   { "stiffness": 180, "damping": 20, "mass": 1 },
+      "snappy": { "stiffness": 320, "damping": 24, "mass": 1 },
+      "bouncy": { "stiffness": 220, "damping": 14, "mass": 1 }
+    },
+    "stagger": { "stepMs": 50, "maxItems": 8, "playOnce": true },
+    "press": { "scale": 0.97, "haptic": "light" },
+    "float3d": { "amplitudeDp": 6, "periodMs": 3200, "tiltMaxDeg": 6, "parallaxFactor": 0.15, "shadowScaleRange": [0.9, 1.0] },
+    "reducedMotion": "When the OS disables animations: no loops, no parallax, no confetti; replace transitions with a 120 ms fade; keep state changes visible.",
+    "principles": [
+      "One hero moment per screen",
+      "Motion answers a user action or explains a state change; it does not decorate",
+      "Every animation is interruptible",
+      "Entrance reveals play once per session, not on every visit"
+    ]
+  },
+
+  "components": {
+    "button": {
+      "primary": {
+        "height": 56,
+        "shape": "pill",
+        "fill": "gradient.accent",
+        "label": { "style": "labelL", "color": "onAccent" },
+        "shadow": "accentGlow",
+        "pressedScale": 0.97,
+        "haptic": "light",
+        "paddingH": 28
+      },
+      "secondary": { "height": 52, "shape": "pill", "fill": "surface", "label": { "style": "labelL", "color": "ink" }, "border": "border", "shadow": "e1" },
+      "ghost": { "height": 44, "shape": "pill", "fill": "transparent", "label": { "style": "label", "color": "ink" } }
+    },
+    "categoryTile": { "radius": "tile", "fillFrom": "color.support", "assetSizeDp": 64, "shadow": "e2", "motion": "float3d" },
+    "bottomBar": { "surface": "glass", "radius": "xl", "shadow": "e3", "heightDp": 72 }
+  },
+
+  "assets": {
+    "style": "3D-style icons and illustrations on transparent backgrounds",
+    "formats": { "icons3d": "WebP, 256 to 512 px, 40 KB max each", "hero3d": "WebP, up to 1024 px, 120 KB max", "lottie": "dotLottie or JSON, 100 KB max", "rive": "Hero moments only, 2 to 3 files in total" },
+    "animateInCode": ["float loop", "press squish", "gyroscope or drag tilt", "scaling shadow ellipse"],
+    "licenceLog": "assets/LICENSES.md with file, source URL, licence, and licence text or notice for every third-party asset"
+  }
+}
