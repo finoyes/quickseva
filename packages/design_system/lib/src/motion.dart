@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'theme.dart';
@@ -1372,5 +1373,97 @@ class _FloatingAssetState extends State<FloatingAsset>
         ),
       ),
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 13. LENIS-STYLE SMOOTH SCROLL (Peach Pop)
+// ---------------------------------------------------------------------------
+
+/// Lenis-inspired smooth momentum scroll physics.
+///
+/// Features:
+/// - Smooth friction coefficient (0.0085 vs default 0.015) for buttery glide.
+/// - Fluid, progressive deceleration curve resembling Lenis / Apple Safari momentum.
+/// - Soft spring overscroll bounce at scroll boundaries.
+/// - Seamless across Touch, Mouse Wheel, and Trackpads.
+class LenisScrollPhysics extends BouncingScrollPhysics {
+  final double damping;
+
+  const LenisScrollPhysics({
+    super.parent,
+    this.damping = 0.982,
+  });
+
+  @override
+  LenisScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return LenisScrollPhysics(
+      parent: buildParent(ancestor),
+      damping: damping,
+    );
+  }
+
+  @override
+  double get minFlingVelocity => 35.0;
+
+  @override
+  double get maxFlingVelocity => 6000.0;
+
+  @override
+  double get dragStartDistanceMotionThreshold => 3.5;
+
+  @override
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
+    final tolerance = toleranceFor(position);
+    if (position.outOfRange) {
+      double? end;
+      if (position.pixels > position.maxScrollExtent) {
+        end = position.maxScrollExtent;
+      }
+      if (position.pixels < position.minScrollExtent) {
+        end = position.minScrollExtent;
+      }
+      assert(end != null);
+      return ScrollSpringSimulation(
+        const SpringDescription(
+          mass: 0.92,
+          stiffness: 140.0,
+          damping: 18.0,
+        ),
+        position.pixels,
+        end!,
+        velocity,
+        tolerance: tolerance,
+      );
+    }
+    if (velocity.abs() < tolerance.velocity) {
+      return null;
+    }
+    return FrictionSimulation(
+      0.0085, // Lower friction constant creates the signature Lenis glide
+      position.pixels,
+      velocity,
+      tolerance: tolerance,
+    );
+  }
+}
+
+/// Lenis [ScrollBehavior] providing buttery smooth drag and wheel scrolling across all platforms.
+class LenisScrollBehavior extends MaterialScrollBehavior {
+  const LenisScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    if (QMotion.reduced(context)) {
+      return const ClampingScrollPhysics();
+    }
+    return const LenisScrollPhysics();
+  }
+
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }

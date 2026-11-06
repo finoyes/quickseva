@@ -32,6 +32,7 @@ class _QuickSevaCustomerAppState extends State<QuickSevaCustomerApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: BrandConfig.brandName,
+            scrollBehavior: const LenisScrollBehavior(),
             theme: QTheme.peachPopLight(),
             darkTheme: QTheme.peachPopDark(),
             themeMode: ThemeMode.light,
