@@ -162,7 +162,6 @@ class QSevaColors extends ThemeExtension<QSevaColors> {
 
   /// Rotates through support pastels by index for category tiles.
   Color supportColor(int index) {
-    const pastels = [5]; // placeholder count
     final colors = [pistachio, sky, lilac, rose, peachTint];
     return colors[index % colors.length];
   }

@@ -97,15 +97,16 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
       _activeJob = null;
       _lastCompletedPayoutRupees = job.netPayoutRupees;
     });
+    final c = QSevaColors.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: QColors.primaryGreen,
+        backgroundColor: c.highlight,
         content: Text(
           context.trPair(
             'Job completed! +${BrandConfig.currency}${job.netPayoutRupees} added to your earnings.',
             'काम पूरा हुआ! +${BrandConfig.currency}${job.netPayoutRupees} आपकी कमाई में जुड़ गए।',
           ),
-          style: const TextStyle(fontWeight: FontWeight.w800),
+          style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
         ),
       ),
     );
@@ -145,6 +146,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // HEADER: partner identity + Stitch Voice Guide + SOS + EN / हिं switcher
   // ===========================================================================
   Widget _buildHeader(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,12 +155,12 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: QColors.softGreenTint,
+                color: c.peachTint,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.engineering_rounded,
-                color: QColors.primaryGreen,
+                color: c.accentStart,
                 size: 24,
               ),
             ),
@@ -171,10 +173,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     context.tr(BrandConfig.partnerAppTitle),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16.5,
                       fontWeight: FontWeight.w900,
-                      color: QColors.inkDark,
+                      color: c.ink,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -185,9 +187,9 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: QColors.inkMuted,
+                      color: c.inkMuted,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -207,25 +209,25 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(
-                color: QColors.cleanWhite,
+                color: c.surface,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: QColors.borderSubtle),
+                border: Border.all(color: c.border),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.volume_up_rounded,
                     size: 14,
-                    color: QColors.primaryGreen,
+                    color: c.accentStart,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     context.trPair('Voice Guide ON', 'आवाज़ गाइड चालू'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: QColors.inkBody,
+                      color: c.ink,
                     ),
                   ),
                 ],
@@ -234,27 +236,27 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(
-                color: QColors.dangerSoftBg,
+                color: c.rose.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
-                  color: QColors.dangerRed.withValues(alpha: 0.3),
+                  color: c.danger.withValues(alpha: 0.35),
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.sos_rounded,
                     size: 14,
-                    color: QColors.dangerRed,
+                    color: c.danger,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     context.trPair('24×7 SOS', 'आपातकालीन SOS'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
-                      color: QColors.dangerRed,
+                      color: c.danger,
                     ),
                   ),
                 ],
@@ -270,12 +272,13 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // 1. GIANT ONLINE / OFFLINE DUTY TOGGLE (Layered solid shapes, no gradient)
   // ===========================================================================
   Widget _buildDutyToggleCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     final online = widget.isOnline;
 
     return LayeredShapeCard(
-      backgroundColor: online ? QColors.primaryGreen : QColors.offlineSlate,
-      primaryShapeColor: online ? QColors.primaryGreenDark : QColors.deepSlate,
-      secondaryShapeColor: online ? QColors.amberGold : QColors.inkMuted,
+      backgroundColor: online ? c.ink : c.surfaceSunken,
+      primaryShapeColor: online ? c.accentStart.withValues(alpha: 0.35) : c.border,
+      secondaryShapeColor: online ? c.highlight : c.inkMuted,
       borderRadius: 20,
       padding: const EdgeInsets.all(18),
       onTap: () => widget.onOnlineChanged(!online),
@@ -285,16 +288,18 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
+              color: online
+                  ? c.highlight.withValues(alpha: 0.2)
+                  : c.border.withValues(alpha: 0.5),
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.35),
+                color: online ? c.highlight : c.border,
                 width: 2,
               ),
             ),
             child: Icon(
               online ? Icons.sensors_rounded : Icons.power_settings_new_rounded,
-              color: Colors.white,
+              color: online ? c.highlight : c.inkMuted,
               size: 28,
             ),
           ),
@@ -307,10 +312,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                   online
                       ? context.trPair('YOU ARE ONLINE', 'आप ऑनलाइन हैं')
                       : context.trPair('YOU ARE OFFLINE', 'आप ऑफलाइन हैं'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                    color: online ? Colors.white : c.ink,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -327,7 +332,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                         ),
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: Colors.white.withValues(alpha: 0.88),
+                    color: online ? Colors.white.withValues(alpha: 0.88) : c.inkMuted,
                     fontWeight: FontWeight.w500,
                     height: 1.3,
                   ),
@@ -338,10 +343,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
           const SizedBox(width: 8),
           Switch(
             value: online,
-            activeTrackColor: Colors.white,
-            activeThumbColor: QColors.primaryGreenDark,
-            inactiveTrackColor: Colors.white.withValues(alpha: 0.22),
-            inactiveThumbColor: Colors.white,
+            activeTrackColor: c.highlight,
+            activeThumbColor: Colors.white,
+            inactiveTrackColor: c.border,
+            inactiveThumbColor: c.inkMuted,
             trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
             onChanged: widget.onOnlineChanged,
           ),
@@ -354,16 +359,17 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // 2. TODAY'S SNAPSHOT: 3 big numbers + daily bonus progress
   // ===========================================================================
   Widget _buildTodaySnapshotCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     final jobs = widget.jobsCompletedToday;
     final bonusProgress = (jobs / _dailyBonusTarget).clamp(0.0, 1.0);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 6),
       decoration: BoxDecoration(
-        color: QColors.cleanWhite,
+        color: c.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: QColors.borderSubtle),
-        boxShadow: QTheme.softShadow,
+        border: Border.all(color: c.border),
+        boxShadow: c.e1,
       ),
       child: Column(
         children: [
@@ -373,7 +379,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                 child: _BigMetricTile(
                   label: context.trPair("Today's pay", 'आज की कमाई'),
                   value: '${BrandConfig.currency}${widget.todayEarningsRupees}',
-                  valueColor: QColors.primaryGreen,
+                  valueColor: c.highlight,
                 ),
               ),
               const _MetricDivider(),
@@ -381,7 +387,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                 child: _BigMetricTile(
                   label: context.trPair('Jobs done', 'पूरे काम'),
                   value: '$jobs',
-                  valueColor: QColors.inkDark,
+                  valueColor: c.ink,
                 ),
               ),
               const _MetricDivider(),
@@ -389,18 +395,18 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                 child: _BigMetricTile(
                   label: context.trPair('Rating', 'रेटिंग'),
                   value: '4.9 ★',
-                  valueColor: QColors.amberGold,
+                  valueColor: c.warning,
                 ),
               ),
             ],
           ),
-          const Divider(height: 26),
+          Divider(height: 26, color: c.border),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.emoji_events_rounded,
                 size: 18,
-                color: QColors.amberGold,
+                color: c.warning,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -409,10 +415,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     'Daily bonus: finish $_dailyBonusTarget jobs, get +${BrandConfig.currency}250',
                     'डेली बोनस: $_dailyBonusTarget काम पूरे करें, +${BrandConfig.currency}250 पाएं',
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
-                    color: QColors.inkBody,
+                    color: c.ink,
                     height: 1.3,
                   ),
                 ),
@@ -420,10 +426,11 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
               const SizedBox(width: 8),
               Text(
                 '$jobs/$_dailyBonusTarget',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: c.ink,
+                  fontFamily: QFonts.display,
                 ),
               ),
             ],
@@ -434,8 +441,8 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             child: LinearProgressIndicator(
               value: bonusProgress,
               minHeight: 7,
-              backgroundColor: QColors.warmIvorySurface,
-              color: QColors.amberGold,
+              backgroundColor: c.surfaceSunken,
+              color: c.highlight,
             ),
           ),
           Align(
@@ -443,12 +450,13 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             child: TextButton.icon(
               onPressed: widget.onSwitchToAnalyticsTab,
               iconAlignment: IconAlignment.end,
-              icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+              icon: Icon(Icons.arrow_forward_rounded, size: 16, color: c.accentStart),
               label: Text(
                 context.trPair('View detailed earnings', 'पूरा हिसाब देखें'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
+                  color: c.accentStart,
                 ),
               ),
             ),
@@ -462,6 +470,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // 3a. WAITING FOR JOBS (online, no active job) + LIVE SONAR RADAR GRAPHIC
   // ===========================================================================
   Widget _buildWaitingForJobCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -481,6 +490,8 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
         _StatusCard(
           key: const ValueKey('waiting-card'),
           icon: Icons.notifications_active_rounded,
+          iconColor: c.highlight,
+          iconBackground: c.peachTint,
           showSonarRadar: true,
           title: context.trPair(
             'Ready for new bookings',
@@ -508,11 +519,12 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // 3b. OFFLINE (no offers until the partner goes online)
   // ===========================================================================
   Widget _buildOfflineCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     return _StatusCard(
       key: const ValueKey('offline-card'),
       icon: Icons.power_settings_new_rounded,
-      iconColor: QColors.inkMuted,
-      iconBackground: QColors.warmIvorySurface,
+      iconColor: c.inkMuted,
+      iconBackground: c.surfaceSunken,
       title: context.trPair('You are offline', 'आप ऑफलाइन हैं'),
       message: context.trPair(
         'Go online to start receiving nearby jobs.',
@@ -530,6 +542,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
   // 3c. ACTIVE JOB: Stitch Minimal Active Job + 4-Digit OTP Box Display
   // ===========================================================================
   Widget _buildActiveJobCard(BuildContext context, ProviderJobOffer job) {
+    final c = QSevaColors.of(context);
     final stepIdx = _jobSteps.indexOf(_jobStep);
     final otpDigits = job.startOtp.split('');
 
@@ -537,10 +550,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
       key: const ValueKey('active-job-card'),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: QColors.cleanWhite,
+        color: c.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: QColors.primaryGreen, width: 2),
-        boxShadow: QTheme.elevatedShadow,
+        border: Border.all(color: c.highlight, width: 2),
+        boxShadow: c.e2,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,7 +563,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
             decoration: BoxDecoration(
-              color: QColors.deepSlate,
+              color: c.ink,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Wrap(
@@ -569,10 +582,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                 ),
                 Text(
                   '${context.trPair('You earn', 'आपकी आय')} ${BrandConfig.currency}${job.netPayoutRupees}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFFFDE68A),
+                    color: c.accentEnd,
                   ),
                 ),
               ],
@@ -581,30 +594,30 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
           const SizedBox(height: 14),
           Text(
             context.tr(job.serviceName),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: QColors.inkDark,
+              color: c.ink,
               height: 1.25,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.tr(job.packageName),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const Divider(height: 24),
+          Divider(height: 24, color: c.border),
 
           // Customer & address
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.person_pin_circle_rounded,
-                color: QColors.primaryGreen,
+                color: c.accentStart,
                 size: 28,
               ),
               const SizedBox(width: 10),
@@ -614,18 +627,18 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                   children: [
                     Text(
                       context.tr(job.customerName),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: QColors.inkDark,
+                        color: c.ink,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       context.tr(job.fullAddress),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: QColors.inkBody,
+                        color: c.inkMuted,
                         height: 1.3,
                       ),
                     ),
@@ -646,19 +659,19 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     vertical: 9,
                   ),
                   decoration: BoxDecoration(
-                    color: QColors.trustBlueSoft,
+                    color: c.sky.withValues(alpha: 0.35),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: QColors.trustBlue.withValues(alpha: 0.25),
+                      color: c.highlight.withValues(alpha: 0.25),
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.map_rounded,
                         size: 16,
-                        color: QColors.trustBlue,
+                        color: c.highlight,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -666,10 +679,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                           context.trPair('Google Maps', 'गूगल मैप्स'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: QColors.trustBlue,
+                            color: c.ink,
                           ),
                         ),
                       ),
@@ -685,17 +698,19 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     vertical: 9,
                   ),
                   decoration: BoxDecoration(
-                    color: QColors.softGreenTint,
+                    color: c.peachTint,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: QColors.softGreenBorder),
+                    border: Border.all(
+                      color: c.accentStart.withValues(alpha: 0.35),
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.call_rounded,
                         size: 16,
-                        color: QColors.primaryGreen,
+                        color: c.accentStart,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -703,10 +718,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                           context.trPair('Call Customer', 'ग्राहक को कॉल'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: QColors.primaryGreen,
+                            color: c.ink,
                           ),
                         ),
                       ),
@@ -733,15 +748,15 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: QColors.amberSoftBg,
+                  color: c.peachTint,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: QColors.amberGold),
+                  border: Border.all(color: c.accentStart),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.dialpad_rounded,
-                      color: QColors.amberGold,
+                      color: c.accentStart,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
@@ -751,10 +766,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                           'Tap to enter Start OTP:',
                           'OTP कीपैड खोलने के लिए टैप करें:',
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: QColors.inkDark,
+                          color: c.ink,
                         ),
                       ),
                     ),
@@ -767,19 +782,20 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                           margin: const EdgeInsets.only(left: 4),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: QColors.cleanWhite,
+                            color: c.surface,
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: QColors.primaryGreen,
+                              color: c.accentStart,
                               width: 1.5,
                             ),
                           ),
                           child: Text(
                             digit,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w900,
-                              color: QColors.inkDark,
+                              color: c.ink,
+                              fontFamily: QFonts.display,
                             ),
                           ),
                         );
@@ -797,7 +813,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: QColors.warmIvoryBg,
+              color: c.surfaceSunken,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -808,22 +824,22 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 1),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
                         child: Icon(
                           Icons.check_circle_outline_rounded,
                           size: 16,
-                          color: QColors.primaryGreen,
+                          color: c.highlight,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           context.tr(item),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
-                            color: QColors.inkBody,
+                            color: c.ink,
                             height: 1.3,
                           ),
                         ),
@@ -916,6 +932,7 @@ class _BigActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -923,11 +940,17 @@ class _BigActionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           minimumSize: const Size.fromHeight(56),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          backgroundColor: c.ink,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 2,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22),
+            Icon(icon, size: 22, color: c.accentEnd),
             const SizedBox(width: 10),
             Flexible(
               child: Text(
@@ -951,8 +974,8 @@ class _BigActionButton extends StatelessWidget {
 
 class _StatusCard extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
-  final Color iconBackground;
+  final Color? iconColor;
+  final Color? iconBackground;
   final String title;
   final String message;
   final Widget action;
@@ -961,8 +984,8 @@ class _StatusCard extends StatelessWidget {
   const _StatusCard({
     super.key,
     required this.icon,
-    this.iconColor = QColors.primaryGreen,
-    this.iconBackground = QColors.softGreenTint,
+    this.iconColor,
+    this.iconBackground,
     required this.title,
     required this.message,
     required this.action,
@@ -971,14 +994,18 @@ class _StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
+    final iColor = iconColor ?? c.highlight;
+    final iBg = iconBackground ?? c.peachTint;
+
     return LayeredShapeCard(
-      backgroundColor: QColors.cleanWhite,
-      primaryShapeColor: iconBackground,
-      secondaryShapeColor: iconColor,
+      backgroundColor: c.surface,
+      primaryShapeColor: iBg,
+      secondaryShapeColor: iColor,
       padding: const EdgeInsets.all(18),
       borderRadius: 20,
-      border: Border.all(color: QColors.borderSubtle),
-      boxShadow: QTheme.softShadow,
+      border: Border.all(color: c.border),
+      boxShadow: c.e1,
       child: Column(
         children: [
           if (showSonarRadar)
@@ -989,18 +1016,18 @@ class _StatusCard extends StatelessWidget {
               builder: (context, angle, _) {
                 return SonarRadarGraphic(
                   size: 94,
-                  primaryColor: iconColor,
-                  accentColor: QColors.karmicOrange,
+                  primaryColor: iColor,
+                  accentColor: c.accentStart,
                   sweepAngleRadians: angle,
                   centerChild: Container(
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: QColors.cleanWhite,
+                      color: c.surface,
                       shape: BoxShape.circle,
-                      border: Border.all(color: iconColor, width: 2),
+                      border: Border.all(color: iColor, width: 2),
                     ),
-                    child: Icon(icon, size: 22, color: iconColor),
+                    child: Icon(icon, size: 22, color: iColor),
                   ),
                 );
               },
@@ -1010,28 +1037,28 @@ class _StatusCard extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: iconBackground,
+                color: iBg,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 30, color: iconColor),
+              child: Icon(icon, size: 30, color: iColor),
             ),
           const SizedBox(height: 14),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: QColors.inkDark,
+              color: c.ink,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
               height: 1.35,
             ),
           ),
@@ -1051,6 +1078,7 @@ class _StepProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1059,10 +1087,10 @@ class _StepProgress extends StatelessWidget {
             'Step ${current + 1} of $total',
             'स्टेप ${current + 1} / $total',
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: QColors.inkMuted,
+            color: c.inkMuted,
           ),
         ),
         const SizedBox(height: 6),
@@ -1074,8 +1102,8 @@ class _StepProgress extends StatelessWidget {
                 margin: EdgeInsets.only(right: i == total - 1 ? 0 : 6),
                 decoration: BoxDecoration(
                   color: i <= current
-                      ? QColors.primaryGreen
-                      : QColors.warmIvoryHighlight,
+                      ? c.highlight
+                      : c.surfaceSunken,
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
@@ -1092,11 +1120,12 @@ class _MetricDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Container(
       width: 1,
       height: 44,
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      color: QColors.borderSubtle,
+      color: c.border,
     );
   }
 }
@@ -1114,6 +1143,7 @@ class _BigMetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Column(
       children: [
         FittedBox(
@@ -1126,6 +1156,7 @@ class _BigMetricTile extends StatelessWidget {
               fontWeight: FontWeight.w900,
               color: valueColor,
               letterSpacing: -0.4,
+              fontFamily: QFonts.display,
             ),
           ),
         ),
@@ -1135,10 +1166,10 @@ class _BigMetricTile extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: QColors.inkMuted,
+            color: c.inkMuted,
           ),
         ),
       ],
@@ -1183,6 +1214,7 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     final o = widget.offer;
 
     return SafeArea(
@@ -1190,10 +1222,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
       child: Container(
         margin: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: QColors.cleanWhite,
+          color: c.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: QColors.primaryGreen, width: 2.5),
-          boxShadow: QTheme.elevatedShadow,
+          border: Border.all(color: c.highlight, width: 2.5),
+          boxShadow: c.e3,
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(18),
@@ -1213,15 +1245,15 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: QColors.softGreenTint,
+                          color: c.peachTint,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.bolt_rounded,
-                              color: QColors.primaryGreen,
+                              color: c.accentStart,
                               size: 18,
                             ),
                             const SizedBox(width: 4),
@@ -1233,10 +1265,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w900,
-                                  color: QColors.primaryGreen,
+                                  color: c.ink,
                                 ),
                               ),
                             ),
@@ -1256,16 +1288,17 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                           child: CircularProgressIndicator(
                             value: _secondsLeft / _ttlSeconds,
                             strokeWidth: 4.5,
-                            backgroundColor: QColors.warmIvorySurface,
-                            color: QColors.primaryGreen,
+                            backgroundColor: c.surfaceSunken,
+                            color: c.highlight,
                           ),
                         ),
                         Text(
                           '${_secondsLeft}s',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
-                            color: QColors.inkDark,
+                            color: c.ink,
+                            fontFamily: QFonts.display,
                           ),
                         ),
                       ],
@@ -1280,9 +1313,9 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: QColors.warmIvoryBg,
+                  color: c.surfaceSunken,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: QColors.borderSubtle),
+                  border: Border.all(color: c.border),
                 ),
                 child: Column(
                   children: [
@@ -1292,10 +1325,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                         'इस काम से आपकी कमाई',
                       ),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
-                        color: QColors.inkMuted,
+                        color: c.inkMuted,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1303,21 +1336,22 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         '${BrandConfig.currency}${o.netPayoutRupees}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
-                          color: QColors.primaryGreen,
+                          color: c.highlight,
                           letterSpacing: -1,
+                          fontFamily: QFonts.display,
                         ),
                       ),
                     ),
                     Text(
                       '${context.tr(o.paymentMode.label)} (${BrandConfig.currency}${o.grossAmountRupees})',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: QColors.inkBody,
+                        color: c.ink,
                         height: 1.3,
                       ),
                     ),
@@ -1328,16 +1362,16 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: QColors.softGreenTint,
+                        color: c.peachTint,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.bolt_rounded,
                             size: 12,
-                            color: QColors.primaryGreen,
+                            color: c.accentStart,
                           ),
                           const SizedBox(width: 3),
                           Flexible(
@@ -1347,10 +1381,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                                 'सीधा बैंक खाते में / तुरंत भुगतान',
                               ),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
-                                color: QColors.primaryGreen,
+                                color: c.ink,
                               ),
                             ),
                           ),
@@ -1365,19 +1399,19 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
               // Service & distance
               Text(
                 context.tr(o.serviceName),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: c.ink,
                   height: 1.25,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 context.tr(o.packageName),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13.5,
-                  color: QColors.inkMuted,
+                  color: c.inkMuted,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1385,10 +1419,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.near_me_rounded,
                     size: 18,
-                    color: QColors.primaryGreen,
+                    color: c.accentStart,
                   ),
                   const SizedBox(width: 6),
                   Expanded(
@@ -1397,10 +1431,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                         '${o.distanceKm} km • ${o.etaMinutes} mins away • ${o.addressArea.en}',
                         '${o.distanceKm} किमी • ${o.etaMinutes} मिनट दूर • ${o.addressArea.hi}',
                       ),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
-                        color: QColors.inkDark,
+                        color: c.ink,
                         height: 1.3,
                       ),
                     ),
@@ -1416,16 +1450,16 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                   vertical: 9,
                 ),
                 decoration: BoxDecoration(
-                  color: QColors.warmIvorySurface,
+                  color: c.surfaceSunken,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: QColors.borderSubtle),
+                  border: Border.all(color: c.border),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.play_circle_fill_rounded,
                       size: 20,
-                      color: QColors.primaryGreen,
+                      color: c.accentStart,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -1436,10 +1470,10 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: QColors.inkBody,
+                          color: c.ink,
                         ),
                       ),
                     ),
@@ -1458,8 +1492,8 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(56),
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        foregroundColor: QColors.dangerRed,
-                        side: const BorderSide(color: QColors.dangerRed),
+                        foregroundColor: c.danger,
+                        side: BorderSide(color: c.danger),
                       ),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -1482,6 +1516,8 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(56),
                         padding: const EdgeInsets.symmetric(horizontal: 12),
+                        backgroundColor: c.highlight,
+                        foregroundColor: Colors.white,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1551,6 +1587,7 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     final canVerify = _entered.length == 4;
 
     return SafeArea(
@@ -1558,10 +1595,10 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: QColors.cleanWhite,
+          color: c.surface,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: QColors.primaryGreen, width: 2),
-          boxShadow: QTheme.darkSlateShadow,
+          border: Border.all(color: c.highlight, width: 2),
+          boxShadow: c.e3,
         ),
         clipBehavior: Clip.antiAlias,
         child: SingleChildScrollView(
@@ -1574,7 +1611,7 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: QColors.deepSlate,
+                  color: c.ink,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -1608,10 +1645,10 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                         padding: const EdgeInsets.only(left: 6),
                         child: Text(
                           context.trPair('Auto-Fill', 'ऑटो-फिल'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xFFFDE68A),
+                            color: c.accentEnd,
                           ),
                         ),
                       ),
@@ -1636,13 +1673,13 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: hasChar
-                          ? QColors.softGreenTint
-                          : QColors.warmIvoryBg,
+                          ? c.peachTint
+                          : c.surfaceSunken,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: hasChar || isCurrent
-                            ? QColors.primaryGreen
-                            : QColors.borderStrong,
+                            ? c.accentStart
+                            : c.border,
                         width: hasChar || isCurrent ? 2.0 : 1.2,
                       ),
                     ),
@@ -1651,7 +1688,8 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                       style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.w900,
-                        color: hasChar ? QColors.inkDark : QColors.inkLight,
+                        color: hasChar ? c.ink : c.inkMuted,
+                        fontFamily: QFonts.display,
                       ),
                     ),
                   );
@@ -1687,8 +1725,9 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                                 }
                               },
                               style: OutlinedButton.styleFrom(
-                                backgroundColor: QColors.warmIvoryBg,
-                                foregroundColor: QColors.inkDark,
+                                backgroundColor: c.surfaceSunken,
+                                foregroundColor: c.ink,
+                                side: BorderSide(color: c.border),
                                 padding: EdgeInsets.zero,
                                 minimumSize: const Size.fromHeight(38),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1701,6 +1740,7 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
+                                  fontFamily: QFonts.display,
                                 ),
                               ),
                             ),
@@ -1726,6 +1766,8 @@ class _OtpKeypadModalState extends State<_OtpKeypadModal> {
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(48),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
+                    backgroundColor: c.highlight,
+                    foregroundColor: Colors.white,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

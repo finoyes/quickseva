@@ -76,6 +76,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // HEADER
   // ===========================================================================
   Widget _buildHeader(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -85,10 +86,10 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
             children: [
               Text(
                 context.trPair('Earnings & Ledger', 'कमाई और खाता'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: c.ink,
                   letterSpacing: -0.4,
                 ),
               ),
@@ -98,9 +99,9 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                   'Plan: 15% commission + daily bonus',
                   'प्लान: 15% कमीशन + डेली बोनस',
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
-                  color: QColors.primaryGreen,
+                  color: c.highlight,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -117,12 +118,13 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // PERIOD SELECTOR
   // ===========================================================================
   Widget _buildPeriodSelector(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: QColors.warmIvorySurface,
+        color: c.surfaceSunken,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: QColors.borderSubtle),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -150,6 +152,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // 1. EARNINGS CHART
   // ===========================================================================
   Widget _buildEarningsChartCard(BuildContext context, int displayedTotal) {
+    final c = QSevaColors.of(context);
     final maxAmount = _weeklyAmounts.reduce((a, b) => a > b ? a : b);
 
     return _Card(
@@ -158,10 +161,10 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
         children: [
           Text(
             context.trPair('Net partner earnings', 'कुल शुद्ध कमाई'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
             ),
           ),
           const SizedBox(height: 2),
@@ -172,26 +175,27 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
             children: [
               RollingRupeeText(
                 amountRupees: displayedTotal,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: QColors.inkDark,
+                  color: c.ink,
                   letterSpacing: -0.8,
+                  fontFamily: QFonts.display,
                 ),
               ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: QColors.softGreenTint,
+                  color: c.pistachio.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   context.trPair('+18% vs last week', 'पिछले सप्ताह से +18%'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: QColors.primaryGreen,
+                    color: c.highlight,
                   ),
                 ),
               ),
@@ -233,8 +237,9 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                             fontWeight:
                                 isToday ? FontWeight.w900 : FontWeight.w600,
                             color: isToday
-                                ? QColors.primaryGreen
-                                : QColors.inkMuted,
+                                ? c.highlight
+                                : c.inkMuted,
+                            fontFamily: QFonts.display,
                           ),
                         ),
                       ),
@@ -250,8 +255,8 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                               color: isToday
-                                  ? QColors.primaryGreen
-                                  : QColors.softGreenBorder,
+                                  ? c.accentStart
+                                  : c.peachTint,
                               borderRadius: BorderRadius.circular(8),
                             ),
                           );
@@ -267,7 +272,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                             fontWeight:
                                 isToday ? FontWeight.w900 : FontWeight.w600,
                             color:
-                                isToday ? QColors.inkDark : QColors.inkMuted,
+                                isToday ? c.ink : c.inkMuted,
                           ),
                         ),
                       ),
@@ -286,9 +291,10 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // 2. WALLET: withdrawable balance + cash dues cap
   // ===========================================================================
   Widget _buildWalletCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     final dues = widget.cashDuesRupees;
     final duesRatio = (dues / _duesCapRupees).clamp(0.0, 1.0);
-    final duesColor = duesRatio > 0.75 ? QColors.dangerRed : QColors.amberGold;
+    final duesColor = duesRatio > 0.75 ? c.danger : c.warning;
 
     return _Card(
       child: Column(
@@ -297,19 +303,20 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
           // Withdrawable balance
           Text(
             context.trPair('Withdrawable balance', 'निकालने योग्य राशि'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
             ),
           ),
           const SizedBox(height: 4),
           RollingRupeeText(
             amountRupees: _withdrawableBalance,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w900,
-              color: QColors.primaryGreen,
+              color: c.highlight,
+              fontFamily: QFonts.display,
             ),
           ),
           const SizedBox(height: 12),
@@ -319,14 +326,20 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
               onPressed: _withdrawableBalance > 0 ? _instantPayout : null,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
+                backgroundColor: c.ink,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              icon: const Icon(Icons.account_balance_rounded, size: 18),
+              icon: Icon(Icons.account_balance_rounded, size: 18, color: c.accentEnd),
               label: Text(
                 context.trPair('Instant payout to bank', 'तुरंत बैंक में भेजें'),
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ),
           ),
-          const Divider(height: 30),
+          Divider(height: 30, color: c.border),
 
           // Cash dues (cash jobs accrue platform commission owed)
           Row(
@@ -335,10 +348,10 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
               Expanded(
                 child: Text(
                   context.trPair('Cash job dues', 'नकद काम का बकाया'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: QColors.inkDark,
+                    color: c.ink,
                   ),
                 ),
               ),
@@ -349,6 +362,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                   fontSize: 13.5,
                   fontWeight: FontWeight.w900,
                   color: duesColor,
+                  fontFamily: QFonts.display,
                 ),
               ),
             ],
@@ -359,7 +373,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
             child: LinearProgressIndicator(
               value: duesRatio,
               minHeight: 8,
-              backgroundColor: QColors.warmIvorySurface,
+              backgroundColor: c.surfaceSunken,
               color: duesColor,
             ),
           ),
@@ -369,9 +383,9 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
               'Keep dues below ${BrandConfig.currency}$_duesCapRupees to keep receiving jobs.',
               'नई बुकिंग पाते रहने के लिए बकाया ${BrandConfig.currency}$_duesCapRupees से कम रखें।',
             ),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
               height: 1.35,
             ),
           ),
@@ -383,13 +397,19 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                 onPressed: widget.onClearCashDues,
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(46),
+                  side: BorderSide(color: c.border),
+                  foregroundColor: c.ink,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                icon: const Icon(Icons.qr_code_rounded, size: 18),
+                icon: Icon(Icons.qr_code_rounded, size: 18, color: c.accentStart),
                 label: Text(
                   context.trPair(
                     'Pay ${BrandConfig.currency}$dues dues (demo UPI)',
                     '${BrandConfig.currency}$dues बकाया चुकाएं (डेमो UPI)',
                   ),
+                  style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
             ),
@@ -400,16 +420,18 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   }
 
   void _instantPayout() {
+    final c = QSevaColors.of(context);
     final paid = _withdrawableBalance;
     setState(() => _withdrawableBalance = 0);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: QColors.primaryGreen,
+        backgroundColor: c.highlight,
         content: Text(
           context.trPair(
             'Instant payout of ${BrandConfig.currency}$paid sent to your bank / UPI.',
             '${BrandConfig.currency}$paid आपके बैंक / UPI खाते में भेज दिए गए।',
           ),
+          style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
         ),
       ),
     );
@@ -419,6 +441,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // 3. PERFORMANCE & DEVICE HEALTH (2x2 grid, always fits)
   // ===========================================================================
   Widget _buildHealthCard(BuildContext context) {
+    final c = QSevaColors.of(context);
     final badges = [
       _DiagnosticBadge(
         label: context.trPair('Acceptance', 'स्वीकृति दर'),
@@ -444,10 +467,10 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
         children: [
           Text(
             context.trPair('Performance & phone health', 'प्रदर्शन और फोन स्थिति'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: QColors.inkDark,
+              color: c.ink,
             ),
           ),
           const SizedBox(height: 12),
@@ -475,15 +498,16 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
   // 4. LEDGER JOURNAL
   // ===========================================================================
   Widget _buildLedger(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           context.trPair('Transaction history', 'लेन-देन इतिहास'),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w900,
-            color: QColors.inkDark,
+            color: c.ink,
           ),
         ),
         const SizedBox(height: 10),
@@ -505,14 +529,15 @@ class _Card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return LayeredShapeCard(
-      backgroundColor: QColors.cleanWhite,
-      primaryShapeColor: QColors.softGreenTint,
-      secondaryShapeColor: QColors.primaryGreen,
+      backgroundColor: c.surface,
+      primaryShapeColor: c.peachTint,
+      secondaryShapeColor: c.highlight,
       padding: const EdgeInsets.all(16),
       borderRadius: 18,
-      border: Border.all(color: QColors.borderSubtle),
-      boxShadow: QTheme.softShadow,
+      border: Border.all(color: c.border),
+      boxShadow: c.e1,
       child: child,
     );
   }
@@ -524,15 +549,16 @@ class _LedgerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = entry.isCredit ? QColors.primaryGreen : QColors.amberGold;
+    final c = QSevaColors.of(context);
+    final color = entry.isCredit ? c.highlight : c.warning;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: QColors.cleanWhite,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: QColors.borderSubtle),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -541,8 +567,8 @@ class _LedgerRow extends StatelessWidget {
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
               color: entry.isCredit
-                  ? QColors.softGreenTint
-                  : QColors.amberSoftBg,
+                  ? c.pistachio.withValues(alpha: 0.45)
+                  : c.peachTint,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -560,19 +586,19 @@ class _LedgerRow extends StatelessWidget {
               children: [
                 Text(
                   context.tr(entry.title),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: QColors.inkDark,
+                    color: c.ink,
                     height: 1.25,
                   ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   context.tr(entry.subtitle),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: QColors.inkMuted,
+                    color: c.inkMuted,
                     height: 1.3,
                   ),
                 ),
@@ -588,23 +614,23 @@ class _LedgerRow extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: QColors.warmIvorySurface,
+                        color: c.surfaceSunken,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
                         context.tr(entry.tag),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: QColors.inkBody,
+                          color: c.ink,
                         ),
                       ),
                     ),
                     Text(
                       entry.timestampLabel,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: QColors.inkLight,
+                        color: c.inkMuted,
                       ),
                     ),
                   ],
@@ -619,6 +645,7 @@ class _LedgerRow extends StatelessWidget {
               fontSize: 15.5,
               fontWeight: FontWeight.w900,
               color: color,
+              fontFamily: QFonts.display,
             ),
           ),
         ],
@@ -640,6 +667,7 @@ class _PeriodTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -649,7 +677,7 @@ class _PeriodTab extends StatelessWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: selected ? QColors.primaryGreen : Colors.transparent,
+            color: selected ? c.ink : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
           ),
           child: Text(
@@ -659,7 +687,7 @@ class _PeriodTab extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: selected ? Colors.white : QColors.inkBody,
+              color: selected ? Colors.white : c.inkMuted,
             ),
           ),
         ),
@@ -676,12 +704,13 @@ class _DiagnosticBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: QColors.warmIvoryBg,
+        color: c.surfaceSunken,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: QColors.borderSubtle),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -690,9 +719,9 @@ class _DiagnosticBadge extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: QColors.inkMuted,
+              color: c.inkMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -701,10 +730,11 @@ class _DiagnosticBadge extends StatelessWidget {
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w900,
-              color: QColors.primaryGreen,
+              color: c.highlight,
+              fontFamily: QFonts.display,
             ),
           ),
         ],

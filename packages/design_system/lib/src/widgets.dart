@@ -152,7 +152,6 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
     final subtle = widget.subtleShapes ??
         (widget.backgroundColor.computeLuminance() > 0.5);
     final reduced = QMotion.reduced(context);
-    final listenable = reduced ? null : _scrollPosition;
 
     Widget shapes(double phase) {
       final dx = math.sin(phase);
@@ -320,8 +319,9 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
 }
 
 /// Scroll-Linked Depth & Entrance Motion Wrapper for Cards and Bento Sections.
-/// Combines a smooth one-shot entrance with a subtle scroll-velocity 3D tilt.
-class ScrollDepthCard extends StatefulWidget {
+/// Uses a GPU-cached [RepaintBoundary] and smooth one-shot entrance without
+/// per-frame 3D perspective Matrix4 rasterization stalls during scroll.
+class ScrollDepthCard extends StatelessWidget {
   final Widget child;
   final int index;
   final double parallaxStrength;
@@ -334,59 +334,13 @@ class ScrollDepthCard extends StatefulWidget {
   });
 
   @override
-  State<ScrollDepthCard> createState() => _ScrollDepthCardState();
-}
-
-class _ScrollDepthCardState extends State<ScrollDepthCard> {
-  ScrollPosition? _scrollPosition;
-  double _lastPixels = 0.0;
-  double _tilt = 0.0;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final pos = Scrollable.maybeOf(context)?.position;
-    if (pos != _scrollPosition) {
-      _scrollPosition = pos;
-      _lastPixels = (pos != null && pos.hasPixels) ? pos.pixels : 0.0;
-    }
-  }
-
-  Matrix4 _matrix() {
-    final pos = _scrollPosition;
-    final pixels = (pos != null && pos.hasPixels) ? pos.pixels : 0.0;
-    final delta = (pixels - _lastPixels).clamp(-18.0, 18.0);
-    _lastPixels = pixels;
-    _tilt = _tilt * 0.6 + (delta * 0.0022) * 0.4;
-    final wave = math.sin((pixels * 0.008) + (widget.index * 0.7));
-    final dy = wave * widget.parallaxStrength * 0.5;
-    return Matrix4.identity()
-      ..setEntry(3, 2, 0.001)
-      ..translateByDouble(0.0, dy, 0.0, 1.0)
-      ..rotateX(_tilt.clamp(-0.04, 0.04));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final reduced = QMotion.reduced(context);
-    final pos = _scrollPosition;
-
-    final Widget body = (reduced || pos == null)
-        ? widget.child
-        : AnimatedBuilder(
-            animation: pos,
-            builder: (context, child) => Transform(
-              alignment: Alignment.center,
-              transform: _matrix(),
-              child: child,
-            ),
-            child: widget.child,
-          );
-
-    return StaggeredEntrance(
-      index: widget.index % 6,
-      offsetY: 14,
-      child: body,
+    return RepaintBoundary(
+      child: StaggeredEntrance(
+        index: index % 6,
+        offsetY: 14,
+        child: child,
+      ),
     );
   }
 }
@@ -793,6 +747,7 @@ class LanguageTogglePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     final controller = LanguageScope.of(context);
     final isHindi = controller.isHindi;
 
@@ -805,12 +760,12 @@ class LanguageTogglePill extends StatelessWidget {
         decoration: BoxDecoration(
           color: darkSurface
               ? Colors.white.withValues(alpha: 0.14)
-              : QColors.warmIvorySurface,
+              : c.surfaceSunken,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: darkSurface
                 ? Colors.white.withValues(alpha: 0.25)
-                : QColors.borderStrong,
+                : c.border,
           ),
         ),
         child: Row(
@@ -819,7 +774,7 @@ class LanguageTogglePill extends StatelessWidget {
             Icon(
               Icons.translate_rounded,
               size: 14,
-              color: darkSurface ? Colors.white : QColors.primaryGreen,
+              color: darkSurface ? Colors.white : c.accentStart,
             ),
             const SizedBox(width: 5),
             Text(
@@ -827,7 +782,7 @@ class LanguageTogglePill extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: darkSurface ? Colors.white : QColors.inkDark,
+                color: darkSurface ? Colors.white : c.ink,
               ),
             ),
           ],
@@ -852,13 +807,14 @@ class InstantLaterSegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return Container(
       height: 50,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: QColors.warmIvorySurface,
+        color: c.surfaceSunken,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: QColors.borderSubtle),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -869,9 +825,9 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeOutCubic,
                 decoration: BoxDecoration(
-                  color: isInstant ? QColors.primaryGreen : Colors.transparent,
+                  color: isInstant ? c.ink : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: isInstant ? QTheme.softShadow : null,
+                  boxShadow: isInstant ? c.e1 : null,
                 ),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -880,7 +836,7 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                   children: [
                     DispatchClockGraphic(
                       size: 18,
-                      color: isInstant ? Colors.white : QColors.primaryGreen,
+                      color: isInstant ? c.accentEnd : c.highlight,
                       active: isInstant,
                     ),
                     const SizedBox(width: 5),
@@ -895,7 +851,7 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: isInstant ? Colors.white : QColors.inkBody,
+                          color: isInstant ? Colors.white : c.inkMuted,
                         ),
                       ),
                     ),
@@ -911,9 +867,9 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeOutCubic,
                 decoration: BoxDecoration(
-                  color: !isInstant ? QColors.primaryGreen : Colors.transparent,
+                  color: !isInstant ? c.ink : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: !isInstant ? QTheme.softShadow : null,
+                  boxShadow: !isInstant ? c.e1 : null,
                 ),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -923,7 +879,7 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                     Icon(
                       Icons.calendar_today_rounded,
                       size: 14,
-                      color: !isInstant ? Colors.white : QColors.inkMuted,
+                      color: !isInstant ? c.accentEnd : c.inkMuted,
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -934,7 +890,7 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: !isInstant ? Colors.white : QColors.inkBody,
+                          color: !isInstant ? Colors.white : c.inkMuted,
                         ),
                       ),
                     ),
@@ -966,6 +922,7 @@ class PackageDurationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     final discount = tier.discountPercent;
 
     return PressableScale(
@@ -979,15 +936,13 @@ class PackageDurationCard extends StatelessWidget {
             width: 154,
             margin: const EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
-              color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+              color: isSelected ? c.peachTint : c.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected
-                    ? QColors.primaryGreen
-                    : QColors.borderSubtle,
+                color: isSelected ? c.accentStart : c.border,
                 width: isSelected ? 1.8 : 1.0,
               ),
-              boxShadow: QTheme.softShadow,
+              boxShadow: c.e1,
             ),
             clipBehavior: Clip.antiAlias,
             child: Stack(
@@ -1002,8 +957,8 @@ class PackageDurationCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
-                          ? QColors.primaryGreen.withValues(alpha: 0.12)
-                          : QColors.softGreenTint.withValues(alpha: 0.65),
+                          ? c.accentStart.withValues(alpha: 0.14)
+                          : c.peachTint.withValues(alpha: 0.65),
                     ),
                   ),
                 ),
@@ -1017,10 +972,10 @@ class PackageDurationCard extends StatelessWidget {
                         context.tr(tier.title),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: QColors.inkDark,
+                          color: c.ink,
                           letterSpacing: -0.3,
                         ),
                       ),
@@ -1029,20 +984,20 @@ class PackageDurationCard extends StatelessWidget {
                         children: [
                           RollingRupeeText(
                             amountRupees: tier.priceRupees,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: QColors.inkDark,
+                              color: c.ink,
                             ),
                           ),
                           const SizedBox(width: 6),
                           if (tier.originalPriceRupees > tier.priceRupees)
                             Text(
                               '${BrandConfig.currency}${tier.originalPriceRupees}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: QColors.inkLight,
+                                color: c.inkMuted,
                                 decoration: TextDecoration.lineThrough,
                               ),
                             ),
@@ -1052,18 +1007,18 @@ class PackageDurationCard extends StatelessWidget {
                       if (discount > 0)
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.local_offer_rounded,
                               size: 13,
-                              color: QColors.primaryGreen,
+                              color: c.highlight,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               context.trPair('$discount% OFF', '$discount% छूट'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: QColors.primaryGreen,
+                                color: c.highlight,
                               ),
                             ),
                           ],
@@ -1075,16 +1030,12 @@ class PackageDurationCard extends StatelessWidget {
                         child: OutlinedButton(
                           onPressed: onBookTap,
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: isSelected
-                                ? QColors.primaryGreen
-                                : QColors.cleanWhite,
-                            foregroundColor: isSelected
-                                ? Colors.white
-                                : QColors.primaryGreen,
+                            backgroundColor:
+                                isSelected ? c.ink : c.surface,
+                            foregroundColor:
+                                isSelected ? Colors.white : c.ink,
                             side: BorderSide(
-                              color: isSelected
-                                  ? QColors.primaryGreen
-                                  : QColors.borderSubtle,
+                              color: isSelected ? c.ink : c.border,
                             ),
                             padding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
@@ -1133,7 +1084,7 @@ class PackageDurationCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
-                  color: QColors.bestsellerForest,
+                  color: c.ink,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -1165,13 +1116,14 @@ class SuperSaverPackBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return LayeredShapeCard(
-      backgroundColor: QColors.superSaverBg,
-      primaryShapeColor: QColors.primaryGreenDark,
-      secondaryShapeColor: QColors.amberGold,
+      backgroundColor: c.ink,
+      primaryShapeColor: c.accentStart,
+      secondaryShapeColor: c.accentEnd,
       borderRadius: 18,
       padding: const EdgeInsets.all(18),
-      boxShadow: QTheme.elevatedShadow,
+      boxShadow: c.e2,
       onTap: onBookTap,
       child: Row(
         children: [
@@ -1186,15 +1138,15 @@ class SuperSaverPackBanner extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: QColors.amberGold,
+                    color: c.accentEnd,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     context.tr(pack.badgeText),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: c.onAccent,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -1221,10 +1173,10 @@ class SuperSaverPackBanner extends StatelessWidget {
                       ),
                       TextSpan(
                         text: '\n${context.tr(pack.pricePerVisitText)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFFFDE68A),
+                          color: c.accentEnd,
                         ),
                       ),
                     ],
@@ -1242,8 +1194,8 @@ class SuperSaverPackBanner extends StatelessWidget {
                 ElevatedButton(
                   onPressed: onBookTap,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: QColors.cleanWhite,
-                    foregroundColor: QColors.inkDark,
+                    backgroundColor: c.surface,
+                    foregroundColor: c.ink,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 22,
                       vertical: 10,
@@ -1306,8 +1258,9 @@ class SuperSaverPackBanner extends StatelessWidget {
 }
 
 /// Matches UC Screenshot #2: Masonry Discovery Card ("Home Cleaning", "Beauty Services", etc.)
-/// Enhanced with inner scroll-linked photo parallax, spring press physics, Hero tag, and layered geometric footer.
-class MasonryDiscoveryCard extends StatefulWidget {
+/// Optimized with static [RepaintBoundary] caching (zero scroll-listener setState jank),
+/// spring press physics, Hero tag, and Peach Pop footer styling.
+class MasonryDiscoveryCard extends StatelessWidget {
   final DiscoveryCardItem item;
   final double imageHeight;
   final VoidCallback onTap;
@@ -1322,177 +1275,134 @@ class MasonryDiscoveryCard extends StatefulWidget {
   });
 
   @override
-  State<MasonryDiscoveryCard> createState() => _MasonryDiscoveryCardState();
-}
-
-class _MasonryDiscoveryCardState extends State<MasonryDiscoveryCard> {
-  ScrollPosition? _scrollPosition;
-  double _scrollPixels = 0.0;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final newPos = Scrollable.maybeOf(context)?.position;
-    if (_scrollPosition != newPos) {
-      _scrollPosition?.removeListener(_onScroll);
-      _scrollPosition = newPos;
-      _scrollPosition?.addListener(_onScroll);
-      if (newPos != null && newPos.hasPixels) {
-        _scrollPixels = newPos.pixels;
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollPosition?.removeListener(_onScroll);
-    super.dispose();
-  }
-
-  void _onScroll() {
-    final pos = _scrollPosition;
-    if (pos != null && pos.hasPixels && mounted) {
-      setState(() {
-        _scrollPixels = pos.pixels;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final parallaxShift = math.sin(
-          (_scrollPixels * 0.009) + (widget.item.id.hashCode * 0.4),
-        ) *
-        8.0;
+    final c = QSevaColors.of(context);
 
     final imageWidget = SizedBox(
-      height: widget.imageHeight,
+      height: imageHeight,
       width: double.infinity,
-      child: ClipRect(
-        child: Transform.translate(
-          offset: Offset(0, parallaxShift),
-          child: Transform.scale(
-            scale: 1.12,
-            child: QNetworkImage(
-              url: widget.item.imageUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+      child: QNetworkImage(
+        url: item.imageUrl,
+        fit: BoxFit.cover,
       ),
     );
 
-    return PressableScale(
-      onTap: widget.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: QColors.cleanWhite,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: QColors.borderSubtle),
-          boxShadow: QTheme.softShadow,
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                if (widget.heroTag != null)
-                  Hero(tag: widget.heroTag!, child: imageWidget)
-                else
-                  imageWidget,
-                if (widget.item.badge != null)
+    return RepaintBoundary(
+      child: PressableScale(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: c.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: c.border),
+            boxShadow: c.e1,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  if (heroTag != null)
+                    Hero(tag: heroTag!, child: imageWidget)
+                  else
+                    imageWidget,
+                  if (item.badge != null)
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: c.ink,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              item.badge!.en.contains('min')
+                                  ? Icons.bolt_rounded
+                                  : (item.badge!.en.contains('Bestseller')
+                                      ? Icons.workspace_premium_rounded
+                                      : Icons.local_offer_rounded),
+                              size: 12,
+                              color: c.accentEnd,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              context.tr(item.badge!),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              Stack(
+                children: [
                   Positioned(
-                    top: 10,
-                    left: 10,
+                    right: -20,
+                    bottom: -22,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 4,
-                      ),
+                      width: 54,
+                      height: 54,
                       decoration: BoxDecoration(
-                        color: QColors.deepSlate,
-                        borderRadius: BorderRadius.circular(8),
+                        shape: BoxShape.circle,
+                        color: c.peachTint.withValues(alpha: 0.72),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            widget.item.badge!.en.contains('min')
-                                ? Icons.bolt_rounded
-                                : (widget.item.badge!.en.contains('Bestseller')
-                                    ? Icons.workspace_premium_rounded
-                                    : Icons.local_offer_rounded),
-                            size: 12,
-                            color: const Color(0xFFFDE68A),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            context.tr(widget.item.badge!),
-                            style: const TextStyle(
-                              fontSize: 11,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            context.tr(item.title),
+                            style: TextStyle(
+                              fontSize: 14.5,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                              color: c.ink,
+                              letterSpacing: -0.2,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            Stack(
-              children: [
-                // Single subtle corner accent that drifts on scroll
-                Positioned(
-                  right: -20 + (parallaxShift * 0.4),
-                  bottom: -22,
-                  child: Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: QColors.softGreenTint.withValues(alpha: 0.72),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          context.tr(widget.item.title),
-                          style: const TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w800,
-                            color: QColors.inkDark,
-                            letterSpacing: -0.2,
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: c.peachTint,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: c.accentStart.withValues(alpha: 0.35),
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.arrow_outward_rounded,
+                            size: 14,
+                            color: c.ink,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        width: 26,
-                        height: 26,
-                        decoration: BoxDecoration(
-                          color: QColors.softGreenTint,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: QColors.softGreenBorder),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_outward_rounded,
-                          size: 14,
-                          color: QColors.primaryGreen,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1514,6 +1424,7 @@ class DateSlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return ElasticBounceWrapper(
       triggerKey: isSelected,
       child: PressableScale(
@@ -1527,12 +1438,10 @@ class DateSlotCard extends StatelessWidget {
               width: 68,
               height: 76,
               decoration: BoxDecoration(
-                color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+                color: isSelected ? c.peachTint : c.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: isSelected
-                      ? QColors.primaryGreen
-                      : QColors.borderSubtle,
+                  color: isSelected ? c.accentStart : c.border,
                   width: isSelected ? 1.8 : 1.0,
                 ),
               ),
@@ -1544,8 +1453,7 @@ class DateSlotCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color:
-                          isSelected ? QColors.primaryGreen : QColors.inkMuted,
+                      color: isSelected ? c.ink : c.inkMuted,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1554,8 +1462,7 @@ class DateSlotCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
-                      color:
-                          isSelected ? QColors.primaryGreen : QColors.inkDark,
+                      color: isSelected ? c.ink : c.ink,
                     ),
                   ),
                 ],
@@ -1569,10 +1476,10 @@ class DateSlotCard extends StatelessWidget {
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: slot.trend == DemandTrend.lowDown
-                        ? QColors.amberSoftBg
-                        : QColors.warmIvorySurface,
+                        ? c.peachTint
+                        : c.surfaceSunken,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: QColors.borderSubtle),
+                    border: Border.all(color: c.border),
                   ),
                   child: Icon(
                     slot.trend == DemandTrend.lowDown
@@ -1580,8 +1487,8 @@ class DateSlotCard extends StatelessWidget {
                         : Icons.trending_up_rounded,
                     size: 12,
                     color: slot.trend == DemandTrend.lowDown
-                        ? QColors.amberGold
-                        : QColors.inkBody,
+                        ? c.warning
+                        : c.inkMuted,
                   ),
                 ),
               ),
@@ -1607,6 +1514,7 @@ class TimeSlotCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return ElasticBounceWrapper(
       triggerKey: isSelected,
       child: PressableScale(
@@ -1620,12 +1528,10 @@ class TimeSlotCell extends StatelessWidget {
               height: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected ? QColors.softGreenTint : QColors.cleanWhite,
+                color: isSelected ? c.peachTint : c.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected
-                      ? QColors.primaryGreen
-                      : QColors.borderSubtle,
+                  color: isSelected ? c.accentStart : c.border,
                   width: isSelected ? 1.8 : 1.0,
                 ),
               ),
@@ -1634,7 +1540,7 @@ class TimeSlotCell extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  color: isSelected ? QColors.primaryGreen : QColors.inkDark,
+                  color: c.ink,
                 ),
               ),
             ),
@@ -1646,18 +1552,18 @@ class TimeSlotCell extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                   decoration: BoxDecoration(
-                    color: QColors.amberSoftBg,
+                    color: c.peachTint,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: QColors.amberGold.withValues(alpha: 0.35),
+                      color: c.warning.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Text(
                     '+ ${BrandConfig.currency}${slot.peakSurchargeRupees}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: QColors.amberGold,
+                      color: c.warning,
                     ),
                   ),
                 ),
@@ -1787,14 +1693,15 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return LayeredShapeCard(
-      backgroundColor: QColors.cleanWhite,
-      primaryShapeColor: QColors.softGreenTint,
-      secondaryShapeColor: QColors.primaryGreen,
+      backgroundColor: c.surface,
+      primaryShapeColor: c.peachTint,
+      secondaryShapeColor: c.highlight,
       borderRadius: 18,
       padding: const EdgeInsets.all(14),
-      border: Border.all(color: QColors.borderSubtle),
-      boxShadow: QTheme.softShadow,
+      border: Border.all(color: c.border),
+      boxShadow: c.e1,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1803,7 +1710,7 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: QColors.deepSlate,
+                  color: c.ink,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -1824,10 +1731,10 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: QColors.inkMuted,
+                    color: c.inkMuted,
                   ),
                 ),
               ),
@@ -1858,9 +1765,9 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                 child: Container(
                   height: 116,
                   decoration: BoxDecoration(
-                    color: QColors.warmIvorySurface,
+                    color: c.surfaceSunken,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: QColors.borderStrong),
+                    border: Border.all(color: c.border),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Stack(
@@ -1868,7 +1775,7 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                       // RIGHT / FULL LAYER: "BEFORE" (Dull / Untreated State)
                       Positioned.fill(
                         child: Container(
-                          color: const Color(0xFFE7E2D8),
+                          color: c.surfaceSunken,
                           padding: const EdgeInsets.all(12),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -1884,7 +1791,7 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                         vertical: 2.5,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: QColors.inkMuted,
+                                        color: c.inkMuted,
                                         borderRadius: BorderRadius.circular(5),
                                       ),
                                       child: Text(
@@ -1897,9 +1804,9 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                       ),
                                     ),
                                     const SizedBox(height: 6),
-                                    const Icon(
+                                    Icon(
                                       Icons.warning_amber_rounded,
-                                      color: QColors.amberGold,
+                                      color: c.warning,
                                       size: 26,
                                     ),
                                     const SizedBox(height: 4),
@@ -1910,10 +1817,10 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: QColors.inkBody,
+                                        color: c.inkMuted,
                                       ),
                                     ),
                                   ],
@@ -1931,11 +1838,10 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                         bottom: 0,
                         width: splitX,
                         child: Container(
-                          color: QColors.softGreenTint,
                           padding: const EdgeInsets.all(12),
                           clipBehavior: Clip.hardEdge,
-                          decoration: const BoxDecoration(
-                            color: QColors.softGreenTint,
+                          decoration: BoxDecoration(
+                            color: c.pistachio.withValues(alpha: 0.45),
                           ),
                           child: Stack(
                             children: [
@@ -1947,8 +1853,7 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                   height: 64,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: QColors.primaryGreen
-                                        .withValues(alpha: 0.14),
+                                    color: c.highlight.withValues(alpha: 0.14),
                                   ),
                                 ),
                               ),
@@ -1962,7 +1867,7 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                       vertical: 2.5,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: QColors.primaryGreen,
+                                      color: c.highlight,
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: Text(
@@ -1980,9 +1885,9 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  const Icon(
+                                  Icon(
                                     Icons.auto_awesome_rounded,
-                                    color: QColors.primaryGreen,
+                                    color: c.highlight,
                                     size: 26,
                                   ),
                                   const SizedBox(height: 4),
@@ -1993,10 +1898,10 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
-                                      color: QColors.primaryGreenDark,
+                                      color: c.ink,
                                     ),
                                   ),
                                 ],
@@ -2017,13 +1922,13 @@ class _BeforeAfterComparisonCardState extends State<BeforeAfterComparisonCard> {
                           children: [
                             Container(
                               width: 3,
-                              color: QColors.deepSlate,
+                              color: c.ink,
                             ),
                             Container(
                               width: 30,
                               height: 30,
                               decoration: BoxDecoration(
-                                color: QColors.deepSlate,
+                                color: c.ink,
                                 shape: BoxShape.circle,
                                 border:
                                     Border.all(color: Colors.white, width: 2),
@@ -2062,6 +1967,7 @@ class GeometricCelebrationBurst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 620),
@@ -2071,9 +1977,9 @@ class GeometricCelebrationBurst extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: QColors.softGreenTint,
+            color: c.pistachio.withValues(alpha: 0.45),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: QColors.primaryGreen, width: 1.5),
+            border: Border.all(color: c.highlight, width: 1.5),
           ),
           child: Row(
             children: [
@@ -2081,9 +1987,18 @@ class GeometricCelebrationBurst extends StatelessWidget {
                 width: 56,
                 height: 56,
                 child: CustomPaint(
-                  painter: _GeometricBurstPainter(progress: clamped),
-                  child: const Center(
-                    child: AnimatedCheckmark(size: 34),
+                  painter: _GeometricBurstPainter(
+                    progress: clamped,
+                    primaryColor: c.highlight,
+                    palette: [
+                      c.highlight,
+                      c.accentStart,
+                      c.accentEnd,
+                      c.sky,
+                    ],
+                  ),
+                  child: Center(
+                    child: AnimatedCheckmark(size: 34, color: c.highlight),
                   ),
                 ),
               ),
@@ -2096,10 +2011,10 @@ class GeometricCelebrationBurst extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w900,
-                        color: QColors.primaryGreenDark,
+                        color: c.ink,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -2107,10 +2022,10 @@ class GeometricCelebrationBurst extends StatelessWidget {
                       subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
-                        color: QColors.inkBody,
+                        color: c.inkMuted,
                       ),
                     ),
                   ],
@@ -2126,15 +2041,14 @@ class GeometricCelebrationBurst extends StatelessWidget {
 
 class _GeometricBurstPainter extends CustomPainter {
   final double progress;
+  final Color primaryColor;
+  final List<Color> palette;
 
-  _GeometricBurstPainter({required this.progress});
-
-  static const List<Color> _palette = [
-    QColors.primaryGreen,
-    QColors.amberGold,
-    QColors.karmicOrange,
-    QColors.trustBlue,
-  ];
+  _GeometricBurstPainter({
+    required this.progress,
+    required this.primaryColor,
+    required this.palette,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -2146,7 +2060,7 @@ class _GeometricBurstPainter extends CustomPainter {
       center,
       (maxRadius * 0.85 * progress).clamp(4.0, maxRadius),
       Paint()
-        ..color = QColors.primaryGreen.withValues(alpha: 0.22)
+        ..color = primaryColor.withValues(alpha: 0.22)
         ..strokeWidth = 1.6
         ..style = PaintingStyle.stroke,
     );
@@ -2160,7 +2074,7 @@ class _GeometricBurstPainter extends CustomPainter {
         center.dy + math.sin(angle) * dist,
       );
       final paint = Paint()
-        ..color = _palette[i % _palette.length]
+        ..color = palette[i % palette.length]
         ..style = PaintingStyle.fill;
 
       if (i.isEven) {
@@ -2180,7 +2094,8 @@ class _GeometricBurstPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GeometricBurstPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+      oldDelegate.progress != progress ||
+      oldDelegate.primaryColor != primaryColor;
 }
 
 

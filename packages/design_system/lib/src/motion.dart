@@ -1129,7 +1129,6 @@ class GlassSurface extends StatelessWidget {
     final glass = isDark ? QGlass.dark : QGlass.light;
     final canBlur = MotionPolicy.canBlur(context);
     final seva = Theme.of(context).extension<QSevaColors>();
-    final opaqueColor = seva?.surface ?? Colors.white;
 
     final br = BorderRadius.circular(borderRadius);
 
