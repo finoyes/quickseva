@@ -1062,10 +1062,9 @@ class MotionPolicy extends InheritedWidget {
   }
 
   /// Whether the device can handle blur/glass.
+  /// Set to false to prioritize solid 60/120fps UI performance without GPU fillrate stalls.
   static bool canBlur(BuildContext context) {
-    final policy = maybeOf(context);
-    if (policy != null) return !policy.isLowEnd && !policy.isReduced;
-    return !QMotion.reduced(context);
+    return false;
   }
 
   /// Returns [d] or a 120 ms fade when reduced motion is active.
@@ -1136,26 +1135,33 @@ class GlassSurface extends StatelessWidget {
     final innerChild = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: canBlur ? glass.fill : opaqueColor.withValues(alpha: 0.95),
+        color: canBlur
+            ? glass.fill
+            : (isDark
+                ? (seva?.surface ?? const Color(0xFF1E1E24)).withValues(alpha: 0.88)
+                : Colors.white.withValues(alpha: 0.92)),
         borderRadius: br,
         border: Border.all(
-          color: canBlur ? glass.border : (seva?.border ?? Colors.grey.shade300),
+          color: canBlur
+              ? glass.border
+              : (isDark
+                  ? Colors.white.withValues(alpha: 0.16)
+                  : Colors.white.withValues(alpha: 0.85)),
           width: glass.borderWidth,
         ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Top highlight line
-          if (canBlur)
-            Container(
-              height: 0.5,
-              margin: EdgeInsets.symmetric(horizontal: borderRadius * 0.3),
-              decoration: BoxDecoration(
-                color: glass.topHighlight,
-                borderRadius: BorderRadius.circular(1),
-              ),
+          // Top highlight line for specular rim light
+          Container(
+            height: 0.5,
+            margin: EdgeInsets.symmetric(horizontal: borderRadius * 0.3),
+            decoration: BoxDecoration(
+              color: glass.topHighlight,
+              borderRadius: BorderRadius.circular(1),
             ),
+          ),
           Flexible(child: child),
         ],
       ),

@@ -17,7 +17,6 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   String _selectedCategoryId = 'ALL';
   String _searchQuery = '';
   bool _homeInstantToggle = true;
-  bool _homeScrolledCompact = false;
   int _selectedHomePkgIndex = 2; // Defaults to 1.5 hours Bestseller
   late ServiceItem _cartService;
   late ServicePackageTier _cartPackage;
@@ -343,21 +342,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
     }).toList();
 
     return SafeArea(
-      child: NotificationListener<ScrollUpdateNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.axis == Axis.vertical) {
-            final shouldCompact = notification.metrics.pixels > 160;
-            if (shouldCompact != _homeScrolledCompact) {
-              setState(() => _homeScrolledCompact = shouldCompact);
-            }
-          }
-          return false;
-        },
-        child: Stack(
-          children: [
-            // Pastel blob background for home tab
-            PastelBackdrop(),
-            CustomScrollView(
+      child: CustomScrollView(
               slivers: [
                 // Top Header with Stitch Live Availability Strip, Address, Brand & EN/HI Switcher
           SliverToBoxAdapter(
@@ -1438,79 +1423,6 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             ),
           ),
         ],
-      ),
-      Positioned(
-        top: 8,
-        left: 16,
-        right: 16,
-        child: IgnorePointer(
-          child: AnimatedSlide(
-            duration: Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            offset: _homeScrolledCompact ? Offset.zero : Offset(0, -1.5),
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 200),
-              opacity: _homeScrolledCompact ? 1.0 : 0.0,
-              child: LayeredShapeCard(
-                backgroundColor: QSevaColors.of(context).ink,
-                primaryShapeColor: QSevaColors.of(context).ink,
-                secondaryShapeColor: QSevaColors.of(context).accentStart,
-                borderRadius: 999,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                boxShadow: QSevaColors.of(context).e3,
-                child: Row(
-                  children: [
-                    DispatchClockGraphic(
-                      size: 16,
-                      color: QSevaColors.of(context).highlight,
-                      active: true,
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        context.trPair(
-                          '${BrandConfig.brandName} • ${BrandConfig.instantPromiseMinutes}-Min Express Active',
-                          '${BrandConfig.brandNameHindi} • ${BrandConfig.instantPromiseMinutes}-मिनट एक्सप्रेस सक्रिय',
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: QSevaColors.of(context).accentStart,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        context.trPair('Fixed Rate', 'फिक्स रेट'),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-        ],
-      ),
       ),
     );
   }

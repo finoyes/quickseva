@@ -160,12 +160,20 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
       return subtle ? _subtleShapes(dx, dy) : _fullShapes(dx, dy);
     }
 
-    final decoration = listenable == null
-        ? shapes(0)
+    // Only animate parallax if explicitly enabled or on dark hero cards with multiplier > 0,
+    // avoiding rebuilding dozens of cards on every single scroll tick.
+    final shouldAnimateScroll = !reduced &&
+        widget.depthMultiplier > 0 &&
+        !subtle &&
+        _scrollPosition != null;
+
+    final decoration = !shouldAnimateScroll
+        ? RepaintBoundary(child: shapes(0))
         : AnimatedBuilder(
-            animation: listenable,
-            builder: (context, _) =>
-                shapes(_pixels * 0.011 * widget.depthMultiplier),
+            animation: _scrollPosition!,
+            builder: (context, _) => RepaintBoundary(
+              child: shapes(_pixels * 0.011 * widget.depthMultiplier),
+            ),
           );
 
     final card = Container(
@@ -180,7 +188,7 @@ class _LayeredShapeCardState extends State<LayeredShapeCard> {
       child: Stack(
         children: [
           Positioned.fill(
-            child: IgnorePointer(child: RepaintBoundary(child: decoration)),
+            child: IgnorePointer(child: decoration),
           ),
           Padding(
             padding: widget.padding,
