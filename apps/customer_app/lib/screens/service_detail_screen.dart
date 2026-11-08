@@ -208,7 +208,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         Icon(
                                           Icons.star_rounded,
                                           size: 15,
-                                          color: QSevaColors.of(context).accentStart,
+                                          color: QSevaColors.of(
+                                            context,
+                                          ).accentStart,
                                         ),
                                         SizedBox(width: 3),
                                         Text(
@@ -216,7 +218,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
-                                            color: QSevaColors.of(context).accentStart,
+                                            color: QSevaColors.of(
+                                              context,
+                                            ).accentStart,
                                           ),
                                         ),
                                       ],
@@ -329,7 +333,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       decoration: BoxDecoration(
                         color: QSevaColors.of(context).base,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: QSevaColors.of(context).border),
+                        border: Border.all(
+                          color: QSevaColors.of(context).border,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,13 +365,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                               return Container(
                                 width:
                                     (MediaQuery.of(context).size.width - 86) /
-                                        2,
+                                    2,
                                 padding: EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   color: QSevaColors.of(context).surface,
                                   borderRadius: BorderRadius.circular(12),
-                                  border:
-                                      Border.all(color: QSevaColors.of(context).border),
+                                  border: Border.all(
+                                    color: QSevaColors.of(context).border,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -373,13 +380,17 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                       width: 28,
                                       height: 28,
                                       decoration: BoxDecoration(
-                                        color: QSevaColors.of(context).pistachio,
+                                        color: QSevaColors.of(
+                                          context,
+                                        ).pistachio,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
                                         Icons.check_circle_rounded,
                                         size: 16,
-                                        color: QSevaColors.of(context).highlight,
+                                        color: QSevaColors.of(
+                                          context,
+                                        ).highlight,
                                       ),
                                     ),
                                     SizedBox(width: 8),
@@ -389,7 +400,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         style: TextStyle(
                                           fontSize: 12.5,
                                           fontWeight: FontWeight.w700,
-                                          color: QSevaColors.of(context).inkSecondary,
+                                          color: QSevaColors.of(
+                                            context,
+                                          ).inkSecondary,
                                           height: 1.25,
                                         ),
                                       ),
@@ -412,7 +425,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       decoration: BoxDecoration(
                         color: QSevaColors.of(context).surface,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: QSevaColors.of(context).border),
+                        border: Border.all(
+                          color: QSevaColors.of(context).border,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,27 +477,37 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                       spacing: 8,
                                       runSpacing: 8,
                                       children: field.options.map((opt) {
-                                        final active =
-                                            selectedVal == opt.value;
+                                        final active = selectedVal == opt.value;
                                         return ChoiceChip(
                                           label: Text(context.tr(opt.label)),
                                           selected: active,
-                                          selectedColor: QSevaColors.of(context).peachTint,
-                                          backgroundColor:
-                                              QSevaColors.of(context).base,
+                                          selectedColor: QSevaColors.of(
+                                            context,
+                                          ).peachTint,
+                                          backgroundColor: QSevaColors.of(
+                                            context,
+                                          ).base,
                                           labelStyle: TextStyle(
                                             fontSize: 12.5,
                                             fontWeight: active
                                                 ? FontWeight.w800
                                                 : FontWeight.w600,
                                             color: active
-                                                ? QSevaColors.of(context).accentStart
-                                                : QSevaColors.of(context).inkSecondary,
+                                                ? QSevaColors.of(
+                                                    context,
+                                                  ).accentStart
+                                                : QSevaColors.of(
+                                                    context,
+                                                  ).inkSecondary,
                                           ),
                                           side: BorderSide(
                                             color: active
-                                                ? QSevaColors.of(context).accentStart
-                                                : QSevaColors.of(context).border,
+                                                ? QSevaColors.of(
+                                                    context,
+                                                  ).accentStart
+                                                : QSevaColors.of(
+                                                    context,
+                                                  ).border,
                                           ),
                                           onSelected: (_) {
                                             setState(() {
@@ -499,7 +524,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             } else {
                               final count =
                                   (_formValues[field.key] as int?) ??
-                                      field.defaultValue;
+                                  field.defaultValue;
                               return Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -510,13 +535,17 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                       style: TextStyle(
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w700,
-                                        color: QSevaColors.of(context).inkSecondary,
+                                        color: QSevaColors.of(
+                                          context,
+                                        ).inkSecondary,
                                       ),
                                     ),
                                   ),
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: QSevaColors.of(context).surfaceSunken,
+                                      color: QSevaColors.of(
+                                        context,
+                                      ).surfaceSunken,
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
                                         color: QSevaColors.of(context).border,
@@ -530,9 +559,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                             size: 18,
                                           ),
                                           onPressed: count > field.min
-                                              ? () => setState(() =>
-                                                  _formValues[field.key] =
-                                                      count - 1)
+                                              ? () => setState(
+                                                  () => _formValues[field.key] =
+                                                      count - 1,
+                                                )
                                               : null,
                                         ),
                                         Text(
@@ -548,9 +578,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                             size: 18,
                                           ),
                                           onPressed: count < field.max
-                                              ? () => setState(() =>
-                                                  _formValues[field.key] =
-                                                      count + 1)
+                                              ? () => setState(
+                                                  () => _formValues[field.key] =
+                                                      count + 1,
+                                                )
                                               : null,
                                         ),
                                       ],
@@ -573,74 +604,75 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               borderRadius: 0,
               boxShadow: QSevaColors.of(context).e2,
               child: ElasticBounceWrapper(
-              triggerKey: '${_selectedPackage.id}_$_isInstant',
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(18, 12, 18, 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            context.tr(_selectedPackage.title),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: QSevaColors.of(context).inkMuted,
+                triggerKey: '${_selectedPackage.id}_$_isInstant',
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(18, 12, 18, 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              context.tr(_selectedPackage.title),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: QSevaColors.of(context).inkMuted,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 2),
-                          Row(
-                            children: [
-                              RollingRupeeText(
-                                amountRupees: _selectedPackage.priceRupees +
-                                    _extraFormPriceRupees,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: QSevaColors.of(context).ink,
+                            SizedBox(height: 2),
+                            Row(
+                              children: [
+                                RollingRupeeText(
+                                  amountRupees:
+                                      _selectedPackage.priceRupees +
+                                      _extraFormPriceRupees,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: QSevaColors.of(context).ink,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                '${BrandConfig.currency}${_selectedPackage.originalPriceRupees}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: QSevaColors.of(context).inkMuted,
-                                  decoration: TextDecoration.lineThrough,
+                                SizedBox(width: 6),
+                                Text(
+                                  '${BrandConfig.currency}${_selectedPackage.originalPriceRupees}',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: QSevaColors.of(context).inkMuted,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Flexible(
-                      child: AccentGradientButton(
-                        label: _isInstant
-                            ? context.trPair(
-                                'Book Instant (${s.instantEtaMinutes}m)',
-                                'तुरंत बुक (${s.instantEtaMinutes}m)',
-                              )
-                            : context.trPair(
-                                'Select Time Slot',
-                                'समय स्लॉट चुनें',
-                              ),
-                        icon: _isInstant
-                            ? Icons.bolt_rounded
-                            : Icons.calendar_month_rounded,
-                        onPressed: () =>
-                            _proceedWithPackage(_selectedPackage),
+                      Flexible(
+                        child: AccentGradientButton(
+                          label: _isInstant
+                              ? context.trPair(
+                                  'Book Instant (${s.instantEtaMinutes}m)',
+                                  'तुरंत बुक (${s.instantEtaMinutes}m)',
+                                )
+                              : context.trPair(
+                                  'Select Time Slot',
+                                  'समय स्लॉट चुनें',
+                                ),
+                          icon: _isInstant
+                              ? Icons.bolt_rounded
+                              : Icons.calendar_month_rounded,
+                          onPressed: () =>
+                              _proceedWithPackage(_selectedPackage),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
             ),
           ],
         ),

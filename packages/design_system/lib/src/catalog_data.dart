@@ -48,6 +48,16 @@ class CatalogData {
       badgeText: Tr('20 MINS', '20 मिनट'),
     ),
     ServiceCategory(
+      id: 'cat_masonry_civil',
+      name: Tr('Masonry, Civil & Daily Labour', 'राजमिस्त्री, सिविल और दिहाड़ी लेबर'),
+      subtitle: Tr('Rajmistri, Tile, Welder, Beldar', 'राजमिस्त्री, टाइल, वेल्डर, बेलदार'),
+      icon: Icons.construction_rounded,
+      imageUrl:
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80',
+      hasInstantBadge: true,
+      badgeText: Tr('SKILLED', 'कुशल लेबर'),
+    ),
+    ServiceCategory(
       id: 'cat_women_salon',
       name: Tr("Women's Salon & Spa", 'महिला सैलून और स्पा'),
       subtitle: Tr('Waxing, facial, manicure, spa', 'वैक्सिंग, फेशियल, स्पा'),
@@ -143,6 +153,41 @@ class CatalogData {
       imageUrl:
           'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=700&q=80',
       aspectRatio: 0.88,
+    ),
+    DiscoveryCardItem(
+      id: 'disc_9',
+      serviceId: 'svc_masonry_civil',
+      title: Tr('Mason / Rajmistri & Civil Work', 'राजमिस्त्री और सिविल निर्माण'),
+      imageUrl:
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=700&q=80',
+      aspectRatio: 0.84,
+      badge: Tr('Half / Full Day', 'दिहाड़ी / ठेका'),
+    ),
+    DiscoveryCardItem(
+      id: 'disc_10',
+      serviceId: 'svc_tile_marble_mistri',
+      title: Tr('Tile, Marble & Granite Mistri', 'टाइल, मार्बल और ग्रेनाइट मिस्त्री'),
+      imageUrl:
+          'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80',
+      aspectRatio: 0.86,
+      badge: Tr('Laser Level', 'लेज़र लेवल'),
+    ),
+    DiscoveryCardItem(
+      id: 'disc_11',
+      serviceId: 'svc_welder_fabricator',
+      title: Tr('Welder & Iron Fabricator', 'वेल्डर और गेट/ग्रिल रिपेयर'),
+      imageUrl:
+          'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=700&q=80',
+      aspectRatio: 0.82,
+    ),
+    DiscoveryCardItem(
+      id: 'disc_12',
+      serviceId: 'svc_construction_helper',
+      title: Tr('Beldar / Site & Shifting Helper', 'बेलदार / निर्माण और शिफ्टिंग लेबर'),
+      imageUrl:
+          'https://images.unsplash.com/photo-1541888946425-d09bb18086f6?auto=format&fit=crop&w=700&q=80',
+      aspectRatio: 0.85,
+      badge: Tr('₹249 onwards', '₹249 से शुरू'),
     ),
   ];
 
@@ -787,6 +832,539 @@ class CatalogData {
         ),
       ],
     ),
+
+    // --- 12. MASONRY / RAJMISTRI & CIVIL WORK ---
+    ServiceItem(
+      id: 'svc_masonry_civil',
+      categoryId: 'cat_masonry_civil',
+      name: Tr(
+        'Mason / Rajmistri (Brickwork, Plaster & Civil)',
+        'राजमिस्त्री (ईंट चुनाई, प्लास्टर और सिविल रिपेयर)',
+      ),
+      tagline: Tr(
+        'Skilled Rajmistri for brickwork, wall plastering, PCC flooring, slope fix & civil repair',
+        'ईंट की दीवार, सीमेंट प्लास्टर, फर्श ढलाई (PCC), ढलान सुधार और सिविल मरम्मत के लिए अनुभवी राजमिस्त्री',
+      ),
+      description: Tr(
+        'Book a verified senior Rajmistri by task or for a 4-hour half-day / 8-hour full-day dihadi shift, with optional Beldar helper.',
+        'छोटी मरम्मत या 4-घंटे हाफ-डे / 8-घंटे फुल-डे दिहाड़ी पर अनुभवी राजमिस्त्री और बेलदार बुक करें।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80',
+      rating: 4.89,
+      bookingsCountLabel: '410K+',
+      supportsInstant: true,
+      instantEtaMinutes: 25,
+      startingPriceRupees: 349,
+      originalStartingPriceRupees: 549,
+      estimatedDurationMinutes: 240,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_mason_patch',
+          title: Tr('Minor Civil / Plaster Patch', 'छोटा प्लास्टर / सिविल पैच रिपेयर'),
+          subtitle: Tr(
+            'Wall crack sealing, bathroom threshold or slab patch (2 hrs)',
+            'दीवार दरार, बाथरूम देहलीज़ या स्लैब मरम्मत (2 घंटे)',
+          ),
+          priceRupees: 349,
+          originalPriceRupees: 549,
+          durationMinutes: 120,
+          inclusions: [
+            Tr('Includes trowel, plumb-bob & spirit-level tools', 'कन्नी, साहुल और लेवल टूल के साथ'),
+            Tr('Clean post-work cement mortar sweeping', 'काम के बाद मलबा समेटना शामिल'),
+          ],
+        ),
+        ServicePackageTier(
+          id: 'pkg_mason_half',
+          title: Tr('Half-Day Rajmistri (4 Hrs)', 'हाफ-डे राजमिस्त्री (4 घंटे)'),
+          subtitle: Tr(
+            'Brick partition patch, chamber cover or kitchen platform fix',
+            'छोटी चुनाई, चैंबर ढक्कन या किचन स्लैब रिपेयर',
+          ),
+          priceRupees: 499,
+          originalPriceRupees: 799,
+          durationMinutes: 240,
+        ),
+        ServicePackageTier(
+          id: 'pkg_mason_full',
+          title: Tr('Full-Day Rajmistri (8 Hrs)', 'फुल-डे सीनियर राजमिस्त्री (8 घंटे)'),
+          subtitle: Tr(
+            'Complete 8-hour shift for brickwork, plastering or PCC floor',
+            'ईंट चुनाई, प्लास्टर या फर्श ढलाई के लिए पूरे 8 घंटे की शिफ्ट',
+          ),
+          priceRupees: 899,
+          originalPriceRupees: 1299,
+          durationMinutes: 480,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_mason_team',
+          title: Tr('Rajmistri + Beldar Helper (8 Hrs)', 'राजमिस्त्री + बेलदार हेल्पर जोड़ी (8 घंटे)'),
+          subtitle: Tr(
+            '1 Senior Mason + 1 Mortar/Material Helper for 2X faster work',
+            '1 राजमिस्त्री + 1 मसाला/ईंट पकड़ाने वाला बेलदार (दोगुनी तेज़ गति)',
+          ),
+          priceRupees: 1399,
+          originalPriceRupees: 1999,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('4-inch & 9-inch brick wall masonry (Chunai)', '4-इंच और 9-इंच ईंट दीवार की चुनाई'),
+        Tr('Internal & external smooth cement plastering', 'अंदर और बाहर की दीवारों पर चिकना सीमेंट प्लास्टर'),
+        Tr('Bathroom/balcony floor slope & waterproofing screed', 'बाथरूम और बालकनी का ढलान व वाटरप्रूफिंग कोबा'),
+        Tr('Manhole chamber, drainage & boundary wall repair', 'मेनहोल चैंबर, नाली और बाउंड्री वॉल मरम्मत'),
+      ],
+      formFields: [
+        ServiceFormField(
+          key: 'mason_work_type',
+          type: FormFieldType.select,
+          label: Tr('Select type of masonry work', 'सिविल / राजमिस्त्री का काम चुनें'),
+          options: [
+            ServiceFormOption(
+              value: 'plaster_patch',
+              label: Tr('Wall Plaster / Dampness Repair', 'दीवार प्लास्टर / सीलन रिपेयर'),
+            ),
+            ServiceFormOption(
+              value: 'brickwork',
+              label: Tr('Brick Wall Construction (Chunai)', 'नई ईंट दीवार चुनाई'),
+              extraPriceRupees: 100,
+            ),
+            ServiceFormOption(
+              value: 'floor_pcc',
+              label: Tr('Floor PCC / Slope Correction', 'फर्श ढलाई (PCC) / ढलान सुधार'),
+              extraPriceRupees: 150,
+            ),
+          ],
+        ),
+        ServiceFormField(
+          key: 'mason_days',
+          type: FormFieldType.stepper,
+          label: Tr('Number of days / shifts needed', 'कितने दिन के लिए मिस्त्री चाहिए?'),
+          min: 1,
+          max: 10,
+          defaultValue: 1,
+        ),
+      ],
+    ),
+
+    // --- 13. TILE, MARBLE & GRANITE FITTING MISTRI ---
+    ServiceItem(
+      id: 'svc_tile_marble_mistri',
+      categoryId: 'cat_masonry_civil',
+      name: Tr(
+        'Tile, Marble & Granite Fitting Mistri',
+        'टाइल, मार्बल और ग्रेनाइट फिटिंग मिस्त्री',
+      ),
+      tagline: Tr(
+        'Laser-level floor & wall tiling, granite kitchen counter, moulding & epoxy grouting',
+        'लेज़र-लेवल फ्लोर और वॉल टाइल फिटिंग, किचन ग्रेनाइट स्लैब, मोल्डिंग और एपॉक्सी ग्राउटिंग',
+      ),
+      description: Tr(
+        'Specialist tile & stone craftsmen equipped with electric tile cutters, rubber mallets & laser levels.',
+        'इलेक्ट्रिक टाइल कटर, रबर हैमर और लेज़र लेवल से लैस विशेषज्ञ टाइल व मार्बल मिस्त्री।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+      rating: 4.90,
+      bookingsCountLabel: '265K+',
+      supportsInstant: true,
+      instantEtaMinutes: 30,
+      startingPriceRupees: 399,
+      originalStartingPriceRupees: 649,
+      estimatedDurationMinutes: 180,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_tile_repair',
+          title: Tr('Up to 5 Loose / Broken Tiles Fix', '5 टूटी / उखड़ी टाइलों की रिपेयर'),
+          subtitle: Tr(
+            'Popped or hollow floor/wall tile re-fixing with adhesive',
+            'उखड़ी या खाली आवाज़ करने वाली टाइलों को केमिकल से दोबारा लगाना',
+          ),
+          priceRupees: 399,
+          originalPriceRupees: 649,
+          durationMinutes: 90,
+        ),
+        ServicePackageTier(
+          id: 'pkg_tile_grout',
+          title: Tr('Bathroom Epoxy Tile Grouting', 'बाथरूम एपॉक्सी टाइल ग्राउटिंग'),
+          subtitle: Tr(
+            'Leak-proof joint sealing for 1 bathroom floor & walls',
+            '1 बाथरूम के टाइल जोड़ों में लीक-प्रूफ एपॉक्सी फिलिंग',
+          ),
+          priceRupees: 699,
+          originalPriceRupees: 1099,
+          durationMinutes: 150,
+        ),
+        ServicePackageTier(
+          id: 'pkg_tile_fullday',
+          title: Tr('Full-Day Tile/Marble Mistri (8 Hrs)', 'फुल-डे टाइल/मार्बल मिस्त्री (8 घंटे)'),
+          subtitle: Tr(
+            'Vitrified tiles, granite slab cutting, skirting & moulding',
+            'फ्लोर/वॉल टाइल, किचन ग्रेनाइट कटिंग और धार मोल्डिंग (8 घंटे)',
+          ),
+          priceRupees: 949,
+          originalPriceRupees: 1399,
+          durationMinutes: 480,
+          isBestseller: true,
+        ),
+      ],
+      capabilities: [
+        Tr('2×2 & 2×4 vitrified floor tile laying with spacers', 'स्पेसर के साथ 2×2 और 2×4 विट्रीफाइड फ्लोर टाइल फिटिंग'),
+        Tr('Kitchen granite counter sink cutout & half-round moulding', 'किचन ग्रेनाइट सिंक कटिंग और हाफ-राउंड मोल्डिंग'),
+        Tr('Staircase marble risers, Kota stone & skirting', 'सीढ़ियों पर मार्बल, कोटा स्टोन और स्कर्टिंग फिटिंग'),
+      ],
+    ),
+
+    // --- 14. EXPERT CARPENTER / BADHAI ---
+    ServiceItem(
+      id: 'svc_carpenter_work',
+      categoryId: 'cat_repairs',
+      name: Tr(
+        'Expert Carpenter (Badhai) & Furniture Repair',
+        'एक्सपर्ट बढ़ई (कारपेंटर) और फर्नीचर रिपेयर',
+      ),
+      tagline: Tr(
+        'Door lock, hinge, hydraulic bed, wardrobe slider, modular kitchen & wood work',
+        'दरवाज़ा लॉक, कब्ज़ा, हाइड्रोलिक बेड, अलमारी स्लाइडर, मॉड्यूलर किचन और लकड़ी का काम',
+      ),
+      description: Tr(
+        'On-demand skilled carpenters for quick hardware fixes, furniture assembly or full-day woodwork.',
+        'तुरंत हार्डवेयर फिटिंग, फर्नीचर रिपेयर या पूरे दिन के लकड़ी काम के लिए कुशल बढ़ई।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80',
+      rating: 4.88,
+      bookingsCountLabel: '530K+',
+      supportsInstant: true,
+      instantEtaMinutes: 20,
+      startingPriceRupees: 149,
+      originalStartingPriceRupees: 279,
+      estimatedDurationMinutes: 60,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_carp_lock',
+          title: Tr('Door Lock / Hinge / Stopper Fix', 'दरवाज़ा लॉक / कब्ज़ा / कुंडी रिपेयर'),
+          subtitle: Tr(
+            'Jammed door planing, handle latch or hydraulic closer',
+            'अटकते दरवाज़े की रंदा घिसाई, हैंडल या डोर क्लोज़र रिपेयर',
+          ),
+          priceRupees: 149,
+          originalPriceRupees: 279,
+          durationMinutes: 45,
+        ),
+        ServicePackageTier(
+          id: 'pkg_carp_furn',
+          title: Tr('Bed / Wardrobe / Kitchen Repair', 'बेड / अलमारी / किचन कैबिनेट रिपेयर'),
+          subtitle: Tr(
+            'Drawer telescopic channel, cabinet hinge or bed dismantling',
+            'दराज चैनल, किचन कैबिनेट कब्ज़ा या बेड खोलना/जोड़ना',
+          ),
+          priceRupees: 299,
+          originalPriceRupees: 499,
+          durationMinutes: 75,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_carp_fullday',
+          title: Tr('Full-Day Carpenter (8 Hrs Dihadi)', 'फुल-डे बढ़ई / कारपेंटर (8 घंटे दिहाड़ी)'),
+          subtitle: Tr(
+            'Custom plywood shelf, laminate pasting & modular woodwork',
+            'प्लाईवुड शेल्फ, सनमाइका पेस्टिंग और कस्टम फर्नीचर काम (8 घंटे)',
+          ),
+          priceRupees: 849,
+          originalPriceRupees: 1299,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('Main door mortise/digital lock & peephole installation', 'मेन डोर लॉक, डिजिटल लॉक और पीपहोल इंस्टॉलेशन'),
+        Tr('Modular kitchen soft-close hinges & drawer channels', 'मॉड्यूलर किचन सॉफ्ट-क्लोज़ कब्ज़े और दराज चैनल'),
+        Tr('Curtain rods, wall mirrors, TV frame & cloth hanger drill', 'पर्दे की रॉड, शीशा और सीलिंग क्लॉथ हैंगर ड्रिलिंग'),
+      ],
+    ),
+
+    // --- 15. WELDER & IRON / GATE FABRICATOR ---
+    ServiceItem(
+      id: 'svc_welder_fabricator',
+      categoryId: 'cat_masonry_civil',
+      name: Tr(
+        'On-Site Welder & Iron Gate Fabricator',
+        'ऑन-साइट वेल्डर और लोहा गेट/ग्रिल फैब्रिकेटर',
+      ),
+      tagline: Tr(
+        'Main iron gate hinge welding, window safety grill, staircase railing & tin shed work',
+        'लोहे के मेन गेट कब्ज़ा वेल्डिंग, खिड़की सेफ्टी ग्रिल, रेलिंग और टिन शेड निर्माण',
+      ),
+      description: Tr(
+        'Certified arc & MIG welders bringing portable inverter welding machine, grinder & safety gear to your doorstep.',
+        'पोर्टेबल इन्वर्टर वेल्डिंग मशीन और ग्राइंडर के साथ आपके घर पर तुरंत वेल्डिंग सेवा।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+      rating: 4.86,
+      bookingsCountLabel: '195K+',
+      supportsInstant: true,
+      instantEtaMinutes: 25,
+      startingPriceRupees: 349,
+      originalStartingPriceRupees: 599,
+      estimatedDurationMinutes: 60,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_weld_gate',
+          title: Tr('On-Site Gate / Grill Welding', 'गेट / ग्रिल ऑन-साइट वेल्डिंग'),
+          subtitle: Tr(
+            'Broken gate hinge, latch, lock-plate or railing joint weld',
+            'टूटे गेट कब्ज़े, कुंडी या रेलिंग जोड़ की मजबूत आर्क वेल्डिंग',
+          ),
+          priceRupees: 349,
+          originalPriceRupees: 599,
+          durationMinutes: 60,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_weld_grill',
+          title: Tr('Safety Grill / AC Cage Fitting', 'सेफ्टी ग्रिल / AC लोहे का पिंजरा फिटिंग'),
+          subtitle: Tr(
+            'Window grill, balcony mesh frame or outdoor AC security cage',
+            'खिड़की ग्रिल, बालकनी जाली फ्रेम या आउटडोर AC सेफ्टी केज फिटिंग',
+          ),
+          priceRupees: 599,
+          originalPriceRupees: 999,
+          durationMinutes: 150,
+        ),
+        ServicePackageTier(
+          id: 'pkg_weld_fullday',
+          title: Tr('Full-Day Welder + Machine (8 Hrs)', 'फुल-डे वेल्डर + वेल्डिंग मशीन (8 घंटे)'),
+          subtitle: Tr(
+            'Roof tin/profile-sheet shed, iron stairs & heavy fabrication',
+            'छत का टिन शेड, लोहे की सीढ़ी और भारी फैब्रिकेशन काम (8 घंटे)',
+          ),
+          priceRupees: 999,
+          originalPriceRupees: 1499,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('Portable single-phase inverter welding machine included', 'पोर्टेबल सिंगल-फेज वेल्डिंग मशीन और रॉड शामिल'),
+        Tr('Angle grinder cutting, buffing & rust primer touch-up', 'एंगल ग्राइंडर कटिंग, घिसाई और प्राइमर टच-अप'),
+        Tr('MS gate, rolling shutter spring & rooftop shed repair', 'लोहे का गेट, शटर स्प्रिंग और रूफ शेड रिपेयर'),
+      ],
+    ),
+
+    // --- 16. HOUSE PAINTER, WALL PUTTY & WATERPROOFING ---
+    ServiceItem(
+      id: 'svc_painter_putty',
+      categoryId: 'cat_painting_pest',
+      name: Tr(
+        'House Painter, Wall Putty & Waterproofing',
+        'हाउस पेंटर, वॉल पुट्टी और वाटरप्रूफिंग मिस्त्री',
+      ),
+      tagline: Tr(
+        'Damp wall seepage cure, Birla putty, 1-day room repaint, texture & wood/iron enamel',
+        'सीलन वाली दीवार का इलाज, बिरला पुट्टी, 1-दिन रूम पेंटिंग और दरवाज़ा/ग्रिल पेंट',
+      ),
+      description: Tr(
+        'Dust-free mechanized sanding, furniture plastic masking & trained painters available per wall, per room or daily dihadi.',
+        'फर्नीचर प्लास्टिक कवरिंग और डस्ट-फ्री सैंडिंग के साथ 1 दीवार, 1 कमरा या दिहाड़ी पर कुशल पेंटर।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80',
+      rating: 4.87,
+      bookingsCountLabel: '380K+',
+      supportsInstant: true,
+      instantEtaMinutes: 30,
+      startingPriceRupees: 499,
+      originalStartingPriceRupees: 849,
+      estimatedDurationMinutes: 240,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_paint_wall',
+          title: Tr('1 Wall Damp Patch + Repaint', '1 दीवार सीलन रिपेयर + पेंट'),
+          subtitle: Tr(
+            'Scraping, waterproof coat, 2 coats putty + primer & paint',
+            'पपड़ी हटाना, वाटरप्रूफ कोट, पुट्टी + प्राइमर और पेंट',
+          ),
+          priceRupees: 499,
+          originalPriceRupees: 849,
+          durationMinutes: 180,
+        ),
+        ServicePackageTier(
+          id: 'pkg_paint_fullday',
+          title: Tr('Full-Day Skilled Painter (8 Hrs)', 'फुल-डे कुशल पेंटर (8 घंटे दिहाड़ी)'),
+          subtitle: Tr(
+            'Hire a pro painter for walls, doors, windows or grill enamel',
+            'दीवार, दरवाज़े, खिड़की या लोहे की ग्रिल पेंट के लिए 8 घंटे पेंटर',
+          ),
+          priceRupees: 799,
+          originalPriceRupees: 1199,
+          durationMinutes: 480,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_paint_room',
+          title: Tr('1 Room Express Repaint (Labour)', '1 कमरा एक्सप्रेस पेंटिंग (लेबर पैक)'),
+          subtitle: Tr(
+            '2 Painters • Complete 4 walls + ceiling putty touch-up & 2 coats',
+            '2 पेंटर • चारों दीवारें + छत टच-अप और 2 कोट फिनिशिंग',
+          ),
+          priceRupees: 1499,
+          originalPriceRupees: 2399,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('Crack filling, dampness waterproofing & 2-coat wall putty', 'दरार भरना, सीलन वाटरप्रूफिंग और 2-कोट वॉल पुट्टी'),
+        Tr('Plastic drop-cloth masking for beds, sofas & switches', 'बेड, सोफा और स्विचबोर्ड की पूरी प्लास्टिक मास्किंग'),
+        Tr('Wood polish (melamine/PU) & iron grill synthetic enamel', 'लकड़ी पॉलिश और लोहे की ग्रिल पर एनामेल पेंट'),
+      ],
+    ),
+
+    // --- 17. CONSTRUCTION HELPER / BELDAR & SHIFTING LABOUR ---
+    ServiceItem(
+      id: 'svc_construction_helper',
+      categoryId: 'cat_masonry_civil',
+      name: Tr(
+        'Beldar / Construction Helper & Shifting Labour',
+        'बेलदार / निर्माण हेल्पर और शिफ्टिंग मज़दूर',
+      ),
+      tagline: Tr(
+        'Hardworking helpers for cement mortar mixing, brick lifting, demolition, debris removal & house shifting',
+        'मसाला मिलाने, ईंट/रेत ढोने, तुड़ाई, मलबा हटाने और घर का भारी सामान शिफ्ट करने के लिए मेहनती बेलदार',
+      ),
+      description: Tr(
+        'Book verified, physically fit daily-wage Beldars & helpers for 2 hours, half-day (4 hrs) or full-day (8 hrs).',
+        '2 घंटे, हाफ-डे (4 घंटे) या फुल-डे (8 घंटे) के लिए सत्यापित और मेहनती बेलदार व लोडिंग लेबर बुक करें।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1541888946425-d09bb18086f6?auto=format&fit=crop&w=800&q=80',
+      rating: 4.85,
+      bookingsCountLabel: '610K+',
+      supportsInstant: true,
+      instantEtaMinutes: 18,
+      startingPriceRupees: 249,
+      originalStartingPriceRupees: 399,
+      estimatedDurationMinutes: 120,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_beldar_2hr',
+          title: Tr('2 Hours Heavy Shifting / Loading', '2 घंटे सामान शिफ्टिंग / लोडिंग लेबर'),
+          subtitle: Tr(
+            'Furniture moving, truck unloading or rooftop material carry',
+            'भारी फर्नीचर शिफ्टिंग, ट्रक अनलोडिंग या छत पर सामान पहुंचाना',
+          ),
+          priceRupees: 249,
+          originalPriceRupees: 399,
+          durationMinutes: 120,
+        ),
+        ServicePackageTier(
+          id: 'pkg_beldar_half',
+          title: Tr('Half-Day Beldar Helper (4 Hrs)', 'हाफ-डे बेलदार / हेल्पर (4 घंटे)'),
+          subtitle: Tr(
+            'Site cleaning, malba bagging, digging or mason assistance',
+            'साइट सफाई, मलबा कट्टों में भरना, खुदाई या मिस्त्री की मदद',
+          ),
+          priceRupees: 349,
+          originalPriceRupees: 549,
+          durationMinutes: 240,
+        ),
+        ServicePackageTier(
+          id: 'pkg_beldar_full',
+          title: Tr('Full-Day Beldar / Mazdoor (8 Hrs)', 'फुल-डे बेलदार / मज़दूर (8 घंटे दिहाड़ी)'),
+          subtitle: Tr(
+            'Complete 8-hour shift for construction, mortar mixing & lifting',
+            'निर्माण कार्य, मसाला बनाने और माल ढुलाई के लिए पूरे 8 घंटे',
+          ),
+          priceRupees: 599,
+          originalPriceRupees: 849,
+          durationMinutes: 480,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_beldar_pair',
+          title: Tr('2 Helpers Team (8 Hrs Shift)', '2 बेलदार / हेल्पर की टीम (8 घंटे)'),
+          subtitle: Tr(
+            'Ideal for wall/tile demolition, house shifting or bulk unloading',
+            'दीवार/टाइल तुड़ाई, घर शिफ्टिंग या भारी माल अनलोडिंग के लिए 2 लेबर',
+          ),
+          priceRupees: 1099,
+          originalPriceRupees: 1599,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('Sand, cement & aggregate mortar mixing (Masala banana)', 'रेत, सीमेंट और गिट्टी का मसाला बनाना व पकड़ाना'),
+        Tr('Brick, cement bag & tile lifting to upper floors', 'ईंट, सीमेंट कट्टे और टाइल ऊपरी मंजिल तक पहुंचाना'),
+        Tr('Old plaster/tile chipping, trench digging & malba bagging', 'पुराना प्लास्टर/टाइल उखाड़ना, खुदाई और मलबा भरना'),
+      ],
+    ),
+
+    // --- 18. POP, GYPSUM FALSE CEILING & SHUTTERING MISTRI ---
+    ServiceItem(
+      id: 'svc_pop_false_ceiling',
+      categoryId: 'cat_masonry_civil',
+      name: Tr(
+        'POP, False Ceiling & Shuttering Mistri',
+        'POP, जिप्सम फॉल्स सीलिंग और शटरिंग मिस्त्री',
+      ),
+      tagline: Tr(
+        'Gypsum board cove ceiling, POP punning/moulding & RCC slab centring/shuttering',
+        'जिप्सम बोर्ड कोव सीलिंग, POP फिनिशिंग/मोल्डिंग और छत की आरसीसी शटरिंग',
+      ),
+      description: Tr(
+        'Specialized POP & false-ceiling artisans for LED cove ceilings, wall punning and structural shuttering.',
+        'एलईडी कोव फॉल्स सीलिंग, दीवार POP फिनिशिंग और छत शटरिंग के लिए विशेषज्ञ कारीगर।',
+      ),
+      imageUrl:
+          'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80',
+      rating: 4.86,
+      bookingsCountLabel: '140K+',
+      supportsInstant: false,
+      startingPriceRupees: 399,
+      originalStartingPriceRupees: 699,
+      estimatedDurationMinutes: 240,
+      packages: [
+        ServicePackageTier(
+          id: 'pkg_pop_patch',
+          title: Tr('POP Ceiling / Cornice Repair', 'POP सीलिंग / कॉर्निस पैच रिपेयर'),
+          subtitle: Tr(
+            'Damaged false-ceiling patch, fan hook cutout or joint tape fix',
+            'टूटी फॉल्स सीलिंग रिपेयर, पंखे का कटआउट या जॉइंट फिनिशिंग',
+          ),
+          priceRupees: 399,
+          originalPriceRupees: 699,
+          durationMinutes: 120,
+        ),
+        ServicePackageTier(
+          id: 'pkg_pop_fullday',
+          title: Tr('Full-Day POP / Ceiling Mistri (8 Hrs)', 'फुल-डे POP / फॉल्स सीलिंग मिस्त्री (8 घंटे)'),
+          subtitle: Tr(
+            'GI channel framing, gypsum board fixing & POP wall punning',
+            'GI चैनल फ्रेमिंग, जिप्सम बोर्ड फिटिंग और POP पुनिंग (8 घंटे)',
+          ),
+          priceRupees: 949,
+          originalPriceRupees: 1399,
+          durationMinutes: 480,
+          isBestseller: true,
+        ),
+        ServicePackageTier(
+          id: 'pkg_shuttering_full',
+          title: Tr('RCC Shuttering / Bar-Bender (8 Hrs)', 'छत शटरिंग / सरिया जाल मिस्त्री (8 घंटे)'),
+          subtitle: Tr(
+            'Slab centring plates, column box shuttering or TMT sariya binding',
+            'छत की प्लेट शटरिंग, कॉलम बॉक्स या सरिया (TMT) बांधने का काम',
+          ),
+          priceRupees: 999,
+          originalPriceRupees: 1499,
+          durationMinutes: 480,
+        ),
+      ],
+      capabilities: [
+        Tr('Gypsum & PVC false ceiling with concealed LED cove', 'कन्सील्ड LED लाइट कोव के साथ जिप्सम और PVC फॉल्स सीलिंग'),
+        Tr('Plaster of Paris (POP) smooth wall punning & moulding', 'प्लास्टर ऑफ पेरिस (POP) दीवार फिनिशिंग और डिजाइनर कोर'),
+        Tr('RCC lintel, beam, column shuttering & TMT bar bending', 'आरसीसी बीम, कॉलम शटरिंग और सरिया बंधाई'),
+      ],
+    ),
   ];
 
   // ===========================================================================
@@ -905,6 +1483,35 @@ class CatalogData {
         Tr('Check cooling temperature & gas pressure', 'कूलिंग और गैस प्रेशर चेक करें'),
       ],
     ),
+    ProviderJobOffer(
+      offerId: 'OFF-9043',
+      bookingId: 'BK-2854',
+      serviceName: Tr('Mason / Rajmistri + Beldar (Full Day)', 'राजमिस्त्री + बेलदार हेल्पर (फुल-डे)'),
+      packageName: Tr(
+        'Brick partition wall & cement plastering (8 Hrs)',
+        'ईंट दीवार चुनाई और सीमेंट प्लास्टर (8 घंटे)',
+      ),
+      isInstant: true,
+      customerName: Tr('Rajendra Rathore', 'राजेंद्र राठौड़'),
+      addressArea: Tr('Vaishali Nagar, Jaipur', 'वैशाली नगर, जयपुर'),
+      fullAddress: Tr(
+        'Plot 42, Queens Road, Vaishali Nagar, Jaipur',
+        'प्लॉट 42, क्वींस रोड, वैशाली नगर, जयपुर',
+      ),
+      distanceKm: 1.8,
+      etaMinutes: 9,
+      grossAmountRupees: 1399,
+      platformFeeRupees: 199,
+      netPayoutRupees: 1200,
+      paymentMode: PaymentMode.cash,
+      startOtp: '5924',
+      taskChecklist: [
+        Tr('Carry trowel (kanni), plumb-bob (sahul) & spirit level', 'कन्नी, साहुल और लेवल टूल साथ रखें'),
+        Tr('Verify 4-digit Start OTP (5924) with customer', 'ग्राहक से 4-अंकीय OTP (5924) सत्यापित करें'),
+        Tr('Complete 4-inch brickwork & smooth cement plastering', 'ईंट चुनाई और प्लास्टर का काम पूरा करें'),
+        Tr('Sweep mortar debris & collect ₹1,399 Cash', 'मलबा साफ करें और ₹1,399 नकद प्राप्त करें'),
+      ],
+    ),
   ];
 
   static const List<LedgerJournalItem> sampleLedgerEntries = [
@@ -964,6 +1571,101 @@ class CatalogData {
 
   static List<ServiceItem> servicesByCategory(String categoryId) {
     return services.where((s) => s.categoryId == categoryId).toList();
+  }
+
+  /// Synonym keywords per service ID so searching in English, Hindi, or Hinglish
+  /// (e.g. "rajmistri", "mistri", "chunai", "tile", "badhai", "beldar", "mazdoor",
+  /// "dihadi", "welder", "sariya", "putty", "plumber") finds the exact skilled labour.
+  static const Map<String, List<String>> _serviceSearchSynonyms = {
+    'svc_house_help': ['maid', 'bai', 'jhadu', 'pocha', 'bartan', 'cook', 'helper', 'housekeeping'],
+    'svc_bathroom_clean': ['toilet', 'washroom', 'acid wash', 'tile scrub', 'commode'],
+    'svc_full_home_clean': ['sofa', 'kitchen clean', 'deep clean', 'sanitization'],
+    'svc_ac_repair': ['air conditioner', 'split ac', 'window ac', 'gas refill', 'cooling', 'foam jet'],
+    'svc_ro_repair': ['water purifier', 'kent', 'aquaguard', 'filter', 'membrane', 'tds'],
+    'svc_electrician': ['bijli', 'light', 'fan', 'mcb', 'switch', 'wiring', 'inverter', 'fuse'],
+    'svc_plumber': ['nal', 'pipe', 'leakage', 'tap', 'tank', 'flush', 'drain', 'motor'],
+    'svc_women_salon': ['beauty', 'parlour', 'waxing', 'facial', 'threading', 'pedicure'],
+    'svc_women_spa': ['massage', 'therapy', 'ayurvedic', 'body spa'],
+    'svc_men_grooming': ['barber', 'haircut', 'beard', 'shave', 'champi', 'nai'],
+    'svc_pest_control': ['cockroach', 'termite', 'deemak', 'khatmal', 'bedbug', 'spray'],
+    'svc_masonry_civil': [
+      'mason', 'masonry', 'rajmistri', 'mistri', 'kadiya', 'brick', 'chunai',
+      'plaster', 'cement', 'concrete', 'pcc', 'civil', 'wall', 'construction',
+      'labour', 'labor', 'dihadi', 'theka', 'राजमिस्त्री', 'मिस्त्री', 'चुनाई', 'प्लास्टर',
+    ],
+    'svc_tile_marble_mistri': [
+      'tile', 'tiles', 'marble', 'granite', 'stone', 'kota', 'grouting', 'epoxy',
+      'flooring', 'moulding', 'skirting', 'mistri', 'टाइल', 'मार्बल', 'ग्रेनाइट',
+    ],
+    'svc_carpenter_work': [
+      'carpenter', 'badhai', 'khati', 'wood', 'furniture', 'door', 'lock',
+      'hinge', 'almirah', 'wardrobe', 'bed', 'plywood', 'sunmica', 'laminate',
+      'बढ़ई', 'कारपेंटर', 'फर्नीचर', 'दरवाजा',
+    ],
+    'svc_welder_fabricator': [
+      'welder', 'welding', 'fabricator', 'fabrication', 'iron', 'loha', 'gate',
+      'grill', 'railing', 'shutter', 'shed', 'tin', 'arc', 'वेल्डर', 'वेल्डिंग', 'लोहा',
+    ],
+    'svc_painter_putty': [
+      'painter', 'painting', 'paint', 'putty', 'birla', 'whitewash', 'distemper',
+      'waterproofing', 'seepage', 'damp', 'polish', 'enamel', 'पेंटर', 'पुट्टी', 'पेंट',
+    ],
+    'svc_construction_helper': [
+      'helper', 'beldar', 'mazdoor', 'majdoor', 'labour', 'labor', 'dihadi',
+      'loading', 'unloading', 'shifting', 'coolie', 'demolition', 'malba',
+      'digging', 'masala', 'बेलदार', 'मज़दूर', 'लेबर', 'दिहाड़ी', 'हेल्पर',
+    ],
+    'svc_pop_false_ceiling': [
+      'pop', 'false ceiling', 'gypsum', 'pvc ceiling', 'cornice', 'shuttering',
+      'centring', 'sariya', 'bar bender', 'rcc', 'slab', 'शटरिंग', 'फॉल्स सीलिंग', 'सरिया',
+    ],
+  };
+
+  /// Full-text + bilingual + Hinglish synonym search across all services.
+  static List<ServiceItem> searchServices(
+    String rawQuery, {
+    String categoryId = 'ALL',
+  }) {
+    final q = rawQuery.trim().toLowerCase();
+    return services.where((s) {
+      final matchesCat = categoryId == 'ALL' || s.categoryId == categoryId;
+      if (!matchesCat) return false;
+      if (q.isEmpty) return true;
+
+      if (s.name.en.toLowerCase().contains(q) ||
+          s.name.hi.toLowerCase().contains(q) ||
+          s.tagline.en.toLowerCase().contains(q) ||
+          s.tagline.hi.toLowerCase().contains(q) ||
+          s.description.en.toLowerCase().contains(q) ||
+          s.description.hi.toLowerCase().contains(q)) {
+        return true;
+      }
+
+      for (final cap in s.capabilities) {
+        if (cap.en.toLowerCase().contains(q) ||
+            cap.hi.toLowerCase().contains(q)) {
+          return true;
+        }
+      }
+
+      for (final pkg in s.packages) {
+        if (pkg.title.en.toLowerCase().contains(q) ||
+            pkg.title.hi.toLowerCase().contains(q) ||
+            pkg.subtitle.en.toLowerCase().contains(q) ||
+            pkg.subtitle.hi.toLowerCase().contains(q)) {
+          return true;
+        }
+      }
+
+      final synonyms = _serviceSearchSynonyms[s.id] ?? const [];
+      for (final syn in synonyms) {
+        if (syn.toLowerCase().contains(q) || q.contains(syn.toLowerCase())) {
+          return true;
+        }
+      }
+
+      return false;
+    }).toList();
   }
 }
 

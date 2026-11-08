@@ -1350,24 +1350,36 @@ class _VoiceSearchSheet extends StatelessWidget {
 
   static const List<({String query, Tr label})> _presets = [
     (
-      query: 'House help',
-      label: Tr('"House help in 14 mins"', '"14 मिनट में हाउस हेल्प"'),
+      query: 'Rajmistri',
+      label: Tr('"Mason / Rajmistri (Brick & Plaster)"', '"राजमिस्त्री (चुनाई और प्लास्टर)"'),
+    ),
+    (
+      query: 'Tile',
+      label: Tr('"Tile & Marble Fitting Mistri"', '"टाइल और मार्बल मिस्त्री"'),
+    ),
+    (
+      query: 'Carpenter',
+      label: Tr('"Carpenter / Badhai (Door & Furniture)"', '"बढ़ई / कारपेंटर (दरवाजा व फर्नीचर)"'),
+    ),
+    (
+      query: 'Welder',
+      label: Tr('"Welder & Iron Gate Repair"', '"वेल्डर और लोहे का गेट रिपेयर"'),
+    ),
+    (
+      query: 'Beldar',
+      label: Tr('"Beldar / Construction Helper"', '"बेलदार / निर्माण और शिफ्टिंग मज़दूर"'),
+    ),
+    (
+      query: 'Painter',
+      label: Tr('"House Painter & Wall Putty"', '"पेंटर और वॉल पुट्टी"'),
     ),
     (
       query: 'Plumber',
       label: Tr('"Plumber & tap leak repair"', '"प्लम्बर और नल रिपेयर"'),
     ),
     (
-      query: 'AC',
-      label: Tr('"AC foam-jet servicing"', '"AC फोम-जेट सर्विस"'),
-    ),
-    (
-      query: 'Electrician',
-      label: Tr('"Electrician & MCB fix"', '"इलेक्ट्रीशियन और MCB"'),
-    ),
-    (
-      query: 'Salon',
-      label: Tr('"Salon & facial at home"', '"घर पर सैलून और ब्यूटी"'),
+      query: 'House help',
+      label: Tr('"House help in 14 mins"', '"14 मिनट में हाउस हेल्प"'),
     ),
   ];
 

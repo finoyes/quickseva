@@ -16,10 +16,29 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   int _tabIndex = 0;
   String _selectedCategoryId = 'ALL';
   String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
   bool _homeInstantToggle = true;
   int _selectedHomePkgIndex = 2; // Defaults to 1.5 hours Bestseller
   late ServiceItem _cartService;
   late ServicePackageTier _cartPackage;
+
+  void _setSearchQuery(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (_searchController.text != query) {
+        _searchController.value = TextEditingValue(
+          text: query,
+          selection: TextSelection.collapsed(offset: query.length),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   final List<BookingOrder> _bookings = [
     BookingOrder(
@@ -330,16 +349,11 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   // ===========================================================================
   Widget _buildHomeTab(BuildContext context) {
     final houseHelpService = CatalogData.services.first;
-    final filteredServices = CatalogData.services.where((s) {
-      final matchesCat =
-          _selectedCategoryId == 'ALL' || s.categoryId == _selectedCategoryId;
-      final q = _searchQuery.trim().toLowerCase();
-      final matchesSearch = q.isEmpty ||
-          s.name.en.toLowerCase().contains(q) ||
-          s.name.hi.toLowerCase().contains(q) ||
-          s.tagline.en.toLowerCase().contains(q);
-      return matchesCat && matchesSearch;
-    }).toList();
+    final filteredServices = CatalogData.searchServices(
+      _searchQuery,
+      categoryId: _selectedCategoryId,
+    );
+    final isSearching = _searchQuery.trim().isNotEmpty;
 
     return SafeArea(
       child: CustomScrollView(
@@ -553,11 +567,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         ),
                         SizedBox(height: 14),
 
-                        // Search Bar with Animated Rotating Placeholder & Voice Mic Pill
+                        // Search Bar with Animated Rotating Placeholder, Clear Button & Voice Mic Pill
                         Stack(
                           alignment: Alignment.centerLeft,
                           children: [
                             TextField(
+                              controller: _searchController,
                               onChanged: (v) =>
                                   setState(() => _searchQuery = v),
                               decoration: InputDecoration(
@@ -566,24 +581,46 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   Icons.search_rounded,
                                   color: QSevaColors.of(context).accentStart,
                                 ),
-                                suffixIcon: GestureDetector(
-                                  onTap: () => showVoiceSearchSheet(
-                                    context,
-                                    onQuerySelected: (q) =>
-                                        setState(() => _searchQuery = q),
-                                  ),
-                                  child: Container(
-                                    margin: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: QSevaColors.of(context).lilac,
-                                      borderRadius: BorderRadius.circular(10),
+                                suffixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (_searchQuery.isNotEmpty)
+                                      GestureDetector(
+                                        onTap: () => _setSearchQuery(''),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
+                                          child: Icon(
+                                            Icons.close_rounded,
+                                            size: 18,
+                                            color: QSevaColors.of(context)
+                                                .inkMuted,
+                                          ),
+                                        ),
+                                      ),
+                                    GestureDetector(
+                                      onTap: () => showVoiceSearchSheet(
+                                        context,
+                                        onQuerySelected: _setSearchQuery,
+                                      ),
+                                      child: Container(
+                                        margin: EdgeInsets.all(6),
+                                        padding: EdgeInsets.all(7),
+                                        decoration: BoxDecoration(
+                                          color: QSevaColors.of(context).lilac,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.mic_none_rounded,
+                                          size: 18,
+                                          color: QSevaColors.of(context)
+                                              .purpleAccent,
+                                        ),
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.mic_none_rounded,
-                                      size: 18,
-                                      color: QSevaColors.of(context).purpleAccent,
-                                    ),
-                                  ),
+                                  ],
                                 ),
                                 filled: true,
                                 fillColor: QSevaColors.of(context).base,
@@ -618,18 +655,20 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                     hints: context.lang == AppLanguage.hi
                                         ? const [
+                                            '"राजमिस्त्री और प्लास्टर"',
+                                            '"टाइल और मार्बल मिस्त्री"',
+                                            '"बढ़ई (कारपेंटर) और फर्नीचर"',
+                                            '"वेल्डर और लोहे का गेट"',
+                                            '"बेलदार / निर्माण लेबर"',
                                             '"14 मिनट में हाउस हेल्प"',
-                                            '"प्लम्बर और नल रिपेयर"',
-                                            '"AC फोम-जेट सर्विस"',
-                                            '"सैलून और ब्यूटी पार्लर"',
-                                            '"इलेक्ट्रीशियन और MCB"',
                                           ]
                                         : const [
+                                            '"Mason / Rajmistri & plaster"',
+                                            '"Tile & marble fitting mistri"',
+                                            '"Carpenter & door/lock fix"',
+                                            '"Welder & iron gate repair"',
+                                            '"Beldar / daily construction labour"',
                                             '"House help in 14 mins"',
-                                            '"Plumber & tap repair"',
-                                            '"AC foam-jet service"',
-                                            '"Salon & facial at home"',
-                                            '"Electrician & MCB fix"',
                                           ],
                                     style: TextStyle(
                                       fontSize: 13,
@@ -646,6 +685,70 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                               ),
                           ],
                         ),
+                        SizedBox(height: 10),
+                        // Quick Trade & Skilled Labour Search Tags
+                        SizedBox(
+                          height: 30,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              for (final tag in const [
+                                (q: 'Rajmistri', label: Tr('🧱 Mason / राजमिस्त्री', '🧱 राजमिस्त्री')),
+                                (q: 'Tile', label: Tr('📐 Tile Mistri', '📐 टाइल मिस्त्री')),
+                                (q: 'Carpenter', label: Tr('🪚 Carpenter / बढ़ई', '🪚 बढ़ई')),
+                                (q: 'Welder', label: Tr('⚡ Welder', '⚡ वेल्डर')),
+                                (q: 'Beldar', label: Tr('👷 Beldar / लेबर', '👷 बेलदार / मज़दूर')),
+                                (q: 'Painter', label: Tr('🎨 Painter / पुट्टी', '🎨 पेंटर')),
+                                (q: 'POP', label: Tr('🏛️ POP / Shuttering', '🏛️ POP / शटरिंग')),
+                                (q: 'Plumber', label: Tr('🔧 Plumber', '🔧 प्लम्बर')),
+                              ])
+                                Padding(
+                                  padding: EdgeInsets.only(right: 6),
+                                  child: GestureDetector(
+                                    onTap: () => _setSearchQuery(
+                                      _searchQuery.toLowerCase() ==
+                                              tag.q.toLowerCase()
+                                          ? ''
+                                          : tag.q,
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _searchQuery.toLowerCase() ==
+                                                tag.q.toLowerCase()
+                                            ? QSevaColors.of(context).peachTint
+                                            : QSevaColors.of(context).base,
+                                        borderRadius:
+                                            BorderRadius.circular(999),
+                                        border: Border.all(
+                                          color: _searchQuery.toLowerCase() ==
+                                                  tag.q.toLowerCase()
+                                              ? QSevaColors.of(context)
+                                                  .accentStart
+                                              : QSevaColors.of(context).border,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        context.tr(tag.label),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          color: _searchQuery.toLowerCase() ==
+                                                  tag.q.toLowerCase()
+                                              ? QSevaColors.of(context)
+                                                  .accentStart
+                                              : QSevaColors.of(context).ink,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -653,6 +756,100 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               ),
             ),
           ),
+
+          // =================================================================
+          // LIVE INSTANT SEARCH RESULTS AT TOP WHEN SEARCHING
+          // =================================================================
+          if (isSearching)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(18, 14, 18, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            context.trPair(
+                              'Search Results for "$_searchQuery" (${filteredServices.length})',
+                              '"$_searchQuery" के परिणाम (${filteredServices.length})',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16.5,
+                              fontWeight: FontWeight.w900,
+                              color: QSevaColors.of(context).ink,
+                            ),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            _setSearchQuery('');
+                            setState(() => _selectedCategoryId = 'ALL');
+                          },
+                          icon: Icon(Icons.clear_rounded, size: 15),
+                          label: Text(
+                            context.trPair('Clear', 'हटाएं'),
+                            style: TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    if (filteredServices.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: QSevaColors.of(context).surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: QSevaColors.of(context).border,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 32,
+                              color: QSevaColors.of(context).inkMuted,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              context.trPair(
+                                'No service matched "$_searchQuery". Try "Rajmistri", "Tile", "Welder", "Carpenter" or "Beldar".',
+                                '"$_searchQuery" से कोई सेवा नहीं मिली। "राजमिस्त्री", "टाइल", "वेल्डर" या "बेलदार" खोजें।',
+                              ),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: QSevaColors.of(context).inkMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      ...filteredServices.map((s) {
+                        final heroTag = 'top-search-svc-${s.id}';
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: _ServiceListRowCard(
+                            service: s,
+                            heroTag: heroTag,
+                            onTap: () => _openService(s, heroTag: heroTag),
+                            onQuickSheetTap: () => _openSubCategoryRateCardSheet(
+                              initialCategoryId: s.categoryId,
+                            ),
+                          ),
+                        );
+                      }),
+                  ],
+                ),
+              ),
+            ),
 
           // =================================================================
           // AUTO-ADVANCING PROMO CAROUSEL (TURBO + SUPER SAVER + ESCROW)
@@ -1460,18 +1657,18 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   Widget _buildStitchEssentialBentoGrid(BuildContext context) {
     final essentials = [
       (
-        serviceId: 'svc_plumber_repair',
+        serviceId: 'svc_plumber',
         categoryId: 'cat_repairs',
         title: Tr('Plumber', 'प्लम्बर'),
         subtitle:
             Tr('प्लम्बर • Tap, Pipe, Flush', 'नल, पाइप और फ्लश रिपेयर'),
-        badge: Tr('Fast 14m', 'तेज़ 14m'),
+        badge: Tr('Fast 20m', 'तेज़ 20m'),
         icon: Icons.plumbing_rounded,
         iconBg: QSevaColors.of(context).lilac,
         iconColor: QSevaColors.of(context).purpleAccent,
       ),
       (
-        serviceId: 'svc_electrician_repair',
+        serviceId: 'svc_electrician',
         categoryId: 'cat_repairs',
         title: Tr('Electrician', 'इलेक्ट्रीशियन'),
         subtitle:
@@ -1482,8 +1679,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         iconColor: QSevaColors.of(context).accentStart,
       ),
       (
-        serviceId: 'svc_ac_foam_jet',
-        categoryId: 'cat_ac_appliance',
+        serviceId: 'svc_ac_repair',
+        categoryId: 'cat_appliances',
         title: Tr('AC & Appliance', 'AC और उपकरण'),
         subtitle:
             Tr('एसी रिपेयर • Foam-Jet, Gas', 'फोम-जेट सर्विस, कूलिंग'),
@@ -1502,6 +1699,53 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         icon: Icons.handyman_rounded,
         iconBg: QSevaColors.of(context).lilac,
         iconColor: QSevaColors.of(context).purpleAccent,
+      ),
+    ];
+
+    final skilledLabour = [
+      (
+        serviceId: 'svc_masonry_civil',
+        categoryId: 'cat_masonry_civil',
+        title: Tr('Mason / Rajmistri', 'राजमिस्त्री (सिविल)'),
+        subtitle:
+            Tr('राजमिस्त्री • Brick, Plaster, PCC', 'ईंट चुनाई, प्लास्टर, ढलाई'),
+        badge: Tr('Half/Full Day', 'दिहाड़ी / ठेका'),
+        icon: Icons.construction_rounded,
+        iconBg: QSevaColors.of(context).peachTint,
+        iconColor: QSevaColors.of(context).accentStart,
+      ),
+      (
+        serviceId: 'svc_tile_marble_mistri',
+        categoryId: 'cat_masonry_civil',
+        title: Tr('Tile & Marble Mistri', 'टाइल और मार्बल मिस्त्री'),
+        subtitle:
+            Tr('टाइल मिस्त्री • Floor, Granite, Grout', 'फ्लोर टाइल, ग्रेनाइट, ग्राउट'),
+        badge: Tr('Laser Level', 'लेज़र लेवल'),
+        icon: Icons.grid_on_rounded,
+        iconBg: QSevaColors.of(context).pistachio,
+        iconColor: QSevaColors.of(context).highlight,
+      ),
+      (
+        serviceId: 'svc_welder_fabricator',
+        categoryId: 'cat_masonry_civil',
+        title: Tr('Welder & Gate Fix', 'वेल्डर और लोहा काम'),
+        subtitle:
+            Tr('वेल्डर • Iron Gate, Grill, Shed', 'लोहे का गेट, ग्रिल और शेड'),
+        badge: Tr('On-Site Arc', 'ऑन-साइट मशीन'),
+        icon: Icons.precision_manufacturing_rounded,
+        iconBg: QSevaColors.of(context).lilac,
+        iconColor: QSevaColors.of(context).purpleAccent,
+      ),
+      (
+        serviceId: 'svc_construction_helper',
+        categoryId: 'cat_masonry_civil',
+        title: Tr('Beldar / Site Helper', 'बेलदार / निर्माण लेबर'),
+        subtitle:
+            Tr('बेलदार • Mortar, Shifting, Malba', 'मसाला, माल ढुलाई, शिफ्टिंग'),
+        badge: Tr('₹249 onwards', '₹249 से शुरू'),
+        icon: Icons.engineering_rounded,
+        iconBg: QSevaColors.of(context).peachTint,
+        iconColor: QSevaColors.of(context).accentStart,
       ),
     ];
 
@@ -1612,6 +1856,109 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                 ),
                 onQuickRateTap: () => _openSubCategoryRateCardSheet(
                   initialCategoryId: essentials[3].categoryId,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.trPair(
+                  'Masonry, Civil & Daily Labour',
+                  'राजमिस्त्री, सिविल और दिहाड़ी लेबर',
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w900,
+                  color: QSevaColors.of(context).ink,
+                  letterSpacing: -0.4,
+                ),
+              ),
+            ),
+            SizedBox(width: 6),
+            PressableScale(
+              onTap: () => _openSubCategoryRateCardSheet(
+                initialCategoryId: 'cat_masonry_civil',
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: QSevaColors.of(context).peachTint,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: QSevaColors.of(context)
+                        .accentStart
+                        .withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Text(
+                  context.trPair('Dihadi Rates →', 'दिहाड़ी रेट →'),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: QSevaColors.of(context).accentStart,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _EssentialBentoTile(
+                data: skilledLabour[0],
+                onTap: () => _openService(
+                  CatalogData.serviceById(skilledLabour[0].serviceId),
+                ),
+                onQuickRateTap: () => _openSubCategoryRateCardSheet(
+                  initialCategoryId: skilledLabour[0].categoryId,
+                ),
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: _EssentialBentoTile(
+                data: skilledLabour[1],
+                onTap: () => _openService(
+                  CatalogData.serviceById(skilledLabour[1].serviceId),
+                ),
+                onQuickRateTap: () => _openSubCategoryRateCardSheet(
+                  initialCategoryId: skilledLabour[1].categoryId,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _EssentialBentoTile(
+                data: skilledLabour[2],
+                onTap: () => _openService(
+                  CatalogData.serviceById(skilledLabour[2].serviceId),
+                ),
+                onQuickRateTap: () => _openSubCategoryRateCardSheet(
+                  initialCategoryId: skilledLabour[2].categoryId,
+                ),
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: _EssentialBentoTile(
+                data: skilledLabour[3],
+                onTap: () => _openService(
+                  CatalogData.serviceById(skilledLabour[3].serviceId),
+                ),
+                onQuickRateTap: () => _openSubCategoryRateCardSheet(
+                  initialCategoryId: skilledLabour[3].categoryId,
                 ),
               ),
             ),
