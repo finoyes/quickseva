@@ -361,7 +361,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                       child: Icon(
                                         Icons.check_circle_rounded,
                                         size: 16,
-                                        color: QSevaColors.of(context).accentStart,
+                                        color: QSevaColors.of(context).highlight,
                                       ),
                                     ),
                                     SizedBox(width: 8),
@@ -449,7 +449,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                         return ChoiceChip(
                                           label: Text(context.tr(opt.label)),
                                           selected: active,
-                                          selectedColor: QSevaColors.of(context).pistachio,
+                                          selectedColor: QSevaColors.of(context).peachTint,
                                           backgroundColor:
                                               QSevaColors.of(context).base,
                                           labelStyle: TextStyle(

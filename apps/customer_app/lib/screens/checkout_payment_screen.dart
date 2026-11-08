@@ -325,7 +325,7 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                           child: Icon(
                             Icons.discount_rounded,
                             size: 18,
-                            color: QSevaColors.of(context).accentStart,
+                            color: QSevaColors.of(context).highlight,
                           ),
                         ),
                         SizedBox(width: 12),
@@ -552,7 +552,7 @@ class _PaymentOptionTile extends StatelessWidget {
         duration: Duration(milliseconds: 180),
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? QSevaColors.of(context).pistachio : QSevaColors.of(context).base,
+          color: selected ? QSevaColors.of(context).peachTint : QSevaColors.of(context).base,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? QSevaColors.of(context).accentStart : QSevaColors.of(context).border,
@@ -637,7 +637,7 @@ class _BillRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
-              color: isGreen ? QSevaColors.of(context).accentStart : QSevaColors.of(context).ink,
+              color: isGreen ? QSevaColors.of(context).highlight : QSevaColors.of(context).ink,
             ),
           ),
         ],

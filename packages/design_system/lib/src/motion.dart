@@ -1222,10 +1222,9 @@ class PastelBackdrop extends StatelessWidget {
           child: CustomPaint(
             painter: _PastelBlobPainter(
               isDark: isDark,
-              rose: seva?.rose ?? const Color(0xFFFFD6E4),
-              lilac: seva?.lilac ?? const Color(0xFFE6D9FF),
-              sky: seva?.sky ?? const Color(0xFFCFE6FF),
-              peachTint: seva?.peachTint ?? const Color(0xFFFFE3D6),
+              pistachio: seva?.pistachio ?? const Color(0xFFDDF7E3),
+              lilac: seva?.lilac ?? const Color(0xFFEDE9FE),
+              peachTint: seva?.peachTint ?? const Color(0xFFFFEFE5),
             ),
           ),
         ),
@@ -1236,26 +1235,24 @@ class PastelBackdrop extends StatelessWidget {
 
 class _PastelBlobPainter extends CustomPainter {
   final bool isDark;
-  final Color rose;
+  final Color pistachio;
   final Color lilac;
-  final Color sky;
   final Color peachTint;
 
   const _PastelBlobPainter({
     required this.isDark,
-    required this.rose,
+    required this.pistachio,
     required this.lilac,
-    required this.sky,
     required this.peachTint,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Clean & calm 3-color ambient wash (Pastel Green, Pastel Purple, Warm Orange tint)
     final blobs = [
-      _Blob(rose,    0.05, 0.02, 0.55, 90, isDark ? 0.30 : 0.75),
-      _Blob(lilac,   0.95, 0.12, 0.50, 90, isDark ? 0.28 : 0.70),
-      _Blob(sky,     0.50, 0.45, 0.45, 100, isDark ? 0.22 : 0.55),
-      _Blob(peachTint, 0.15, 0.85, 0.50, 100, isDark ? 0.25 : 0.80),
+      _Blob(peachTint, 0.08, 0.04, 0.48, 110, isDark ? 0.08 : 0.24),
+      _Blob(lilac,     0.92, 0.14, 0.45, 110, isDark ? 0.08 : 0.22),
+      _Blob(pistachio, 0.20, 0.82, 0.48, 110, isDark ? 0.08 : 0.22),
     ];
 
     for (final b in blobs) {

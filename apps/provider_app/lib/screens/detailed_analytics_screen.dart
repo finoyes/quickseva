@@ -614,7 +614,7 @@ class _LedgerRow extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: c.surfaceSunken,
+                        color: c.lilac,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
@@ -622,7 +622,7 @@ class _LedgerRow extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: c.ink,
+                          color: c.purpleAccent,
                         ),
                       ),
                     ),

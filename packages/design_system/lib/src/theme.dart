@@ -160,36 +160,45 @@ class QSevaColors extends ThemeExtension<QSevaColors> {
         colors: [accentStart, accentEnd],
       );
 
-  /// Rotates through support pastels by index for category tiles.
+  /// Deep purple foreground accent for icons and text placed on [lilac] pastel purple surfaces.
+  Color get purpleAccent => const Color(0xFF7C3AED);
+
+  /// Rotates strictly through the 3 primary support pastels (Pastel Green, Warm Orange tint, Pastel Purple).
   Color supportColor(int index) {
-    final colors = [pistachio, sky, lilac, rose, peachTint];
+    final colors = [pistachio, peachTint, lilac];
     return colors[index % colors.length];
   }
 
-  // ---- Peach Pop instances ------------------------------------------------
+  /// Matching foreground/icon color for [supportColor] by index.
+  Color supportForeground(int index) {
+    final colors = [highlight, accentStart, purpleAccent];
+    return colors[index % colors.length];
+  }
+
+  // ---- Peach Pop instances (Unified 3-Color Palette) ----------------------
 
   static const peachPopLight = QSevaColors(
-    base: Color(0xFFFFF8F2),
+    base: Color(0xFFFAF8F5),
     surface: Color(0xFFFFFFFF),
-    surfaceSunken: Color(0xFFFFEFE4),
-    glassFill: Color.fromRGBO(255, 255, 255, 0.70),
-    glassBorder: Color.fromRGBO(255, 255, 255, 0.80),
-    glassHairline: Color.fromRGBO(51, 32, 28, 0.06),
-    ink: Color(0xFF33201C),
-    inkSecondary: Color(0xFF8A6A60),
-    inkMuted: Color(0xFFB39B92),
-    border: Color.fromRGBO(51, 32, 28, 0.10),
-    accentStart: Color(0xFFFF9E80),
-    accentEnd: Color(0xFFFFC857),
-    onAccent: Color(0xFF33201C),
-    highlight: Color(0xFF2BC6B4),
-    danger: Color(0xFFE5605F),
-    warning: Color(0xFFF5A524),
-    pistachio: Color(0xFFD4F0C8),
-    sky: Color(0xFFCFE6FF),
-    lilac: Color(0xFFE6D9FF),
-    rose: Color(0xFFFFD6E4),
-    peachTint: Color(0xFFFFE3D6),
+    surfaceSunken: Color(0xFFF3F1EC),
+    glassFill: Color.fromRGBO(255, 255, 255, 0.85),
+    glassBorder: Color.fromRGBO(255, 255, 255, 0.92),
+    glassHairline: Color.fromRGBO(30, 27, 24, 0.06),
+    ink: Color(0xFF1E1B18),
+    inkSecondary: Color(0xFF57524E),
+    inkMuted: Color(0xFF8A837C),
+    border: Color.fromRGBO(30, 27, 24, 0.08),
+    accentStart: Color(0xFFF97316),
+    accentEnd: Color(0xFFFF9A5C),
+    onAccent: Color(0xFFFFFFFF),
+    highlight: Color(0xFF1F9D55),
+    danger: Color(0xFFDC2626),
+    warning: Color(0xFFF97316),
+    pistachio: Color(0xFFDDF7E3),
+    sky: Color(0xFFEDE9FE),
+    lilac: Color(0xFFEDE9FE),
+    rose: Color(0xFFFFEFE5),
+    peachTint: Color(0xFFFFEFE5),
     e1: QElevation.lightE1,
     e2: QElevation.lightE2,
     e3: QElevation.lightE3,
@@ -197,27 +206,27 @@ class QSevaColors extends ThemeExtension<QSevaColors> {
   );
 
   static const peachPopDark = QSevaColors(
-    base: Color(0xFF1C1311),
-    surface: Color(0xFF2A1C19),
-    surfaceSunken: Color(0xFF241715),
+    base: Color(0xFF181614),
+    surface: Color(0xFF23201D),
+    surfaceSunken: Color(0xFF1E1B18),
     glassFill: Color.fromRGBO(255, 255, 255, 0.08),
     glassBorder: Color.fromRGBO(255, 255, 255, 0.16),
     glassHairline: Color.fromRGBO(0, 0, 0, 0.30),
-    ink: Color(0xFFFFF3EC),
-    inkSecondary: Color(0xFFC9A99E),
-    inkMuted: Color(0xFF8C7168),
-    border: Color.fromRGBO(255, 255, 255, 0.12),
-    accentStart: Color(0xFFFF9E80),
-    accentEnd: Color(0xFFFFC857),
-    onAccent: Color(0xFF33201C),
-    highlight: Color(0xFF2BC6B4),
-    danger: Color(0xFFF27D7C),
-    warning: Color(0xFFF7B955),
-    pistachio: Color(0xFFD4F0C8),
-    sky: Color(0xFFCFE6FF),
-    lilac: Color(0xFFE6D9FF),
-    rose: Color(0xFFFFD6E4),
-    peachTint: Color(0xFFFFE3D6),
+    ink: Color(0xFFFAF8F5),
+    inkSecondary: Color(0xFFB8B0A8),
+    inkMuted: Color(0xFF8A837C),
+    border: Color.fromRGBO(255, 255, 255, 0.10),
+    accentStart: Color(0xFFF97316),
+    accentEnd: Color(0xFFFF9A5C),
+    onAccent: Color(0xFFFFFFFF),
+    highlight: Color(0xFF22C55E),
+    danger: Color(0xFFEF4444),
+    warning: Color(0xFFF97316),
+    pistachio: Color(0xFFDDF7E3),
+    sky: Color(0xFFEDE9FE),
+    lilac: Color(0xFFEDE9FE),
+    rose: Color(0xFFFFEFE5),
+    peachTint: Color(0xFFFFEFE5),
     e1: QElevation.darkE1,
     e2: QElevation.darkE2,
     e3: QElevation.darkE3,

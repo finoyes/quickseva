@@ -879,7 +879,7 @@ class InstantLaterSegmentedControl extends StatelessWidget {
                     Icon(
                       Icons.calendar_today_rounded,
                       size: 14,
-                      color: !isInstant ? c.accentEnd : c.inkMuted,
+                      color: !isInstant ? c.lilac : c.purpleAccent,
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -1138,7 +1138,7 @@ class SuperSaverPackBanner extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: c.accentEnd,
+                    color: c.accentStart,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -1176,7 +1176,7 @@ class SuperSaverPackBanner extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.w900,
-                          color: c.accentEnd,
+                          color: c.pistachio,
                         ),
                       ),
                     ],
@@ -1476,8 +1476,8 @@ class DateSlotCard extends StatelessWidget {
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: slot.trend == DemandTrend.lowDown
-                        ? c.peachTint
-                        : c.surfaceSunken,
+                        ? c.pistachio
+                        : c.lilac,
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: c.border),
                   ),
@@ -1487,8 +1487,8 @@ class DateSlotCard extends StatelessWidget {
                         : Icons.trending_up_rounded,
                     size: 12,
                     color: slot.trend == DemandTrend.lowDown
-                        ? c.warning
-                        : c.inkMuted,
+                        ? c.highlight
+                        : c.purpleAccent,
                   ),
                 ),
               ),
@@ -1552,10 +1552,10 @@ class TimeSlotCell extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                   decoration: BoxDecoration(
-                    color: c.peachTint,
+                    color: c.lilac,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: c.warning.withValues(alpha: 0.35),
+                      color: c.purpleAccent.withValues(alpha: 0.30),
                     ),
                   ),
                   child: Text(
@@ -1563,7 +1563,7 @@ class TimeSlotCell extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: c.warning,
+                      color: c.purpleAccent,
                     ),
                   ),
                 ),
@@ -1993,8 +1993,7 @@ class GeometricCelebrationBurst extends StatelessWidget {
                     palette: [
                       c.highlight,
                       c.accentStart,
-                      c.accentEnd,
-                      c.sky,
+                      c.purpleAccent,
                     ],
                   ),
                   child: Center(

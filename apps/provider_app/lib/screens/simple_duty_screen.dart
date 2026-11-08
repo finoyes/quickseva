@@ -209,9 +209,11 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(
-                color: c.surface,
+                color: c.lilac,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: c.border),
+                border: Border.all(
+                  color: c.purpleAccent.withValues(alpha: 0.22),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -219,7 +221,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                   Icon(
                     Icons.volume_up_rounded,
                     size: 14,
-                    color: c.accentStart,
+                    color: c.purpleAccent,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -491,7 +493,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
           key: const ValueKey('waiting-card'),
           icon: Icons.notifications_active_rounded,
           iconColor: c.highlight,
-          iconBackground: c.peachTint,
+          iconBackground: c.pistachio,
           showSonarRadar: true,
           title: context.trPair(
             'Ready for new bookings',
@@ -659,10 +661,10 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                     vertical: 9,
                   ),
                   decoration: BoxDecoration(
-                    color: c.sky.withValues(alpha: 0.35),
+                    color: c.lilac,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: c.highlight.withValues(alpha: 0.25),
+                      color: c.purpleAccent.withValues(alpha: 0.25),
                     ),
                   ),
                   child: Row(
@@ -671,7 +673,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
                       Icon(
                         Icons.map_rounded,
                         size: 16,
-                        color: c.highlight,
+                        color: c.purpleAccent,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -1450,16 +1452,18 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
                   vertical: 9,
                 ),
                 decoration: BoxDecoration(
-                  color: c.surfaceSunken,
+                  color: c.lilac,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: c.border),
+                  border: Border.all(
+                    color: c.purpleAccent.withValues(alpha: 0.22),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.play_circle_fill_rounded,
                       size: 20,
-                      color: c.accentStart,
+                      color: c.purpleAccent,
                     ),
                     const SizedBox(width: 8),
                     Expanded(

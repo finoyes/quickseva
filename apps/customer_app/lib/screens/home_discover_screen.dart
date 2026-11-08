@@ -364,7 +364,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                       height: 110,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: QSevaColors.of(context).rose.withValues(alpha: 0.5),
+                        color: QSevaColors.of(context).lilac.withValues(alpha: 0.45),
                       ),
                     ),
                   ),
@@ -397,14 +397,14 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     LiveStatusDot(
-                                      color: QSevaColors.of(context).accentStart,
+                                      color: QSevaColors.of(context).highlight,
                                       size: 7,
                                     ),
                                     SizedBox(width: 5),
                                     Icon(
                                       Icons.bolt_rounded,
                                       size: 13,
-                                      color: QSevaColors.of(context).accentEnd,
+                                      color: QSevaColors.of(context).highlight,
                                     ),
                                     SizedBox(width: 2),
                                     Flexible(
@@ -418,7 +418,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                         style: TextStyle(
                                           fontSize: 10.5,
                                           fontWeight: FontWeight.w800,
-                                          color: QSevaColors.of(context).accentEnd,
+                                          color: QSevaColors.of(context).highlight,
                                           letterSpacing: 0.1,
                                         ),
                                       ),
@@ -484,7 +484,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             Container(
                               padding: EdgeInsets.all(9),
                               decoration: BoxDecoration(
-                                color: QSevaColors.of(context).pistachio,
+                                color: QSevaColors.of(context).peachTint,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -552,13 +552,13 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 suffixIcon: Container(
                                   margin: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: QSevaColors.of(context).pistachio,
+                                    color: QSevaColors.of(context).lilac,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
                                     Icons.mic_none_rounded,
                                     size: 18,
-                                    color: QSevaColors.of(context).accentStart,
+                                    color: QSevaColors.of(context).purpleAccent,
                                   ),
                                 ),
                                 filled: true,
@@ -792,13 +792,16 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                     ),
                   ),
 
-                  // Slide 2: Super Saver 3-Visits Pack
+                  // Slide 2: Super Saver 3-Visits Pack (Pastel Purple Promo Highlight)
                   LayeredShapeCard(
-                    backgroundColor: QSevaColors.of(context).accentEnd,
-                    primaryShapeColor: QSevaColors.of(context).accentStart,
-                    secondaryShapeColor: QSevaColors.of(context).warning,
+                    backgroundColor: QSevaColors.of(context).lilac,
+                    primaryShapeColor: QSevaColors.of(context).surface,
+                    secondaryShapeColor: QSevaColors.of(context).purpleAccent,
                     borderRadius: 20,
                     padding: EdgeInsets.all(16),
+                    border: Border.all(
+                      color: QSevaColors.of(context).purpleAccent.withValues(alpha: 0.18),
+                    ),
                     boxShadow: QSevaColors.of(context).e2,
                     onTap: () => _openService(houseHelpService),
                     child: Column(
@@ -811,7 +814,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: QSevaColors.of(context).warning,
+                            color: QSevaColors.of(context).purpleAccent,
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Row(
@@ -859,7 +862,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     style: TextStyle(
                                       fontSize: 18.5,
                                       fontWeight: FontWeight.w900,
-                                      color: QSevaColors.of(context).highlight,
+                                      color: QSevaColors.of(context).ink,
                                       letterSpacing: -0.4,
                                     ),
                                   ),
@@ -873,7 +876,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.white.withValues(alpha: 0.85),
+                                      color: QSevaColors.of(context).inkSecondary,
                                       height: 1.25,
                                     ),
                                   ),
@@ -887,7 +890,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 vertical: 9,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: QSevaColors.of(context).ink,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -895,7 +898,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w900,
-                                  color: QSevaColors.of(context).accentEnd,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
@@ -1273,7 +1276,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? QSevaColors.of(context).pistachio
+                                  ? QSevaColors.of(context).peachTint
                                   : QSevaColors.of(context).surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
@@ -1302,7 +1305,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                         size: 22,
                                         color: isSelected
                                             ? Colors.white
-                                            : QSevaColors.of(context).accentStart,
+                                            : QSevaColors.of(context).supportForeground(idx),
                                       ),
                                     ),
                                     if (cat.badgeText != null)
@@ -1315,7 +1318,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                             vertical: 1.5,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: QSevaColors.of(context).accentStart,
+                                            color: QSevaColors.of(context).purpleAccent,
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
@@ -1440,8 +1443,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             Tr('प्लम्बर • Tap, Pipe, Flush', 'नल, पाइप और फ्लश रिपेयर'),
         badge: Tr('Fast 14m', 'तेज़ 14m'),
         icon: Icons.plumbing_rounded,
-        iconBg: QSevaColors.of(context).sky,
-        iconColor: QSevaColors.of(context).highlight,
+        iconBg: QSevaColors.of(context).lilac,
+        iconColor: QSevaColors.of(context).purpleAccent,
       ),
       (
         serviceId: 'svc_electrician_repair',
@@ -1452,7 +1455,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         badge: Tr('Top Pick', 'टॉप पिक'),
         icon: Icons.electrical_services_rounded,
         iconBg: QSevaColors.of(context).peachTint,
-        iconColor: QSevaColors.of(context).warning,
+        iconColor: QSevaColors.of(context).accentStart,
       ),
       (
         serviceId: 'svc_ac_foam_jet',
@@ -1463,7 +1466,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
         badge: Tr('30-day War.', '30-दिन वारंटी'),
         icon: Icons.ac_unit_rounded,
         iconBg: QSevaColors.of(context).pistachio,
-        iconColor: QSevaColors.of(context).accentStart,
+        iconColor: QSevaColors.of(context).highlight,
       ),
       (
         serviceId: 'svc_carpenter_work',
@@ -1473,8 +1476,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             Tr('बढ़ई • Locks, Door & Wood', 'ताला, दरवाज़ा और फर्नीचर'),
         badge: Tr('Fixed Rate', 'फिक्स रेट'),
         icon: Icons.handyman_rounded,
-        iconBg: QSevaColors.of(context).peachTint,
-        iconColor: QSevaColors.of(context).warning,
+        iconBg: QSevaColors.of(context).lilac,
+        iconColor: QSevaColors.of(context).purpleAccent,
       ),
     ];
 
@@ -1614,12 +1617,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: QSevaColors.of(context).accentStart,
+                  color: QSevaColors.of(context).pistachio,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.verified_user_rounded,
-                  color: Colors.white,
+                  color: QSevaColors.of(context).highlight,
                   size: 18,
                 ),
               ),
@@ -2161,7 +2164,7 @@ class _ServiceListRowCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: QSevaColors.of(context).pistachio,
+                              color: QSevaColors.of(context).peachTint,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Row(

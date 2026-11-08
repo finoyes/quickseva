@@ -675,9 +675,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               borderRadius: 18,
               boxShadow: QSevaColors.of(context).e1,
               child: LayeredShapeCard(
-              backgroundColor: QSevaColors.of(context).surface.withValues(alpha: 0.5),
-              primaryShapeColor: QSevaColors.of(context).rose,
-              secondaryShapeColor: QSevaColors.of(context).highlight,
+              backgroundColor: QSevaColors.of(context).surface,
+              primaryShapeColor: QSevaColors.of(context).lilac,
+              secondaryShapeColor: QSevaColors.of(context).purpleAccent,
               padding: EdgeInsets.all(16),
               borderRadius: 18,
               border: Border.all(color: QSevaColors.of(context).border),
@@ -685,10 +685,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: QSevaColors.of(context).rose,
+                    backgroundColor: QSevaColors.of(context).lilac,
                     child: Icon(
                       Icons.engineering_rounded,
-                      color: QSevaColors.of(context).accentStart,
+                      color: QSevaColors.of(context).purpleAccent,
                       size: 28,
                     ),
                   ),
@@ -715,7 +715,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             Icon(
                               Icons.verified_rounded,
                               size: 16,
-                              color: QSevaColors.of(context).accentStart,
+                              color: QSevaColors.of(context).highlight,
                             ),
                           ],
                         ),
@@ -733,7 +733,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           o.providerPhoneMasked,
                           style: TextStyle(
                             fontSize: 11.5,
-                            color: QSevaColors.of(context).accentStart,
+                            color: QSevaColors.of(context).purpleAccent,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -743,7 +743,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   IconButton.filledTonal(
                     style: IconButton.styleFrom(
                       backgroundColor: QSevaColors.of(context).pistachio,
-                      foregroundColor: QSevaColors.of(context).accentStart,
+                      foregroundColor: QSevaColors.of(context).highlight,
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(

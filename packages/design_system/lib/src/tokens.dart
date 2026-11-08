@@ -354,7 +354,7 @@ class QElevation {
     BoxShadow(
       offset: Offset(0, 8),
       blurRadius: 24,
-      color: Color.fromRGBO(255, 158, 128, 0.45),
+      color: Color.fromRGBO(249, 115, 22, 0.28),
     ),
   ];
 
