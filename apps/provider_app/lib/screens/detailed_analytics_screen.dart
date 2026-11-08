@@ -94,15 +94,23 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                context.trPair(
-                  'Plan: 15% commission + daily bonus',
-                  'प्लान: 15% कमीशन + डेली बोनस',
-                ),
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: c.highlight,
-                  fontWeight: FontWeight.w700,
+              PressableScale(
+                onTap: () => showPitchControlSheet(context),
+                child: ListenableBuilder(
+                  listenable: PitchDemoStore.instance,
+                  builder: (context, _) {
+                    return Text(
+                      context.trPair(
+                        'Active Plan: ${context.tr(PitchDemoStore.instance.activePlan.title)} (Tap to switch)',
+                        'सक्रिय प्लान: ${context.tr(PitchDemoStore.instance.activePlan.title)} (बदलें)',
+                      ),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: c.highlight,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -461,35 +469,48 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
       ),
     ];
 
-    return _Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.trPair('Performance & phone health', 'प्रदर्शन और फोन स्थिति'),
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: c.ink,
+    return PressableScale(
+      onTap: () => showKycAndOemHealthSheet(context),
+      child: _Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    context.trPair(
+                      'Performance & phone health (Tap for KYC)',
+                      'प्रदर्शन और फोन स्थिति (KYC देखें)',
+                    ),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: c.ink,
+                    ),
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: c.inkMuted, size: 18),
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: badges[0]),
-              const SizedBox(width: 10),
-              Expanded(child: badges[1]),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(child: badges[2]),
-              const SizedBox(width: 10),
-              Expanded(child: badges[3]),
-            ],
-          ),
-        ],
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: badges[0]),
+                const SizedBox(width: 10),
+                Expanded(child: badges[1]),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(child: badges[2]),
+                const SizedBox(width: 10),
+                Expanded(child: badges[3]),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -552,103 +573,106 @@ class _LedgerRow extends StatelessWidget {
     final c = QSevaColors.of(context);
     final color = entry.isCredit ? c.highlight : c.warning;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: c.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: entry.isCredit
-                  ? c.pistachio.withValues(alpha: 0.45)
-                  : c.peachTint,
-              borderRadius: BorderRadius.circular(10),
+    return PressableScale(
+      onTap: () => showDoubleEntryJournalSheet(context, item: entry),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: c.border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: entry.isCredit
+                    ? c.pistachio.withValues(alpha: 0.45)
+                    : c.peachTint,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                entry.isCredit
+                    ? Icons.south_west_rounded
+                    : Icons.north_east_rounded,
+                size: 18,
+                color: color,
+              ),
             ),
-            child: Icon(
-              entry.isCredit
-                  ? Icons.south_west_rounded
-                  : Icons.north_east_rounded,
-              size: 18,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.tr(entry.title),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: c.ink,
-                    height: 1.25,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.tr(entry.title),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: c.ink,
+                      height: 1.25,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  context.tr(entry.subtitle),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: c.inkMuted,
-                    height: 1.3,
+                  const SizedBox(height: 3),
+                  Text(
+                    context.tr(entry.subtitle),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: c.inkMuted,
+                      height: 1.3,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: c.lilac,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        context.tr(entry.tag),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: c.purpleAccent,
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: c.lilac,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          context.tr(entry.tag),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: c.purpleAccent,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      entry.timestampLabel,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: c.inkMuted,
+                      Text(
+                        entry.timestampLabel,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: c.inkMuted,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '${entry.isCredit ? '+' : '−'}${BrandConfig.currency}${entry.amountRupees}',
-            style: TextStyle(
-              fontSize: 15.5,
-              fontWeight: FontWeight.w900,
-              color: color,
-              fontFamily: QFonts.display,
+            const SizedBox(width: 8),
+            Text(
+              '${entry.isCredit ? '+' : '−'}${BrandConfig.currency}${entry.amountRupees}',
+              style: TextStyle(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w900,
+                color: color,
+                fontFamily: QFonts.display,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

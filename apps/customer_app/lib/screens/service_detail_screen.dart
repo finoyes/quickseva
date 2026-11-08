@@ -47,6 +47,24 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     }
   }
 
+  int get _extraFormPriceRupees {
+    int extra = 0;
+    for (final field in widget.service.formFields) {
+      if (field.type == FormFieldType.select) {
+        final val = _formValues[field.key];
+        for (final opt in field.options) {
+          if (opt.value == val) extra += opt.extraPriceRupees;
+        }
+      } else if (field.type == FormFieldType.stepper) {
+        final count = (_formValues[field.key] as int?) ?? field.defaultValue;
+        if (count > field.defaultValue) {
+          extra += (count - field.defaultValue) * 40;
+        }
+      }
+    }
+    return extra;
+  }
+
   void _proceedWithPackage(ServicePackageTier tier) {
     setState(() => _selectedPackage = tier);
     if (_isInstant) {
@@ -60,7 +78,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               'Instant • Arrives in ${widget.service.instantEtaMinutes} mins',
               'तुरंत • ${widget.service.instantEtaMinutes} मिनट में आगमन',
             ),
-            surchargeRupees: 0,
+            surchargeRupees: _extraFormPriceRupees,
             onBookingCreated: widget.onBookingCreated,
           ),
         ),
@@ -579,7 +597,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           Row(
                             children: [
                               RollingRupeeText(
-                                amountRupees: _selectedPackage.priceRupees,
+                                amountRupees: _selectedPackage.priceRupees +
+                                    _extraFormPriceRupees,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,

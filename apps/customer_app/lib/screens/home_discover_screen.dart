@@ -474,65 +474,82 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                   ),
                                 ),
+                              const PitchControlPill(),
                             ],
                           ),
                         ),
 
                         // Location Row + Language Toggle Pill
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(9),
-                              decoration: BoxDecoration(
-                                color: QSevaColors.of(context).peachTint,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.location_on_rounded,
-                                color: QSevaColors.of(context).accentStart,
-                                size: 20,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          '${BrandConfig.name(context.lang)} • ${context.tr(BrandConfig.defaultAddressLabel)}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 13.5,
-                                            fontWeight: FontWeight.w800,
-                                            color: QSevaColors.of(context).ink,
+                        ListenableBuilder(
+                          listenable: PitchDemoStore.instance,
+                          builder: (context, _) {
+                            final addr = PitchDemoStore.instance.currentAddress;
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () => showAddressBookSheet(context),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.all(9),
+                                          decoration: BoxDecoration(
+                                            color: QSevaColors.of(context).peachTint,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Icon(
+                                            Icons.location_on_rounded,
+                                            color: QSevaColors.of(context).accentStart,
+                                            size: 20,
                                           ),
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.keyboard_arrow_down_rounded,
-                                        size: 18,
-                                        color: QSevaColors.of(context).ink,
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    context.tr(BrandConfig.defaultAddressLine),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: QSevaColors.of(context).inkMuted,
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      '${BrandConfig.name(context.lang)} • ${context.tr(addr.label)}',
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontSize: 13.5,
+                                                        fontWeight: FontWeight.w800,
+                                                        color: QSevaColors.of(context).ink,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    Icons.keyboard_arrow_down_rounded,
+                                                    size: 18,
+                                                    color: QSevaColors.of(context).ink,
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                context.tr(addr.addressLine),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: QSevaColors.of(context).inkMuted,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            LanguageTogglePill(),
-                          ],
+                                ),
+                                LanguageTogglePill(),
+                              ],
+                            );
+                          },
                         ),
                         SizedBox(height: 14),
 
@@ -549,16 +566,23 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   Icons.search_rounded,
                                   color: QSevaColors.of(context).accentStart,
                                 ),
-                                suffixIcon: Container(
-                                  margin: EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: QSevaColors.of(context).lilac,
-                                    borderRadius: BorderRadius.circular(10),
+                                suffixIcon: GestureDetector(
+                                  onTap: () => showVoiceSearchSheet(
+                                    context,
+                                    onQuerySelected: (q) =>
+                                        setState(() => _searchQuery = q),
                                   ),
-                                  child: Icon(
-                                    Icons.mic_none_rounded,
-                                    size: 18,
-                                    color: QSevaColors.of(context).purpleAccent,
+                                  child: Container(
+                                    margin: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: QSevaColors.of(context).lilac,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.mic_none_rounded,
+                                      size: 18,
+                                      color: QSevaColors.of(context).purpleAccent,
+                                    ),
                                   ),
                                 ),
                                 filled: true,
@@ -1905,12 +1929,13 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
+                      onPressed: () async {
+                        await Navigator.of(context).push(
                           SmoothPageRoute(
                             page: LiveTrackingScreen(order: b),
                           ),
                         );
+                        if (mounted) setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
@@ -1939,6 +1964,82 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                         ],
                       ),
                     ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            showDoubleEntryJournalSheet(
+                              context,
+                              item: LedgerJournalItem(
+                                id: 'JRN-${b.id}',
+                                title: b.service.name,
+                                subtitle: b.selectedPackage.title,
+                                timestampLabel: b.scheduleLabel,
+                                amountRupees: b.totalAmountRupees,
+                                isCredit:
+                                    b.paymentMode == PaymentMode.dummyOnline,
+                                tag: const Tr('TAX INVOICE', 'टैक्स इनवॉइस'),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.receipt_long_rounded,
+                            size: 15,
+                            color: QSevaColors.of(context).purpleAccent,
+                          ),
+                          label: Text(
+                            context.trPair('Split Invoice', 'स्प्लिट बिल'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              b.warrantyClaimStatus = 'WARRANTY_ACTIVE';
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor:
+                                    QSevaColors.of(context).highlight,
+                                content: Text(
+                                  context.trPair(
+                                    '7-Day Free Re-Work Priority Ticket #WR-${b.id} registered!',
+                                    '7-दिन फ्री री-वर्क टिकट #WR-${b.id} दर्ज हो गया!',
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.verified_user_rounded,
+                            size: 15,
+                            color: QSevaColors.of(context).highlight,
+                          ),
+                          label: Text(
+                            b.warrantyClaimStatus != null
+                                ? context.trPair(
+                                    'Re-Work Booked ✓',
+                                    'री-वर्क बुक ✓',
+                                  )
+                                : context.trPair(
+                                    '7-Day Warranty',
+                                    '7-दिन वारंटी',
+                                  ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

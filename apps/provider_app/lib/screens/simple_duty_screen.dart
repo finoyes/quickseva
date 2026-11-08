@@ -201,67 +201,129 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
           ],
         ),
         const SizedBox(height: 10),
-        // Stitch Quick Utility Strip: Voice Guide + Emergency SOS + Instant Bank Settlement Tag
+        // Stitch Quick Utility Strip: Pitch Control + Voice Guide + KYC/OEM Health + Emergency SOS
         Wrap(
           spacing: 8,
           runSpacing: 6,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: c.lilac,
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: c.purpleAccent.withValues(alpha: 0.22),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.volume_up_rounded,
-                    size: 14,
-                    color: c.purpleAccent,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    context.trPair('Voice Guide ON', 'आवाज़ गाइड चालू'),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: c.ink,
+            const PitchControlPill(),
+            PressableScale(
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      context.trPair(
+                        'Bilingual Hindi/English Voice Guide Active for Low-Literacy Partners',
+                        'द्विभाषी हिंदी/अंग्रेज़ी वॉइस गाइड सक्रिय है',
+                      ),
                     ),
                   ),
-                ],
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: c.lilac,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: c.purpleAccent.withValues(alpha: 0.22),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.volume_up_rounded,
+                      size: 14,
+                      color: c.purpleAccent,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.trPair('Voice Guide ON', 'आवाज़ गाइड चालू'),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: c.ink,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: c.rose.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: c.danger.withValues(alpha: 0.35),
+            PressableScale(
+              onTap: () => showKycAndOemHealthSheet(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: c.pistachio,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: c.highlight.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.verified_user_rounded,
+                      size: 14,
+                      color: c.highlight,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.trPair('KYC & OEM ✓', 'KYC और स्वास्थ्य ✓'),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: c.highlight,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.sos_rounded,
-                    size: 14,
-                    color: c.danger,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    context.trPair('24×7 SOS', 'आपातकालीन SOS'),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      color: c.danger,
+            ),
+            PressableScale(
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: c.danger,
+                    content: Text(
+                      context.trPair(
+                        '24×7 Partner Safety Desk alerted with live GPS coordinates!',
+                        '24×7 पार्टनर सुरक्षा डेस्क को लाइव GPS लोकेशन भेजी गई!',
+                      ),
                     ),
                   ),
-                ],
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: c.rose.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: c.danger.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.sos_rounded,
+                      size: 14,
+                      color: c.danger,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.trPair('24×7 SOS', 'आपातकालीन SOS'),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: c.danger,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -694,40 +756,47 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 9,
+                child: PressableScale(
+                  onTap: () => showInAppChatSheet(
+                    context,
+                    partnerName: job.customerName,
+                    bookingId: job.bookingId,
                   ),
-                  decoration: BoxDecoration(
-                    color: c.peachTint,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: c.accentStart.withValues(alpha: 0.35),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 9,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.call_rounded,
-                        size: 16,
-                        color: c.accentStart,
+                    decoration: BoxDecoration(
+                      color: c.peachTint,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: c.accentStart.withValues(alpha: 0.35),
                       ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          context.trPair('Call Customer', 'ग्राहक को कॉल'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: c.ink,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 16,
+                          color: c.accentStart,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            context.trPair('Chat / Call', 'चैट / कॉल'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: c.ink,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1445,43 +1514,58 @@ class _IncomingOfferModalState extends State<_IncomingOfferModal> {
               ),
               const SizedBox(height: 12),
 
-              // Stitch Customer Voice Note Preview Pill
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 9,
-                ),
-                decoration: BoxDecoration(
-                  color: c.lilac,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: c.purpleAccent.withValues(alpha: 0.22),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.play_circle_fill_rounded,
-                      size: 20,
-                      color: c.purpleAccent,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
+              // Stitch Customer Voice Note Preview Pill (Interactive)
+              PressableScale(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: c.purpleAccent,
+                      content: Text(
                         context.trPair(
-                          'Customer Voice Note (0:10s) • Tap to listen',
-                          'ग्राहक का वॉइस नोट (0:10s) • सुनने के लिए टैप करें',
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: c.ink,
+                          'Playing Voice Note: "Please bring a 16A socket and tap washer"',
+                          'वॉइस नोट चल रहा है: "कृपया 16A सॉकेट और नल का वॉशर साथ लाएं"',
                         ),
                       ),
                     ),
-                  ],
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: c.lilac,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: c.purpleAccent.withValues(alpha: 0.22),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.play_circle_fill_rounded,
+                        size: 20,
+                        color: c.purpleAccent,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          context.trPair(
+                            'Customer Voice Note (0:10s) • Tap to listen',
+                            'ग्राहक का वॉइस नोट (0:10s) • सुनने के लिए टैप करें',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: c.ink,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 18),

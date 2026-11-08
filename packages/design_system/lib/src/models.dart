@@ -238,6 +238,11 @@ class BookingOrder {
   final String providerRating;
   final String providerPhoneMasked;
   BookingStatus status;
+  int extraSparePartsRupees;
+  int? ratingStars;
+  int tipRupees;
+  bool isRecurring;
+  String? warrantyClaimStatus;
 
   BookingOrder({
     required this.id,
@@ -252,6 +257,11 @@ class BookingOrder {
     this.providerRating = '4.9 ★ (312 jobs)',
     this.providerPhoneMasked = '+91 8045-XX-XX92 (Masked)',
     this.status = BookingStatus.assigned,
+    this.extraSparePartsRupees = 0,
+    this.ratingStars,
+    this.tipRupees = 0,
+    this.isRecurring = false,
+    this.warrantyClaimStatus,
   });
 }
 

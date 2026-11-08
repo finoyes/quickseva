@@ -30,7 +30,12 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
   bool _isProcessingDummyPg = false;
 
   int get _convenienceFee => 19;
-  int get _couponDiscount => _applyCoupon ? 20 : 0;
+  int get _couponDiscount {
+    if (!_applyCoupon) return 0;
+    final active = PitchDemoStore.instance.activeCoupon;
+    return active?.discountRupees ?? 20;
+  }
+
   int get _grandTotal {
     final raw = widget.selectedPackage.priceRupees +
         widget.surchargeRupees +
@@ -289,7 +294,7 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                '${context.tr(BrandConfig.defaultAddressLabel)} • ${context.tr(BrandConfig.defaultAddressLine)}',
+                                '${context.tr(PitchDemoStore.instance.currentAddress.label)} • ${context.tr(PitchDemoStore.instance.currentAddress.addressLine)}',
                                 style: TextStyle(
                                   fontSize: 12.5,
                                   color: QSevaColors.of(context).inkMuted,
@@ -303,66 +308,92 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                   ),
                   SizedBox(height: 16),
 
-                  // Coupon Toggle Card
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: QSevaColors.of(context).surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: QSevaColors.of(context).border),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: QSevaColors.of(context).pistachio,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.discount_rounded,
-                            size: 18,
-                            color: QSevaColors.of(context).highlight,
-                          ),
+                  // Coupon Toggle & Multi-Coupon Selector Card
+                  PressableScale(
+                    onTap: () {
+                      showCouponPickerSheet(
+                        context,
+                        currentCode: PitchDemoStore.instance.selectedCouponCode,
+                        subtotalRupees: widget.selectedPackage.priceRupees +
+                            widget.surchargeRupees,
+                        onSelected: (item) {
+                          PitchDemoStore.instance.selectCoupon(item?.code);
+                          if (mounted) {
+                            setState(() {
+                              _applyCoupon = item != null;
+                            });
+                          }
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: QSevaColors.of(context).surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: QSevaColors.of(context).border,
                         ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                context.trPair(
-                                  'Code QUICK20 Applied',
-                                  'कूपन QUICK20 लागू है',
-                                ),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: QSevaColors.of(context).ink,
-                                ),
-                              ),
-                              Text(
-                                context.trPair(
-                                  'Extra ₹20 instant platform discount',
-                                  '₹20 की अतिरिक्त छूट',
-                                ),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: QSevaColors.of(context).inkMuted,
-                                ),
-                              ),
-                            ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: QSevaColors.of(context).pistachio,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.discount_rounded,
+                              size: 18,
+                              color: QSevaColors.of(context).highlight,
+                            ),
                           ),
-                        ),
-                        Switch(
-                          value: _applyCoupon,
-                          activeTrackColor: QSevaColors.of(context).accentStart,
-                          onChanged: (v) => setState(() => _applyCoupon = v),
-                        ),
-                      ],
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _applyCoupon
+                                      ? context.trPair(
+                                          'Code ${PitchDemoStore.instance.selectedCouponCode ?? "QUICK20"} Applied (Tap to change)',
+                                          'कूपन ${PitchDemoStore.instance.selectedCouponCode ?? "QUICK20"} लागू (बदलने के लिए टैप करें)',
+                                        )
+                                      : context.trPair(
+                                          'Tap to choose a coupon code',
+                                          'कूपन कोड चुनने के लिए टैप करें',
+                                        ),
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: QSevaColors.of(context).ink,
+                                  ),
+                                ),
+                                Text(
+                                  context.trPair(
+                                    'Extra ₹$_couponDiscount instant platform discount • 3 offers available',
+                                    '₹$_couponDiscount की अतिरिक्त छूट • 3 ऑफ़र उपलब्ध',
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: QSevaColors.of(context).inkMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: _applyCoupon,
+                            activeTrackColor:
+                                QSevaColors.of(context).accentStart,
+                            onChanged: (v) => setState(() => _applyCoupon = v),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -414,6 +445,49 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                             () => _paymentMode = PaymentMode.dummyOnline,
                           ),
                         ),
+                        if (_paymentMode == PaymentMode.dummyOnline) ...[
+                          SizedBox(height: 10),
+                          Builder(
+                            builder: (context) {
+                              final split = DummyFeeEngine.computeFees(
+                                plan: PitchDemoStore.instance.activePlan,
+                                labourRupees: _grandTotal,
+                              );
+                              return Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: QSevaColors.of(context).lilac,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.call_split_rounded,
+                                      size: 16,
+                                      color:
+                                          QSevaColors.of(context).purpleAccent,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        context.trPair(
+                                          'Auto-Split: ₹${split.providerNetPayoutRupees} Partner Escrow • ₹${split.totalPlatformTakeRupees} Platform + GST (${context.tr(PitchDemoStore.instance.activePlan.title)})',
+                                          'ऑटो-स्प्लिट: ₹${split.providerNetPayoutRupees} पार्टनर एस्क्रो • ₹${split.totalPlatformTakeRupees} प्लेटफ़ॉर्म + GST',
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: QSevaColors.of(context)
+                                              .purpleAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ],
                     ),
                   ),

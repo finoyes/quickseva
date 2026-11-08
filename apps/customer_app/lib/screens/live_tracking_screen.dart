@@ -641,7 +641,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         ),
                       ),
                     )
-                  else
+                  else ...[
                     GeometricCelebrationBurst(
                       title: context.trPair(
                         'Job Completed & Escrow Verified!',
@@ -652,6 +652,46 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         '${BrandConfig.brandNameHindi} चुनने के लिए धन्यवाद। 7-दिन वारंटी सक्रिय।',
                       ),
                     ),
+                    SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          showPostJobRatingSheet(
+                            context,
+                            order: o,
+                            onSubmitted: (stars, tip) {
+                              setState(() {
+                                o.ratingStars = stars;
+                                o.tipRupees = tip;
+                              });
+                            },
+                          );
+                        },
+                        icon: Icon(
+                          Icons.star_rounded,
+                          size: 18,
+                          color: QSevaColors.of(context).accentStart,
+                        ),
+                        label: Text(
+                          o.ratingStars != null
+                              ? context.trPair(
+                                  'Rated ${o.ratingStars}★ ${o.tipRupees > 0 ? "• +₹${o.tipRupees} Tip Added" : "• Edit Review"}',
+                                  '${o.ratingStars}★ रेटिंग दी गई',
+                                )
+                              : context.trPair(
+                                  'Rate Professional & Add 100% Partner Tip',
+                                  'प्रोफेशनल को रेट करें और टिप जोड़ें',
+                                ),
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w800,
+                            color: QSevaColors.of(context).accentStart,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   if (status == BookingStatus.assigned) ...[
                     SizedBox(height: 12),
                     GeometricCelebrationBurst(
@@ -742,6 +782,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   ),
                   IconButton.filledTonal(
                     style: IconButton.styleFrom(
+                      backgroundColor: QSevaColors.of(context).peachTint,
+                      foregroundColor: QSevaColors.of(context).accentStart,
+                    ),
+                    onPressed: () => showInAppChatSheet(
+                      context,
+                      partnerName: o.providerName,
+                      bookingId: o.id,
+                    ),
+                    icon: Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                  ),
+                  SizedBox(width: 6),
+                  IconButton.filledTonal(
+                    style: IconButton.styleFrom(
                       backgroundColor: QSevaColors.of(context).pistachio,
                       foregroundColor: QSevaColors.of(context).highlight,
                     ),
@@ -757,7 +810,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         ),
                       );
                     },
-                    icon: Icon(Icons.call_rounded),
+                    icon: Icon(Icons.call_rounded, size: 20),
                   ),
                 ],
               ),
