@@ -713,44 +713,60 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Stitch Side-by-Side Quick Action Buttons: Google Maps + Call Customer
+          // Embedded Compact Offline Map + Side-by-Side Quick Action Buttons
+          QOfflineTrackingMap(
+            routeProgress: (stepIdx + 1) / _jobSteps.length,
+            partnerName: 'You',
+            destinationLabel: context.tr(job.customerName),
+            isCompleted: _jobStep == BookingStatus.completed,
+            height: 184,
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 9,
+                child: PressableScale(
+                  onTap: () => showOfflineNavigationSheet(
+                    context,
+                    customerName: context.tr(job.customerName),
+                    addressText: context.tr(job.fullAddress),
+                    progress: (stepIdx + 1) / _jobSteps.length,
                   ),
-                  decoration: BoxDecoration(
-                    color: c.lilac,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: c.purpleAccent.withValues(alpha: 0.25),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 9,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.map_rounded,
-                        size: 16,
-                        color: c.purpleAccent,
+                    decoration: BoxDecoration(
+                      color: c.lilac,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: c.purpleAccent.withValues(alpha: 0.25),
                       ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          context.trPair('Google Maps', 'गूगल मैप्स'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: c.ink,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.map_rounded,
+                          size: 16,
+                          color: c.purpleAccent,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            context.trPair('Offline Map', 'ऑफलाइन मैप'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: c.ink,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
