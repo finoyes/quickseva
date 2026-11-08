@@ -2479,3 +2479,406 @@ class _DoubleEntryJournalSheet extends StatelessWidget {
     );
   }
 }
+
+// =============================================================================
+// 13. CUSTOMER WALLET, SUPER-SAVER PASS, REFERRAL & 24×7 HELP CENTER SHEET
+// =============================================================================
+
+void showCustomerWalletAndPassSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _CustomerWalletAndPassSheet(),
+  );
+}
+
+class _CustomerWalletAndPassSheet extends StatefulWidget {
+  const _CustomerWalletAndPassSheet();
+
+  @override
+  State<_CustomerWalletAndPassSheet> createState() =>
+      _CustomerWalletAndPassSheetState();
+}
+
+class _CustomerWalletAndPassSheetState
+    extends State<_CustomerWalletAndPassSheet> {
+  int _walletCashRupees = 250;
+  final int _remainingPassVisits = 2;
+  bool _referralClaimed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = QSevaColors.of(context);
+    return SafeArea(
+      top: false,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: c.border),
+          boxShadow: c.e3,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: c.peachTint,
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: c.accentStart,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.trPair(
+                            'Ananya Singhania • Gold Member',
+                            'अनन्या सिंघानिया • गोल्ड सदस्य',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: c.ink,
+                          ),
+                        ),
+                        Text(
+                          context.trPair(
+                            '+91 98290-XXXXX • Verified Customer',
+                            '+91 98290-XXXXX • सत्यापित ग्राहक',
+                          ),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: c.inkMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // 1. QSeva Cash & Escrow Refund Wallet Card
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: c.pistachio,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: c.highlight.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: c.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.account_balance_wallet_rounded,
+                        color: c.highlight,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.trPair(
+                              'QSeva Wallet Balance',
+                              'क्विकसेवा वॉलेट बैलेंस',
+                            ),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: c.inkSecondary,
+                            ),
+                          ),
+                          Text(
+                            '${BrandConfig.currency}$_walletCashRupees',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: c.highlight,
+                              fontFamily: QFonts.display,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() => _walletCashRupees += 100);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: c.highlight,
+                            content: Text(
+                              context.trPair(
+                                'Added ₹100 Demo Promo Cash to your QSeva Wallet!',
+                                'आपके वॉलेट में ₹100 डेमो कैश जोड़ा गया!',
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: c.surface,
+                        foregroundColor: c.highlight,
+                      ),
+                      child: Text(
+                        context.trPair('+ Add ₹100', '+ ₹100 जोड़ें'),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 2. Active Super Saver Pack (3-Visits Pass @ ₹33/visit)
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: c.lilac,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: c.purpleAccent.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: c.purpleAccent,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            context.trPair('ACTIVE PASS', 'सक्रिय पास'),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            context.trPair(
+                              'Super Saver 3-Visits Pack (₹33/visit)',
+                              'सुपर सेवर 3-विज़िट पैक (₹33/विज़िट)',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w900,
+                              color: c.ink,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.trPair(
+                        '$_remainingPassVisits of 3 prepaid visits remaining • Valid for 26 more days',
+                        '3 में से $_remainingPassVisits प्रीपेड विज़िट शेष • 26 दिनों के लिए मान्य',
+                      ),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: c.purpleAccent,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: List.generate(3, (i) {
+                        final used = i < (3 - _remainingPassVisits);
+                        return Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(right: i < 2 ? 6 : 0),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: used ? c.purpleAccent : c.surface,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: c.purpleAccent),
+                            ),
+                            child: Text(
+                              used
+                                  ? context.trPair('Visit #${i + 1} ✓', 'विज़िट #${i + 1} ✓')
+                                  : context.trPair('Visit #${i + 1} Ready', 'विज़िट #${i + 1} उपलब्ध'),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: used ? Colors.white : c.purpleAccent,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 3. Refer & Earn ₹100 Neighbour Reward
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: c.peachTint,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: c.accentStart.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.card_giftcard_rounded,
+                      color: c.accentStart,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.trPair(
+                              'Refer a Neighbour • Get ₹100',
+                              'पड़ोसी को रेफर करें • ₹100 पाएं',
+                            ),
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w900,
+                              color: c.ink,
+                            ),
+                          ),
+                          Text(
+                            context.trPair(
+                              'Code: ANANYA100 • Instant wallet credit on first booking',
+                              'कोड: ANANYA100 • पहली बुकिंग पर ₹100 वॉलेट क्रेडिट',
+                            ),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: c.inkSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _referralClaimed
+                          ? null
+                          : () {
+                              setState(() {
+                                _referralClaimed = true;
+                                _walletCashRupees += 100;
+                              });
+                            },
+                      child: Text(
+                        _referralClaimed
+                            ? context.trPair('Claimed ✓', 'मिल गया ✓')
+                            : context.trPair('Simulate +₹100', '+₹100 पाएं'),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: c.accentStart,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 4. 24×7 Customer Escrow & Dispute Support
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: c.base,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: c.border),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.support_agent_rounded,
+                      color: c.ink,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.trPair(
+                              '24×7 Escrow & Safety Helpdesk',
+                              '24×7 एस्क्रो और सुरक्षा हेल्पडेस्क',
+                            ),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: c.ink,
+                            ),
+                          ),
+                          Text(
+                            context.trPair(
+                              'Instant refund if partner is >10 mins late or quality issue',
+                              'पार्टनर के लेट होने या शिकायत पर तुरंत रिफंड',
+                            ),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: c.inkMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

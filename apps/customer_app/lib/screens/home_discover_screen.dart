@@ -489,6 +489,49 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                   ),
                                 ),
                               const PitchControlPill(),
+                              PressableScale(
+                                onTap: () =>
+                                    showCustomerWalletAndPassSheet(context),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: QSevaColors.of(context).peachTint,
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(
+                                      color: QSevaColors.of(context)
+                                          .accentStart
+                                          .withValues(alpha: 0.35),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.account_balance_wallet_rounded,
+                                        size: 13,
+                                        color:
+                                            QSevaColors.of(context).accentStart,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        context.trPair(
+                                          '₹250 • Pass',
+                                          '₹250 • पास',
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w900,
+                                          color: QSevaColors.of(context)
+                                              .accentStart,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -2168,14 +2211,100 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   // TAB 2: DEDICATED DISCOVER FULL PAGE
   // ===========================================================================
   Widget _buildDiscoverMasonryTab(BuildContext context) {
+    final discoverMatches = CatalogData.searchServices(
+      _searchQuery,
+      categoryId: _selectedCategoryId,
+    );
+
     return SafeArea(
       child: ListView(
         padding: EdgeInsets.all(18),
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: LanguageTogglePill(),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.trPair(
+                    'Discover All Trades & Services',
+                    'सभी सेवाएं और कारीगर खोजें',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: QText.titleL.copyWith(
+                    color: QSevaColors.of(context).ink,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              LanguageTogglePill(),
+            ],
           ),
+          SizedBox(height: 12),
+          TextField(
+            controller: _searchController,
+            onChanged: (v) => setState(() => _searchQuery = v),
+            decoration: InputDecoration(
+              hintText: context.trPair(
+                'Search Mason, Tile Mistri, Welder, AC, Salon...',
+                'राजमिस्त्री, टाइल, वेल्डर, AC, सैलून खोजें...',
+              ),
+              prefixIcon: Icon(
+                Icons.search_rounded,
+                color: QSevaColors.of(context).accentStart,
+              ),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      onPressed: () => _setSearchQuery(''),
+                      icon: Icon(Icons.close_rounded, size: 18),
+                    )
+                  : IconButton(
+                      onPressed: () => showVoiceSearchSheet(
+                        context,
+                        onQuerySelected: _setSearchQuery,
+                      ),
+                      icon: Icon(
+                        Icons.mic_none_rounded,
+                        size: 18,
+                        color: QSevaColors.of(context).purpleAccent,
+                      ),
+                    ),
+              filled: true,
+              fillColor: QSevaColors.of(context).surface,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 11,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: QSevaColors.of(context).border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: QSevaColors.of(context).accentStart,
+                  width: 1.5,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 14),
+          if (_searchQuery.trim().isNotEmpty) ...[
+            ...discoverMatches.map((s) {
+              final heroTag = 'disc-search-${s.id}';
+              return Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: _ServiceListRowCard(
+                  service: s,
+                  heroTag: heroTag,
+                  onTap: () => _openService(s, heroTag: heroTag),
+                  onQuickSheetTap: () => _openSubCategoryRateCardSheet(
+                    initialCategoryId: s.categoryId,
+                  ),
+                ),
+              );
+            }),
+            SizedBox(height: 12),
+          ],
           _buildMasonrySection(context, prefix: 'discover-tab'),
         ],
       ),

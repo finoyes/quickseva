@@ -44,6 +44,41 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
     return raw < 29 ? widget.selectedPackage.priceRupees : raw;
   }
 
+  Tr _specialistForService(ServiceItem s) {
+    switch (s.id) {
+      case 'svc_masonry_civil':
+      case 'svc_tile_marble_mistri':
+      case 'svc_pop_false_ceiling':
+        return const Tr(
+          'Gopal Lal Kumawat • Senior Rajmistri',
+          'गोपाल लाल कुमावत • सीनियर राजमिस्त्री',
+        );
+      case 'svc_carpenter_work':
+        return const Tr(
+          'Mahendra Jangid • Master Carpenter',
+          'महेंद्र जांगिड़ • मास्टर बढ़ई',
+        );
+      case 'svc_welder_fabricator':
+        return const Tr(
+          'Salim Khan • Certified Welder',
+          'सलीम खान • सर्टिफाइड वेल्डर',
+        );
+      case 'svc_construction_helper':
+        return const Tr(
+          'Kailash Meena • Senior Beldar',
+          'कैलाश मीणा • सीनियर बेलदार',
+        );
+      case 'svc_women_salon':
+      case 'svc_women_spa':
+        return const Tr(
+          'Priya Verma • Senior Beautician',
+          'प्रिया वर्मा • सीनियर ब्यूटीशियन',
+        );
+      default:
+        return const Tr('Rameshwar Sharma', 'रमेश्वर शर्मा');
+    }
+  }
+
   Future<void> _confirmBooking() async {
     if (_paymentMode == PaymentMode.dummyOnline) {
       setState(() => _isProcessingDummyPg = true);
@@ -60,6 +95,7 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
       scheduleLabel: widget.scheduleLabel,
       totalAmountRupees: _grandTotal,
       paymentMode: _paymentMode,
+      providerName: _specialistForService(widget.service),
       status: BookingStatus.assigned,
     );
 
@@ -520,11 +556,21 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                         if (widget.surchargeRupees > 0)
                           _BillRow(
                             label: context.trPair(
-                              'Peak Slot Surcharge',
-                              'पीक स्लॉट शुल्क',
+                              'Custom Add-Ons / Peak Slot',
+                              'अतिरिक्त विकल्प / पीक स्लॉट शुल्क',
                             ),
                             value:
                                 '+ ${BrandConfig.currency}${widget.surchargeRupees}',
+                          )
+                        else if (widget.surchargeRupees < 0)
+                          _BillRow(
+                            label: context.trPair(
+                              'Off-Peak Happy Hours Discount',
+                              'ऑफ-पीक हैप्पी आवर्स छूट',
+                            ),
+                            value:
+                                '- ${BrandConfig.currency}${widget.surchargeRupees.abs()}',
+                            isGreen: true,
                           ),
                         _BillRow(
                           label: context.trPair(
@@ -536,8 +582,8 @@ class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
                         if (_applyCoupon)
                           _BillRow(
                             label: context.trPair(
-                              'Coupon Discount (QUICK20)',
-                              'कूपन छूट (QUICK20)',
+                              'Coupon Discount (${PitchDemoStore.instance.selectedCouponCode ?? "QUICK20"})',
+                              'कूपन छूट (${PitchDemoStore.instance.selectedCouponCode ?? "QUICK20"})',
                             ),
                             value: '- ${BrandConfig.currency}$_couponDiscount',
                             isGreen: true,

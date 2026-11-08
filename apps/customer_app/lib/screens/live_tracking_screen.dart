@@ -377,6 +377,109 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   ),
                   SizedBox(height: 16),
 
+                  // Mid-Job Fixed-Tariff Spare Part / Material Approval Card
+                  if (status == BookingStatus.inProgress) ...[
+                    Container(
+                      margin: EdgeInsets.only(bottom: 14),
+                      padding: EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: QSevaColors.of(context).lilac,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: QSevaColors.of(context)
+                              .purpleAccent
+                              .withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.build_circle_rounded,
+                                size: 18,
+                                color: QSevaColors.of(context).purpleAccent,
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  context.trPair(
+                                    'Mid-Job Spare Part / Material Approval (0% Commission)',
+                                    'स्पेयर पार्ट / सामग्री मंजूरी (0% कमीशन)',
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w900,
+                                    color: QSevaColors.of(context).ink,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            context.trPair(
+                              'Tap to approve fixed-rate material if requested by partner (100% goes to partner):',
+                              'यदि प्रोफेशनल को सामग्री चाहिए तो फिक्स-रेट मंजूर करें:',
+                            ),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: QSevaColors.of(context).inkSecondary,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: PitchDemoStore.standardSpareParts
+                                .map((part) {
+                              final selected =
+                                  o.extraSparePartsRupees == part.priceRupees;
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    o.extraSparePartsRupees = selected
+                                        ? 0
+                                        : part.priceRupees;
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: selected
+                                        ? QSevaColors.of(context).purpleAccent
+                                        : QSevaColors.of(context).surface,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color:
+                                          QSevaColors.of(context).purpleAccent,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '${context.tr(part.name)} (+₹${part.priceRupees})',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: selected
+                                          ? Colors.white
+                                          : QSevaColors.of(context).ink,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
                   // Interactive Simulator Button to test state transitions
                   if (status != BookingStatus.completed)
                     SizedBox(
