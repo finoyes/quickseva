@@ -1537,118 +1537,120 @@ class _CouponPickerSheet extends StatelessWidget {
           border: Border.all(color: c.border),
           boxShadow: c.e3,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.local_offer_rounded, color: c.highlight, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    context.trPair(
-                      'Available Coupons & Offers',
-                      'उपलब्ध कूपन और ऑफर्स',
-                    ),
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w900,
-                      color: c.ink,
-                    ),
-                  ),
-                ),
-                if (currentCode != null)
-                  TextButton(
-                    onPressed: () {
-                      onSelected(null);
-                      Navigator.of(context).pop();
-                    },
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.local_offer_rounded, color: c.highlight, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
                     child: Text(
-                      context.trPair('Remove', 'हटाएं'),
-                      style: TextStyle(color: c.danger),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ...PitchDemoStore.availableCoupons.map((coupon) {
-              final selected = currentCode == coupon.code;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: PressableScale(
-                  onTap: () {
-                    onSelected(coupon);
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: selected ? c.pistachio : c.base,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: selected ? c.highlight : c.border,
-                        width: selected ? 1.8 : 1.0,
+                      context.trPair(
+                        'Available Coupons & Offers',
+                        'उपलब्ध कूपन और ऑफर्स',
+                      ),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: c.ink,
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: c.ink,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            coupon.code,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              letterSpacing: 0.6,
+                  ),
+                  if (currentCode != null)
+                    TextButton(
+                      onPressed: () {
+                        onSelected(null);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        context.trPair('Remove', 'हटाएं'),
+                        style: TextStyle(color: c.danger),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...PitchDemoStore.availableCoupons.map((coupon) {
+                final selected = currentCode == coupon.code;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: PressableScale(
+                    onTap: () {
+                      onSelected(coupon);
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: selected ? c.pistachio : c.base,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: selected ? c.highlight : c.border,
+                          width: selected ? 1.8 : 1.0,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: c.ink,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              coupon.code,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.6,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                context.tr(coupon.title),
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w800,
-                                  color: c.ink,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  context.tr(coupon.title),
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: c.ink,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                context.tr(coupon.subtitle),
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: c.inkSecondary,
+                                Text(
+                                  context.tr(coupon.subtitle),
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    color: c.inkSecondary,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Icon(
-                          selected
-                              ? Icons.check_circle_rounded
-                              : Icons.arrow_forward_ios_rounded,
-                          size: 18,
-                          color: selected ? c.highlight : c.inkMuted,
-                        ),
-                      ],
+                          Icon(
+                            selected
+                                ? Icons.check_circle_rounded
+                                : Icons.arrow_forward_ios_rounded,
+                            size: 18,
+                            color: selected ? c.highlight : c.inkMuted,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
-          ],
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
@@ -2178,10 +2180,11 @@ class _KycAndOemHealthSheet extends StatelessWidget {
           border: Border.all(color: c.border),
           boxShadow: c.e3,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Row(
               children: [
                 Container(
@@ -2293,8 +2296,9 @@ class _KycAndOemHealthSheet extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 // =============================================================================
@@ -2336,10 +2340,11 @@ class _DoubleEntryJournalSheet extends StatelessWidget {
           border: Border.all(color: c.border),
           boxShadow: c.e3,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Row(
               children: [
                 Container(
@@ -2476,8 +2481,9 @@ class _DoubleEntryJournalSheet extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 // =============================================================================

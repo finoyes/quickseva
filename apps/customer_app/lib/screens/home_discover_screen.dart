@@ -687,41 +687,44 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                               ),
                             ),
                             if (_searchQuery.isEmpty)
-                              Positioned(
+                              Positioned.fill(
                                 left: 46,
                                 right: 52,
-                                child: IgnorePointer(
-                                  child: RotatingHintText(
-                                    prefix: context.trPair(
-                                      'Search ',
-                                      'खोजें: ',
-                                    ),
-                                    hints: context.lang == AppLanguage.hi
-                                        ? const [
-                                            '"राजमिस्त्री और प्लास्टर"',
-                                            '"टाइल और मार्बल मिस्त्री"',
-                                            '"बढ़ई (कारपेंटर) और फर्नीचर"',
-                                            '"वेल्डर और लोहे का गेट"',
-                                            '"बेलदार / निर्माण लेबर"',
-                                            '"14 मिनट में हाउस हेल्प"',
-                                          ]
-                                        : const [
-                                            '"Mason / Rajmistri & plaster"',
-                                            '"Tile & marble fitting mistri"',
-                                            '"Carpenter & door/lock fix"',
-                                            '"Welder & iron gate repair"',
-                                            '"Beldar / daily construction labour"',
-                                            '"House help in 14 mins"',
-                                          ],
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: QSevaColors.of(context).inkMuted,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    highlightStyle: TextStyle(
-                                      fontSize: 13,
-                                      color: QSevaColors.of(context).inkMuted,
-                                      fontWeight: FontWeight.w700,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: IgnorePointer(
+                                    child: RotatingHintText(
+                                      prefix: context.trPair(
+                                        'Search ',
+                                        'खोजें: ',
+                                      ),
+                                      hints: context.lang == AppLanguage.hi
+                                          ? const [
+                                              '"राजमिस्त्री और प्लास्टर"',
+                                              '"टाइल और मार्बल मिस्त्री"',
+                                              '"बढ़ई (कारपेंटर) और फर्नीचर"',
+                                              '"वेल्डर और लोहे का गेट"',
+                                              '"बेलदार / निर्माण लेबर"',
+                                              '"14 मिनट में हाउस हेल्प"',
+                                            ]
+                                          : const [
+                                              '"Mason / Rajmistri & plaster"',
+                                              '"Tile & marble fitting mistri"',
+                                              '"Carpenter & door/lock fix"',
+                                              '"Welder & iron gate repair"',
+                                              '"Beldar / daily construction labour"',
+                                              '"House help in 14 mins"',
+                                            ],
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: QSevaColors.of(context).inkMuted,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      highlightStyle: TextStyle(
+                                        fontSize: 13,
+                                        color: QSevaColors.of(context).inkMuted,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ),
                                 ),

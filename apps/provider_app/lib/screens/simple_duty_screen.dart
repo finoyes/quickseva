@@ -125,7 +125,7 @@ class _SimpleDutyScreenState extends State<SimpleDutyScreen> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 108),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

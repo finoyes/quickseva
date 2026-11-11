@@ -54,7 +54,7 @@ class _DetailedAnalyticsScreenState extends State<DetailedAnalyticsScreen> {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 108),
         children: [
           _buildHeader(context),
           const SizedBox(height: 16),

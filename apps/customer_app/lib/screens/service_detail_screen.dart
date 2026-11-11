@@ -610,6 +610,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   child: Row(
                     children: [
                       Expanded(
+                        flex: 5,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -651,16 +652,18 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           ],
                         ),
                       ),
-                      Flexible(
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 6,
                         child: AccentGradientButton(
                           label: _isInstant
                               ? context.trPair(
-                                  'Book Instant (${s.instantEtaMinutes}m)',
-                                  'तुरंत बुक (${s.instantEtaMinutes}m)',
+                                  'Book (${s.instantEtaMinutes}m)',
+                                  'बुक करें (${s.instantEtaMinutes}m)',
                                 )
                               : context.trPair(
-                                  'Select Time Slot',
-                                  'समय स्लॉट चुनें',
+                                  'Select Slot',
+                                  'स्लॉट चुनें',
                                 ),
                           icon: _isInstant
                               ? Icons.bolt_rounded
