@@ -255,18 +255,20 @@ class _PulseSkeletonState extends State<PulseSkeleton>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, _) => Container(
-        width: widget.width,
-        height: widget.height,
-        decoration: BoxDecoration(
-          color: Color.lerp(
-            widget.baseColor,
-            widget.highlightColor,
-            Curves.easeInOut.transform(_c.value),
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) => Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: Color.lerp(
+              widget.baseColor,
+              widget.highlightColor,
+              Curves.easeInOut.transform(_c.value),
+            ),
+            borderRadius: BorderRadius.circular(widget.radius),
           ),
-          borderRadius: BorderRadius.circular(widget.radius),
         ),
       ),
     );
@@ -407,41 +409,43 @@ class _RotatingHintTextState extends State<RotatingHintText>
   @override
   Widget build(BuildContext context) {
     final hint = widget.hints.isEmpty ? '' : widget.hints[_index];
-    return Row(
-      children: [
-        Text(widget.prefix, style: widget.style),
-        Expanded(
-          child: ClipRect(
-            child: AnimatedSwitcher(
-              duration: QMotion.of(context, QMotion.slow),
-              switchInCurve: QMotion.enter,
-              switchOutCurve: QMotion.exit,
-              transitionBuilder: (child, anim) {
-                final incoming = child.key == ValueKey(hint);
-                final offset = Tween<Offset>(
-                  begin: Offset(0, incoming ? 0.9 : -0.9),
-                  end: Offset.zero,
-                ).animate(anim);
-                return FadeTransition(
-                  opacity: anim,
-                  child: SlideTransition(position: offset, child: child),
-                );
-              },
-              layoutBuilder: (current, previous) => Stack(
-                alignment: Alignment.centerLeft,
-                children: [...previous, ?current],
-              ),
-              child: Text(
-                hint,
-                key: ValueKey(hint),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: widget.highlightStyle ?? widget.style,
+    return RepaintBoundary(
+      child: Row(
+        children: [
+          Text(widget.prefix, style: widget.style),
+          Expanded(
+            child: ClipRect(
+              child: AnimatedSwitcher(
+                duration: QMotion.of(context, QMotion.slow),
+                switchInCurve: QMotion.enter,
+                switchOutCurve: QMotion.exit,
+                transitionBuilder: (child, anim) {
+                  final incoming = child.key == ValueKey(hint);
+                  final offset = Tween<Offset>(
+                    begin: Offset(0, incoming ? 0.9 : -0.9),
+                    end: Offset.zero,
+                  ).animate(anim);
+                  return FadeTransition(
+                    opacity: anim,
+                    child: SlideTransition(position: offset, child: child),
+                  );
+                },
+                layoutBuilder: (current, previous) => Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [...previous, ?current],
+                ),
+                child: Text(
+                  hint,
+                  key: ValueKey(hint),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: widget.highlightStyle ?? widget.style,
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -511,90 +515,92 @@ class _PromoCarouselState extends State<PromoCarousel>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: widget.height,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (n) {
-              if (n is ScrollStartNotification && n.dragDetails != null) {
-                _progress.stop();
-              } else if (n is ScrollEndNotification &&
-                  !QMotion.reduced(context)) {
-                _progress.forward(from: 0);
-              }
-              return false;
-            },
-            child: PageView.builder(
-              controller: _page,
-              itemCount: widget.slides.length,
-              onPageChanged: (i) {
-                setState(() => _index = i);
-                if (!QMotion.reduced(context)) {
+    return RepaintBoundary(
+      child: Column(
+        children: [
+          SizedBox(
+            height: widget.height,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (n) {
+                if (n is ScrollStartNotification && n.dragDetails != null) {
+                  _progress.stop();
+                } else if (n is ScrollEndNotification &&
+                    !QMotion.reduced(context)) {
                   _progress.forward(from: 0);
                 }
+                return false;
               },
-              itemBuilder: (context, i) {
-                return AnimatedBuilder(
-                  animation: _page,
-                  builder: (context, child) {
-                    double delta = 0;
-                    if (_page.hasClients && _page.position.haveDimensions) {
-                      delta = ((_page.page ?? 0) - i).clamp(-1.0, 1.0);
-                    } else {
-                      delta = (i - _index).toDouble().clamp(-1.0, 1.0);
-                    }
-                    final scale = 1 - (delta.abs() * 0.06);
-                    return Transform.scale(
-                      scale: scale,
-                      child: Opacity(
-                        opacity: 1 - (delta.abs() * 0.35),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: widget.slides[i],
-                  ),
-                );
-              },
+              child: PageView.builder(
+                controller: _page,
+                itemCount: widget.slides.length,
+                onPageChanged: (i) {
+                  setState(() => _index = i);
+                  if (!QMotion.reduced(context)) {
+                    _progress.forward(from: 0);
+                  }
+                },
+                itemBuilder: (context, i) {
+                  return AnimatedBuilder(
+                    animation: _page,
+                    builder: (context, child) {
+                      double delta = 0;
+                      if (_page.hasClients && _page.position.haveDimensions) {
+                        delta = ((_page.page ?? 0) - i).clamp(-1.0, 1.0);
+                      } else {
+                        delta = (i - _index).toDouble().clamp(-1.0, 1.0);
+                      }
+                      final scale = 1 - (delta.abs() * 0.06);
+                      return Transform.scale(
+                        scale: scale,
+                        child: Opacity(
+                          opacity: 1 - (delta.abs() * 0.35),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: widget.slides[i],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: QSpace.sm),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.slides.length, (i) {
-            final active = i == _index;
-            return AnimatedContainer(
-              duration: QMotion.of(context, QMotion.base),
-              curve: QMotion.standard,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: active ? 26 : 7,
-              height: 7,
-              decoration: BoxDecoration(
-                color: widget.inactiveColor,
-                borderRadius: BorderRadius.circular(QRadius.pill),
-              ),
-              clipBehavior: Clip.antiAlias,
-              alignment: Alignment.centerLeft,
-              child: active
-                  ? AnimatedBuilder(
-                      animation: _progress,
-                      builder: (context, _) => FractionallySizedBox(
-                        widthFactor: QMotion.reduced(context)
-                            ? 1
-                            : math.max(0.18, _progress.value),
-                        heightFactor: 1,
-                        child: ColoredBox(color: widget.activeColor),
-                      ),
-                    )
-                  : null,
-            );
-          }),
-        ),
-      ],
+          const SizedBox(height: QSpace.sm),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.slides.length, (i) {
+              final active = i == _index;
+              return AnimatedContainer(
+                duration: QMotion.of(context, QMotion.base),
+                curve: QMotion.standard,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: active ? 26 : 7,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: widget.inactiveColor,
+                  borderRadius: BorderRadius.circular(QRadius.pill),
+                ),
+                clipBehavior: Clip.antiAlias,
+                alignment: Alignment.centerLeft,
+                child: active
+                    ? AnimatedBuilder(
+                        animation: _progress,
+                        builder: (context, _) => FractionallySizedBox(
+                          widthFactor: QMotion.reduced(context)
+                              ? 1
+                              : math.max(0.18, _progress.value),
+                          heightFactor: 1,
+                          child: ColoredBox(color: widget.activeColor),
+                        ),
+                      )
+                    : null,
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1330,42 +1336,44 @@ class _FloatingAssetState extends State<FloatingAsset>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size + QMotion.floatAmplitude + 8,
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, child) {
-          final t = math.sin(_c.value * 2 * math.pi);
-          final dy = t * QMotion.floatAmplitude;
-          final shadowScale = QMotion.floatShadowMin +
-              (QMotion.floatShadowMax - QMotion.floatShadowMin) *
-                  ((1 - t) / 2); // inverse: shadow shrinks when icon rises
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Transform.translate(
-                offset: Offset(0, dy),
-                child: child!,
-              ),
-              const SizedBox(height: 4),
-              Transform.scale(
-                scaleX: shadowScale,
-                child: Container(
-                  width: widget.size * 0.5,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(QRadius.pill),
+    return RepaintBoundary(
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size + QMotion.floatAmplitude + 8,
+        child: AnimatedBuilder(
+          animation: _c,
+          builder: (context, child) {
+            final t = math.sin(_c.value * 2 * math.pi);
+            final dy = t * QMotion.floatAmplitude;
+            final shadowScale = QMotion.floatShadowMin +
+                (QMotion.floatShadowMax - QMotion.floatShadowMin) *
+                    ((1 - t) / 2); // inverse: shadow shrinks when icon rises
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Transform.translate(
+                  offset: Offset(0, dy),
+                  child: child!,
+                ),
+                const SizedBox(height: 4),
+                Transform.scale(
+                  scaleX: shadowScale,
+                  child: Container(
+                    width: widget.size * 0.5,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(QRadius.pill),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
-        child: SizedBox.square(
-          dimension: widget.size,
-          child: widget.child,
+              ],
+            );
+          },
+          child: SizedBox.square(
+            dimension: widget.size,
+            child: widget.child,
+          ),
         ),
       ),
     );

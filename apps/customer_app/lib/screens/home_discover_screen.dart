@@ -17,10 +17,12 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   String _selectedCategoryId = 'ALL';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  late final FocusNode _searchFocusNode;
   bool _homeInstantToggle = true;
   int _selectedHomePkgIndex = 2; // Defaults to 1.5 hours Bestseller
   late ServiceItem _cartService;
   late ServicePackageTier _cartPackage;
+  bool _showFloatingCart = false;
 
   void _setSearchQuery(String query) {
     setState(() {
@@ -37,6 +39,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -58,6 +61,10 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
     super.initState();
     _cartService = CatalogData.services.first;
     _cartPackage = _cartService.packages[_selectedHomePkgIndex];
+    _searchFocusNode = FocusNode()
+      ..addListener(() {
+        if (mounted) setState(() {});
+      });
   }
 
   void _addBooking(BookingOrder order) {
@@ -121,6 +128,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           setState(() {
             _cartService = svc;
             _cartPackage = pkg;
+            _showFloatingCart = true;
             if (svc.id == CatalogData.services.first.id) {
               final idx = svc.packages.indexWhere((p) => p.id == pkg.id);
               if (idx >= 0) _selectedHomePkgIndex = idx;
@@ -159,19 +167,21 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
           ),
 
           // Stitch-Inspired Floating Layered Cart Pill on Home Tab
-          if (_tabIndex == 0)
+          if (_tabIndex == 0 && _showFloatingCart)
             Positioned(
               left: 16,
               right: 16,
               bottom: 12,
-              child: GlassSurface(
-                borderRadius: 16,
-                boxShadow: QSevaColors.of(context).e3,
-                child: _buildFloatingCartPill(
-                context,
-                _cartService,
-                _cartPackage,
-              ),
+              child: RepaintBoundary(
+                child: GlassSurface(
+                  borderRadius: 16,
+                  boxShadow: QSevaColors.of(context).e3,
+                  child: _buildFloatingCartPill(
+                    context,
+                    _cartService,
+                    _cartPackage,
+                  ),
+                ),
               ),
             ),
         ],
@@ -226,119 +236,113 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
     ServiceItem service,
     ServicePackageTier pkg,
   ) {
-    return ElasticBounceWrapper(
-      triggerKey: '${service.id}_${pkg.id}_${pkg.priceRupees}_$_homeInstantToggle',
-      child: LayeredShapeCard(
-        backgroundColor: QSevaColors.of(context).ink,
-        primaryShapeColor: QSevaColors.of(context).ink,
-        secondaryShapeColor: QSevaColors.of(context).accentStart,
-        borderRadius: 16,
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        boxShadow: QSevaColors.of(context).e3,
-        onTap: () {
-          if (_homeInstantToggle) {
-            _openDirectCheckout(service, pkg);
-          } else {
-            _openDirectSchedule(service, pkg);
-          }
-        },
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: QSevaColors.of(context).accentStart,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.shopping_bag_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${context.tr(service.name)} • ${context.tr(pkg.title)} • ',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      RollingRupeeText(
-                        amountRupees: pkg.priceRupees,
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w900,
-                          color: QSevaColors.of(context).highlight,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        _homeInstantToggle
-                            ? Icons.bolt_rounded
-                            : Icons.calendar_today_rounded,
-                        size: 13,
-                        color: QSevaColors.of(context).highlight,
-                      ),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          _homeInstantToggle
-                              ? context.trPair(
-                                  'Express ${service.instantEtaMinutes}-min dispatch • Escrow protected',
-                                  '${service.instantEtaMinutes}-मिनट एक्सप्रेस • एस्क्रो सुरक्षित',
-                                )
-                              : context.trPair(
-                                  'Scheduled slot • Pay post job',
-                                  'शेड्यूल स्लॉट • काम के बाद भुगतान',
-                                ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white.withValues(alpha: 0.78),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 8),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: QSevaColors.of(context).accentStart,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                context.trPair('Checkout →', 'चेकआउट →'),
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w800,
+    return RepaintBoundary(
+      child: ElasticBounceWrapper(
+        triggerKey: '${service.id}_${pkg.id}_${pkg.priceRupees}_$_homeInstantToggle',
+        child: LayeredShapeCard(
+          backgroundColor: QSevaColors.of(context).ink,
+          primaryShapeColor: QSevaColors.of(context).ink,
+          secondaryShapeColor: QSevaColors.of(context).accentStart,
+          borderRadius: 16,
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          boxShadow: QSevaColors.of(context).e3,
+          onTap: () {
+            if (_homeInstantToggle) {
+              _openDirectCheckout(service, pkg);
+            } else {
+              _openDirectSchedule(service, pkg);
+            }
+          },
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: QSevaColors.of(context).accentStart,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.shopping_bag_rounded,
                   color: Colors.white,
+                  size: 18,
                 ),
               ),
-            ),
-          ],
+              SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            context.tr(pkg.title),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        RollingRupeeText(
+                          amountRupees: pkg.priceRupees,
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w900,
+                            color: QSevaColors.of(context).highlight,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${context.tr(service.name)} • ${_homeInstantToggle ? context.trPair("14m Express", "14मि एक्सप्रेस") : context.trPair("Scheduled", "शेड्यूल्ड")}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.78),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 8),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                decoration: BoxDecoration(
+                  color: QSevaColors.of(context).accentStart,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  context.trPair('Checkout →', 'चेकआउट →'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(width: 6),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _showFloatingCart = false),
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: Colors.white60,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -357,7 +361,11 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
     return SafeArea(
       child: CustomScrollView(
-              slivers: [
+        cacheExtent: 600,
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
                 // Top Header with Stitch Live Availability Strip, Address, Brand & EN/HI Switcher
           SliverToBoxAdapter(
             child: Container(
@@ -387,48 +395,47 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Top Status Row: Live Availability Pill + Compact Active Booking Chip
+                        // Top Status Row: Live Availability Pill + Compact Active Booking Chip + Pitch Pill + Wallet
                         Padding(
                           padding: EdgeInsets.only(bottom: 12),
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 6,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: QSevaColors.of(context).pistachio,
-                                  borderRadius: BorderRadius.circular(999),
-                                  border: Border.all(
-                                    color: QSevaColors.of(context).border,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
                                   ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    LiveStatusDot(
-                                      color: QSevaColors.of(context).highlight,
-                                      size: 7,
+                                  decoration: BoxDecoration(
+                                    color: QSevaColors.of(context).pistachio,
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(
+                                      color: QSevaColors.of(context).border,
                                     ),
-                                    SizedBox(width: 5),
-                                    Icon(
-                                      Icons.bolt_rounded,
-                                      size: 13,
-                                      color: QSevaColors.of(context).highlight,
-                                    ),
-                                    SizedBox(width: 2),
-                                    Flexible(
-                                      child: Text(
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      RepaintBoundary(
+                                        child: LiveStatusDot(
+                                          color: QSevaColors.of(context).highlight,
+                                          size: 7,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.bolt_rounded,
+                                        size: 13,
+                                        color: QSevaColors.of(context).highlight,
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
                                         context.trPair(
                                           '${BrandConfig.instantPromiseMinutes}-MIN EXPRESS • 42 Pros',
                                           '${BrandConfig.instantPromiseMinutes}-मिनट एक्सप्रेस • 42 प्रो',
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: 10.5,
                                           fontWeight: FontWeight.w800,
@@ -436,103 +443,103 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                           letterSpacing: 0.1,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              if (_bookings.isNotEmpty)
-                                PressableScale(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      SmoothPageRoute(
-                                        page: LiveTrackingScreen(
-                                          order: _bookings.first,
+                                if (_bookings.isNotEmpty) ...[
+                                  SizedBox(width: 8),
+                                  PressableScale(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        SmoothPageRoute(
+                                          page: LiveTrackingScreen(
+                                            order: _bookings.first,
+                                          ),
                                         ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
                                       ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: QSevaColors.of(context).ink,
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.two_wheeler_rounded,
-                                          size: 13,
-                                          color: QSevaColors.of(context).highlight,
-                                        ),
-                                        SizedBox(width: 5),
-                                        Flexible(
-                                          child: Text(
+                                      decoration: BoxDecoration(
+                                        color: QSevaColors.of(context).ink,
+                                        borderRadius: BorderRadius.circular(999),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.two_wheeler_rounded,
+                                            size: 13,
+                                            color: QSevaColors.of(context).highlight,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
                                             context.trPair(
                                               'OTP ${_bookings.first.startOtp} • Track →',
                                               'OTP ${_bookings.first.startOtp} • ट्रैक →',
                                             ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 10.5,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                SizedBox(width: 8),
+                                const PitchControlPill(),
+                                SizedBox(width: 8),
+                                PressableScale(
+                                  onTap: () =>
+                                      showCustomerWalletAndPassSheet(context),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 9,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: QSevaColors.of(context).peachTint,
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(
+                                        color: QSevaColors.of(context)
+                                            .accentStart
+                                            .withValues(alpha: 0.35),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.account_balance_wallet_rounded,
+                                          size: 13,
+                                          color:
+                                              QSevaColors.of(context).accentStart,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          context.trPair(
+                                            '₹250 • Pass',
+                                            '₹250 • पास',
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 10.5,
+                                            fontWeight: FontWeight.w900,
+                                            color: QSevaColors.of(context)
+                                                .accentStart,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                              const PitchControlPill(),
-                              PressableScale(
-                                onTap: () =>
-                                    showCustomerWalletAndPassSheet(context),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 9,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: QSevaColors.of(context).peachTint,
-                                    borderRadius: BorderRadius.circular(999),
-                                    border: Border.all(
-                                      color: QSevaColors.of(context)
-                                          .accentStart
-                                          .withValues(alpha: 0.35),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.account_balance_wallet_rounded,
-                                        size: 13,
-                                        color:
-                                            QSevaColors.of(context).accentStart,
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        context.trPair(
-                                          '₹250 • Pass',
-                                          '₹250 • पास',
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w900,
-                                          color: QSevaColors.of(context)
-                                              .accentStart,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
 
@@ -616,6 +623,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                           children: [
                             TextField(
                               controller: _searchController,
+                              focusNode: _searchFocusNode,
                               onChanged: (v) =>
                                   setState(() => _searchQuery = v),
                               decoration: InputDecoration(
@@ -686,57 +694,60 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 ),
                               ),
                             ),
-                            if (_searchQuery.isEmpty)
+                            if (_searchQuery.isEmpty && !_searchFocusNode.hasFocus)
                               Positioned.fill(
                                 left: 46,
                                 right: 52,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: IgnorePointer(
-                                    child: RotatingHintText(
-                                      prefix: context.trPair(
-                                        'Search ',
-                                        'खोजें: ',
-                                      ),
-                                      hints: context.lang == AppLanguage.hi
-                                          ? const [
-                                              '"राजमिस्त्री और प्लास्टर"',
-                                              '"टाइल और मार्बल मिस्त्री"',
-                                              '"बढ़ई (कारपेंटर) और फर्नीचर"',
-                                              '"वेल्डर और लोहे का गेट"',
-                                              '"बेलदार / निर्माण लेबर"',
-                                              '"14 मिनट में हाउस हेल्प"',
-                                            ]
-                                          : const [
-                                              '"Mason / Rajmistri & plaster"',
-                                              '"Tile & marble fitting mistri"',
-                                              '"Carpenter & door/lock fix"',
-                                              '"Welder & iron gate repair"',
-                                              '"Beldar / daily construction labour"',
-                                              '"House help in 14 mins"',
-                                            ],
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: QSevaColors.of(context).inkMuted,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      highlightStyle: TextStyle(
-                                        fontSize: 13,
-                                        color: QSevaColors.of(context).inkMuted,
-                                        fontWeight: FontWeight.w700,
+                                    child: RepaintBoundary(
+                                      child: RotatingHintText(
+                                        prefix: context.trPair(
+                                          'Search ',
+                                          'खोजें: ',
+                                        ),
+                                        hints: context.lang == AppLanguage.hi
+                                            ? const [
+                                                '"राजमिस्त्री और प्लास्टर"',
+                                                '"टाइल और मार्बल मिस्त्री"',
+                                                '"बढ़ई (कारपेंटर) और फर्नीचर"',
+                                                '"वेल्डर और लोहे का गेट"',
+                                                '"बेलदार / निर्माण लेबर"',
+                                                '"14 मिनट में हाउस हेल्प"',
+                                              ]
+                                            : const [
+                                                '"Mason / Rajmistri & plaster"',
+                                                '"Tile & marble fitting mistri"',
+                                                '"Carpenter & door/lock fix"',
+                                                '"Welder & iron gate repair"',
+                                                '"Beldar / daily construction labour"',
+                                                '"House help in 14 mins"',
+                                              ],
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: QSevaColors.of(context).inkMuted,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        highlightStyle: TextStyle(
+                                          fontSize: 13,
+                                          color: QSevaColors.of(context).inkMuted,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                          ],
-                        ),
+                            ],
+                          ),
                         SizedBox(height: 10),
                         // Quick Trade & Skilled Labour Search Tags
                         SizedBox(
-                          height: 30,
+                          height: 34,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
                             children: [
                               for (final tag in const [
                                 (q: 'Rajmistri', label: Tr('🧱 Mason / राजमिस्त्री', '🧱 राजमिस्त्री')),
@@ -759,8 +770,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     ),
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 5,
+                                        horizontal: 11,
+                                        vertical: 6.5,
                                       ),
                                       decoration: BoxDecoration(
                                         color: _searchQuery.toLowerCase() ==
@@ -999,19 +1010,22 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    context.trPair(
-                                      'Need Help in ${BrandConfig.instantPromiseMinutes} Mins?',
-                                      'क्या ${BrandConfig.instantPromiseMinutes} मिनट में मदद चाहिए?',
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 18.5,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white,
-                                      height: 1.15,
-                                      letterSpacing: -0.4,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      context.trPair(
+                                        'Need Help in ${BrandConfig.instantPromiseMinutes} Mins?',
+                                        'क्या ${BrandConfig.instantPromiseMinutes} मिनट में मदद चाहिए?',
+                                      ),
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 17.5,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                        height: 1.15,
+                                        letterSpacing: -0.3,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -1119,18 +1133,21 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    context.trPair(
-                                      '3-Visits Pack at ₹33/visit',
-                                      '3-विज़िट पैक सिर्फ ₹33/विज़िट',
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 18.5,
-                                      fontWeight: FontWeight.w900,
-                                      color: QSevaColors.of(context).ink,
-                                      letterSpacing: -0.4,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      context.trPair(
+                                        '3-Visits Pack at ₹33/visit',
+                                        '3-विज़िट पैक सिर्फ ₹33/विज़िट',
+                                      ),
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 17.5,
+                                        fontWeight: FontWeight.w900,
+                                        color: QSevaColors.of(context).ink,
+                                        letterSpacing: -0.3,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -1234,18 +1251,21 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    context.trPair(
-                                      'Pay Only After 4-Digit OTP',
-                                      '4-अंकीय OTP के बाद ही भुगतान',
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white,
-                                      letterSpacing: -0.4,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      context.trPair(
+                                        'Pay Only After 4-Digit OTP',
+                                        '4-अंकीय OTP के बाद ही भुगतान',
+                                      ),
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 17.5,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                        letterSpacing: -0.3,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -1411,6 +1431,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
                                     _selectedHomePkgIndex = idx;
                                     _cartService = houseHelpService;
                                     _cartPackage = tier;
+                                    _showFloatingCart = true;
                                   });
                                   if (_homeInstantToggle) {
                                     _openService(houseHelpService);
@@ -1671,7 +1692,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
           SliverPadding(
             // Extra bottom padding so the floating cart bar never covers the last card
-            padding: EdgeInsets.fromLTRB(18, 0, 18, 96),
+            padding: EdgeInsets.fromLTRB(18, 0, 18, 120),
             sliver: SliverList.separated(
               itemCount: filteredServices.length,
               separatorBuilder: (_, _) => SizedBox(height: 12),
@@ -2221,7 +2242,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
 
     return SafeArea(
       child: ListView(
-        padding: EdgeInsets.all(18),
+        padding: EdgeInsets.fromLTRB(18, 18, 18, 120),
+        physics: const BouncingScrollPhysics(),
         children: [
           Row(
             children: [
@@ -2320,7 +2342,8 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
   Widget _buildBookingsTab(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: EdgeInsets.all(18),
+        padding: EdgeInsets.fromLTRB(18, 18, 18, 120),
+        physics: const BouncingScrollPhysics(),
         children: [
           Row(
             children: [

@@ -461,9 +461,11 @@ class _ElasticBounceWrapperState extends State<ElasticBounceWrapper>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _scaleAnim,
-      child: widget.child,
+    return RepaintBoundary(
+      child: ScaleTransition(
+        scale: _scaleAnim,
+        child: widget.child,
+      ),
     );
   }
 }
